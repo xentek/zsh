@@ -1,0 +1,23 @@
+#!/bin/zsh -f 
+
+############### 
+# finder_update 
+############### 
+
+#------------------------------------------------------- 
+# function to update desktop and all open Finder windows 
+#------------------------------------------------------- 
+
+function finder_update { 
+osascript <<-eof 
+tell application "Finder"
+	update desktop
+	set allWindows to every window
+	repeat with aWindow in allWindows
+		try
+			update items of aWindow
+		end try
+	end repeat
+end tell
+eof
+}

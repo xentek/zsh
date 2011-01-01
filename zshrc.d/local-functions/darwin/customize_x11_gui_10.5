@@ -1,0 +1,325 @@
+#!/bin/zsh -f
+
+VERSION='0.3.0'
+
+# Feb 18 2005
+# Revised for 10.5 on December 30 2007
+
+
+# Figure out where we are running this from:
+
+WeAreHere=$(dirname $0)
+
+# Define what the dialog should be like
+# Take a look at Pashua's Readme file for more info on the syntax
+
+#############################################################
+##########       Interface      #############################
+#############################################################
+
+# All of this gets put into a single variable called conf:
+conf="
+        # Set transparency: 0 is transparent, 1 is opaque
+        tx.transparency=0.95
+        
+        # Heavy metal overdose:
+        # appearance=metal
+        
+        # Set window title
+        tx.windowtitle = X11.app Customizations
+        
+        #img.type = image
+        #img.path = "$(dirname $WeAreHere)"/Resources/zsh_on_osx.png
+        #img.maxheight = 100
+        
+        ####################
+        # Introductory text:
+        ####################
+        tx.type=text
+        tx.width = 1050
+        tx.text = X11.app Customization Assistant.[return][return]This interface assists the  user  in changing settings that govern the behavior of X11.  The individual user can specify whether focus follows mouse behavior (emulating canonical X11 unix systems) should be set, whether the user should be  warned on  logout  if  X11 is running, whether X11 should be run as a dockless and menuless application in the background, as so forth.  An option to restore all default behaviors is included.[return]
+        
+        
+     #   ###############################################################
+     #   # Ask if X11.app should be included in the Login startup items:
+     #   ###############################################################
+     #   # Define radiobuttons
+     #   rb.type = popup
+     #   rb.width = 300
+     #   rb.label = Add X11.app to my Login startup items?
+     #   rb.option = Start X11 when I log in.
+     #   rb.option = Do not start X11 when I log in.
+     #   rb.option = Leave everything the way it is now.
+     #   rb.default = Leave everything the way it is now.
+        
+        ###############################################################
+        # Ask if xterm should be started automatically:
+        ###############################################################
+        tx2.type=text
+        tx2.width = 1050
+        tx2.text = X11.app starts an xterm every time X11.app starts up. If you find this behavior to be annoying, you can prevent xterm from starting automatically.
+        
+        # Define radiobuttons
+        rb2.type = popup
+        rb2.width = 300
+        rb2.label = Should xterm be started automatically?
+        rb2.option = Prevent xterm from starting automatically.
+        rb2.option = Restore xterm to starting automatically.
+        rb2.option = Leave everything the way it is now.
+        rb2.default = Leave everything the way it is now.
+           
+
+        ###############################################################
+        # Ask if Warning for Quitting X11.app should be turned off:
+        ###############################################################
+        tx3.type=text
+        tx3.width = 1050
+        tx3.text = X11.app has a 'quit alert' warning that pops up, preventing a clean logout.  This can be turned off.        
+        
+        
+        # Define radiobuttons
+        rb3.type = popup
+        rb3.width = 300
+        rb3.label = Get rid of the popup Quit Alert for X11?
+        rb3.option = Get rid of it.
+        rb3.option = Restore it.
+        rb3.option = Leave everything the way it is now.
+        rb3.default = Leave everything the way it is now.   
+        
+        
+        ###############################################################
+        # Ask if Focus Follows Mouse in X11.app should be turned on:
+        ###############################################################
+        tx4.type=text
+        tx4.width = 1050
+        tx4.text = X11.app can be set to focus-follows-mouse and click-through behavior that is typical of standard X11 behavior.  
+        
+        
+        # Define radiobuttons
+        rb4.type = popup
+        rb4.width = 300
+        rb4.label = Use Focus Follows Mouse in X11?
+        rb4.option = Turn on Focus Follows Mouse.
+        rb4.option = Turn off Focus Follows Mouse.
+        rb4.option = Leave everything the way it is now.
+        rb4.default = Leave everything the way it is now.   
+         
+        ###############################################################
+        # Ask if X11.app should go Dockless:
+        ###############################################################
+        tx5.type=text
+        tx5.width = 1050
+        tx5.text = X11.app can be launched silently and without any trace in the dock or menu bar. (If you do this you will lose the ability to use the X11 menu and will have to launch X11 apps from the command line only.) PLEASE SAVE any work in running X11 applications prior to answering yes, as we need to kill the X-server before starting. No need to do this if you anser Leave It Alone.  
+ 
+        # Define radiobuttons
+        rb5.type = popup
+        rb5.width = 300
+        rb5.label = Shall we make X11 Dockless (and Menuless)?
+        rb5.option = Yes, make X11 Dockless.
+        rb5.option = No, restore X11 to the Dock.
+        rb5.option = Leave everything the way it is now.
+        rb5.default = Leave everything the way it is now.
+        
+
+#       ###############################################################
+#       # Ask if DISPLAY should be programmed to accommodate multiple
+#       # simultaneous X11.app users:
+#       ###############################################################
+#       tx6.type=text
+#       tx6.width = 1050
+#       tx6.text = Set DISPLAY variable to allow X-windows programs to run from Terminal.app and iTerm.app. Fast User Switching creates the problem of multiple simultaneous instances of X11.app running and how to find the appropriate DISPLAY value to assign to each. Choosing "Yes" solves this problem. 
+#
+#
+#       # Define radiobuttons
+#       rb6.type = popup
+#       rb6.width = 300
+#       rb6.label = Set up DISPLAY for single or multiple users of X11.app?
+#       rb6.option = Yes, create the appropriate files.
+#       rb6.option = No, leave everything the way it is now.
+#       rb6.default = No, leave everything the way it is now.
+        
+    cn.type=cancelbutton
+    cn.label=Cancel
+
+               
+"; # end of conf
+
+pashua_run "$conf"        
+        
+
+#############################################################
+##########   Begin Actual Program ###########################
+#############################################################
+	
+	
+	#  Check to see if we are running 10.5
+
+	if [[ $(sw_vers -productVersion) < 10.5 ]]; then
+		print "\e[1m $0 is incompatable with the X11 on < 10.5"
+		print " Try invoking \"customize_x11_10.4\" \e[0m "
+		return 420
+	else
+		:
+		# Good to go
+	fi
+
+
+    
+    
+    ########################################################
+    #########     Check for Apple's X11.app      ###########
+    ########################################################
+    
+    # Find out if we have Apple's X11.  If we don't, quit now.
+    
+    if [[ -d /usr/X11/X11.app ]];then
+        PATH_TO_X11='/usr/X11/X11.app'
+    elif [[ -d /usr/X11 && -d /Applications/Utilities/X11.app ]];then
+        PATH_TO_X11='/Applications/Utilities/X11.app'
+    else
+        print "Can't locate Apple's X11.app"
+        return 100
+    fi
+
+    
+    ########################################################
+    ### Nix the start up of an xterm on login?   ###########
+    ########################################################
+     
+    if [[ $rb2 == 'Prevent xterm from starting automatically.' ]];then
+
+		defaults write org.x.X11_launcher app_to_run /usr/X11/bin/xlsclients
+		defaults write org.x.X11          app_to_run /usr/X11/bin/xlsclients
+
+		print "To get the xterm back, issue"
+		print "\e[1m defaults write org.x.X11_launcher app_to_run /usr/X11/bin/xterm \e[0m "
+        print " and "
+		print "\e[1m defaults write org.x.X11  app_to_run /usr/X11/bin/xterm \e[0m "
+
+     
+    elif [[ $rb2 == 'Restore xterm to starting automatically.' ]];then
+
+		defaults write org.x.X11_launcher app_to_run /usr/X11/bin/xterm
+		defaults write org.x.X11          app_to_run /usr/X11/bin/xterm
+		
+    fi
+
+
+    ########################################################
+    ###  Nix the Quit Alert warning on logout?   ###########
+    ########################################################
+     
+        
+    if [[ $rb3 == 'Get rid of it.' ]];then
+        defaults write com.apple.x11 no_quit_alert true  
+        defaults write org.x.X11 no_quit_alert true
+        defaults write org.x.X11_launcher no_quit_alert true
+        print ""; print "writing 'no_quit_alert true' to com.apple.x11.plist"   
+    elif [[ $rb3 == 'Restore it.' ]];then 
+        defaults write com.apple.x11 no_quit_alert false  
+        defaults write org.x.X11 no_quit_alert false
+        defaults write org.x.X11_launcher no_quit_alert false
+        print ""; print "writing 'no_quit_alert false' to com.apple.x11.plist"   
+    else
+        print ""; print "leaving com.apple.x11.plist alone"
+    fi
+
+
+    ########################################################
+    ###  Restore canonical window focus behavior?   ########
+    ########################################################
+  
+    function change_ffm {
+        defaults write com.apple.x11       wm_ffm $BOOL 
+        defaults write org.x.X11_launcher  wm_ffm $BOOL 
+        defaults write org.x.X11           wm_ffm $BOOL 
+        defaults write com.apple.x11       wm_click_through -bool $BOOL 
+        defaults write org.x.X11_launcher  wm_click_through -bool $BOOL 
+        defaults write org.x.X11           wm_click_through -bool $BOOL 
+        }
+        
+    if [[ $rb4 == 'Turn on Focus Follows Mouse.' ]];then
+        BOOL='true'
+        change_ffm
+        BOOL=''
+    
+    elif [[ $rb4 == 'Turn off Focus Follows Mouse.' ]];then
+        BOOL='false'
+        change_ffm         
+        BOOL=''   
+    else
+        BOOL=''
+        print ""; print "leaving com.apple.x11.plist alone" 
+    fi
+    
+ 
+    
+            
+    ########################################################
+    ###  Get rix of X11.app's Dock Icon and menu bar?  #####
+    ########################################################       
+     
+
+	function RemoveDockIcon { 
+
+	    killall X11
+	    # Find the lenght of the file Info.plist
+	    lines=$( wc -l $PATH_TO_X11/Contents/Info.plist | awk '{ print $1 }' )
+	    # Subtract two from this result
+	    twofewerlines=$((lines - 2))
+	    # Get all but the last two lines of the file
+	    command head -n $twofewerlines $PATH_TO_X11/Contents/Info.plist >| /tmp/X11_Info.plist
+	    # Back up the original file
+	    sudo gzip -f $PATH_TO_X11/Contents/Info.plist
+	    # Append new lines to the end of the trunctated file
+	    command echo "        <key>LSUIElement</key>"  >> /tmp/X11_Info.plist
+	    command echo "        <string>1</string>  "  >> /tmp/X11_Info.plist
+	    command echo "</dict>  "  >> /tmp/X11_Info.plist
+	    command echo "</plist>  "  >> /tmp/X11_Info.plist
+	    # copy it back
+	    sudo cp /tmp/X11_Info.plist $PATH_TO_X11/Contents/Info.plist
+	}
+    
+    
+	function RestoreDockIcon { 
+
+	    killall X11
+	    # Find the lenght of the file Info.plist
+	    lines=$( wc -l $PATH_TO_X11/Contents/Info.plist | awk '{ print $1 }' )
+	    # Subtract two from this result
+	    twofewerlines=$((lines - 2))
+	    # Get all but the last two lines of the file
+	    command head -n $twofewerlines $PATH_TO_X11/Contents/Info.plist >| /tmp/X11_Info.plist
+	    # Back up the original file
+	    sudo gzip -f $PATH_TO_X11/Contents/Info.plist
+	    # Append new lines to the end of the trunctated file
+	    command echo "        <key>LSUIElement</key>"  >> /tmp/X11_Info.plist
+	    command echo "        <string>0</string>  "  >> /tmp/X11_Info.plist
+	    command echo "</dict>  "  >> /tmp/X11_Info.plist
+	    command echo "</plist>  "  >> /tmp/X11_Info.plist
+	    # copy it back
+	    sudo cp /tmp/X11_Info.plist $PATH_TO_X11/Contents/Info.plist
+	}
+
+
+        if [[ $rb5 == 'Yes, make X11 Dockless.' ]];then
+            RemoveDockIcon
+            print "X11 removed from the Dock."
+        elif [[ $rb5 == 'No, restore X11 to the Dock.' ]]; then
+            RestoreDockIcon
+            print "X11 restored to the Dock."
+        else
+            print "Not changing X11's dock behavior."
+        fi
+        
+###############################################################################
+#
+#    DISPLAY variable in startup scripts for bash, zsh and tcsh
+#
+###############################################################################
+
+
+    print "\e[1m DO NOT set the DISPLAY environment variable for OS 10.5+ \e[0m ."
+ 
+        
+############ END #############################

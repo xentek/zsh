@@ -1,0 +1,69 @@
+#!/bin/zsh -f
+#
+# mailit
+#
+# Use the perl mail drop in replacement to send mail by command line
+# http://www.cs.cornell.edu/nystrom/macscripts/mail.txt
+# Prompt user for email address, subject, and attachments
+
+# Usage:  mailit [recipient@address.com] [attachment.file] ["subject line"]
+
+# initialize
+    recipientaddress=""
+    attachmentfile=""
+    subjectline=""
+######################################
+
+if [[ $# == 3 ]]; then
+    recipientaddress=$1
+    attachmentfile=$2
+    subjectline=$3
+elif [[ $# == 2 ]]; then
+    recipientaddress=$1
+    attachmentfile=$2
+elif [[ $# == 1 ]]; then
+    if [[ $1:e != (edu|com|org|net|uk) ]];then
+       attachmentfile=$1
+    else
+       recipientaddress=$1
+    fi
+else 
+    print "Usage:  mailit [recipient@address.com] [attachment.file] [\"subject line enclosed in quotes\"]"
+    print ""
+    sleep 2
+fi
+
+if [[ -z $recipientaddress ]]; then
+    print -n "To:  "
+        read -t 30 -A recipientaddress
+        if [[ -z $recipientaddress ]]; then
+                return 1
+        fi
+fi
+
+if [[ -z $subjectline ]]; then
+    print -n "Subject:  "
+    read -t 30 -A subjectline
+        if [[ -z $subjectline ]]; then
+            subjectline="Mail from $USER"
+        fi
+fi
+  
+if [[ -z $attachmentfile ]]; then    
+    print -n "Attachment:  "
+    read -t 30 -A attachmentfile
+        if [[ -z $attachmentfile ]]; then
+            /usr/local/bin/mail -s $subjectline $recipientaddress
+        else
+            /usr/local/bin/mail -s $subjectline $recipientaddress < $attachmentfile
+        fi
+
+fi
+
+# The command is of the form
+# mail -s Subject line here  wgscott@myemail.com  < standard input attachment
+
+# initialize
+    recipientaddress=""
+    attachmentfile=""
+    subjectline=""

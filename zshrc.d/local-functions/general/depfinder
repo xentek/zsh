@@ -1,0 +1,151 @@
+#!/bin/zsh -f
+ 
+#  Created by William Scott on 2007-05-03.
+#  Copyright (c) 2007. All rights reserved.
+
+version="0.0.2"
+
+# set -x
+
+# depfinder
+
+# Look at the contents of a debian package and find the dependencies.
+
+
+###############################################################################
+ 
+#  Created by  on .
+#  Copyright (c) . All rights reserved.
+
+
+#    This program is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation; either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program; if not, write to the Free Software
+#    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+#    USA
+#    
+#    cf. URL:   http://www.fsf.org/licensing/licenses/gpl.html
+#
+###############################################################################
+
+
+
+# Initialize
+
+	binfiles=()
+	libfiles=()
+	
+
+# Input must be a single debian file
+
+DEBFILE="$@"
+
+if [[ $DEBFILE:e != deb || $# != 1 ]]; then
+	print "\e[1m Please provide the name of a single debian archive file with suffix deb \e[0m "
+	return 1
+fi
+
+# Define some stuff specific to Darwin or (Debian) Linux
+
+if [[ $(uname) == "Darwin" ]]; then
+	DYLIB="dylib"
+	SWPREFIX="/sw"
+elif [[ $(uname) == "Linux" ]];then
+	DYLIB="so"
+	SWPREFIX="/usr"	
+else
+	print "\e[1m This only works on Darwin and Linux currently \e[0m "
+	return 42
+fi
+
+# One or both of these arrays is populated using "dpkg -c filename.deb"
+
+binfiles=( $( dpkg -c $DEBFILE \
+	                   | grep "/bin/"| grep -v link | awk '{print $NF}' \
+	                   | perl -p -e "s|.$SWPREFIX|$SWPREFIX|g"  ))
+	
+libfiles=( $( dpkg -c $DEBFILE \
+	                   | grep "/lib/" | grep "\.$DYLIB" | grep -v "\->" | awk '{print $NF}' \
+	                   | perl -p -e "s|.$SWPREFIX|$SWPREFIX|g"  ))
+
+
+function filegetter {
+	
+		
+	allfiles=( $binfiles $libfiles )
+		
+	foreach testfile in $allfiles
+		if [[ $(uname) == "Darwin" ]]; then
+		
+			if [[ ! -d $testfile ]]; then
+				otool -L $testfile  | awk '{print $1}' | grep "/sw/lib" | grep -v \:
+			fi
+		
+		elif [[ $(uname) == "Linux" ]];then
+			if [[ ! -d $testfile ]]; then
+				ldd $testfile | awk '{print $3}' | grep "\.so" | sort -u
+			fi
+			
+		else
+			print "\e[1m This only works on Darwin and Linux currently \e[0m "
+			return 42
+		fi
+	end
+
+}
+
+
+function packagegetter {
+	foreach dylibfile in $(filegetter )
+		dpkg -S $dylibfile  | cut -f 1 -d :
+	end | sort -u
+
+}
+
+ 
+
+
+print ""
+print "\e[1m The binary contents of $SWPREFIX/bin analysed are: \e[0m "
+		if [[ -n $binfiles ]];then
+			print -l "$binfiles"
+		else
+			print "(none found)"
+		fi
+print ""
+print "\e[1m The dylib contents of $SWPREFIX/lib analysed are: \e[0m "
+		if [[ -f $libfiles[1] &&  $libfiles[1]:e == dylib ]];then
+			print -l "$libfiles"
+		else
+			print "(none found)"
+		fi
+print ""
+print "###############################################################################"
+print ""
+print "\e[1m The following packages are dependencies of ${DEBFILE}: \e[0m "
+print "   (This may take some time...)"
+print ""
+
+packagelist=($(packagegetter)) 
+# Print out the results
+print $packagelist  | perl -p -e 's|\ |\, |g'
+print "" 
+
+# On OS X, paste them into the clipboard
+if [[ $(uname) == "Darwin" ]]; then
+	print $packagelist  | perl -p -e 's|\ |\, |g'  | pbcopy 
+	print "\e[1m The comma-delimited list of packages has now been pasted into your clipboard \e[0m  "
+fi
+    
+binfiles=()
+libfiles=()
+

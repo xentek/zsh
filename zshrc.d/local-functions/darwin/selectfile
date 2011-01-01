@@ -1,0 +1,112 @@
+#!/bin/zsh -f
+
+#set -x
+
+    ############################################################################
+    function FinderSelector { 
+            
+        osascript << eof1
+        
+        try
+                tell application "Finder" to set the source_folder to (folder of the front window) as alias
+        on error -- no open folder windows
+                set the source_folder to path to desktop folder as alias
+        end try
+        
+        set thePath to (POSIX path of the source_folder as string)
+        set result to thePath
+        
+        set PosixFile to thePath & "/" & "$@"
+        
+        set CompletePath to POSIX file PosixFile
+        
+        tell application "Finder"
+                select CompletePath
+        end tell
+
+eof1
+
+}
+
+    ###########################################################################    
+    function DesktopSelector { 
+    
+        osascript << eof2
+        
+        set the source_folder to path to desktop folder as alias
+        
+        set thePath to (POSIX path of the source_folder as string)
+        set result to thePath
+        
+        set PosixFile to thePath & "/" & "$@"
+        
+        set CompletePath to POSIX file PosixFile
+        
+        tell application "Finder"
+                select CompletePath
+        end tell
+
+eof2
+
+
+
+    }
+
+    ############################################################################    
+    function PWDSelector { 
+
+        osascript << eof3
+        
+        set PosixFile to "$PWD" & "/" & "$@"
+        
+        set CompletePath to POSIX file PosixFile
+        
+        tell application "Finder"
+                select CompletePath
+        end tell
+
+
+
+eof3
+    
+
+    }
+
+###############################################################################
+
+if [[ $1 == '-f' ||  $1 == '-d' ]];then
+ 
+    ###########################################################################
+    # Add future options in the case statement
+    while getopts ":fd" opt; do
+            case $opt in
+                    f ) thewindow='finder' 
+                    ;;
+                    d ) thewindow='desktop' 
+                    ;;
+            esac
+    done
+
+    shift $(($OPTIND - 1))
+    
+    ###########################################################################
+
+    if [[ $thewindow == 'finder' ]];then
+    
+        FinderSelector "$@"
+    
+    elif [[ $thewindow == 'desktop' ]];then
+             
+        DesktopSelector "$@"
+         
+    fi
+    
+    ###########################################################################
+    
+else      
+          
+       PWDSelector "$@"
+fi
+
+###############################################################################
+

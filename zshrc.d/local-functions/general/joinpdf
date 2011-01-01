@@ -1,0 +1,6 @@
+#!/bin/zsh -f
+# Use ghostscript to join pdf file 1, 2, ..., N together and output one file named merged.pdf
+#
+function joinpdf {
+	gs -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile=merged.pdf "$@"
+}

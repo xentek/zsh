@@ -1,0 +1,50 @@
+#!/bin/zsh -f
+
+prompt_text="Select Xwindow to focus:"
+
+
+# Associative array key-value pairs:
+
+typeset -A windowarray
+
+windowarray=($( xwininfo -root -children -tree | awk '! NF == 0' | \
+    awk '! /(has no name|0x0|child|\"mozilla-bin\"\:|\"firefox-bin\"\:)/ {y = NF-3; print $1 " " $y}' | \
+    perl -p -e 's|[\",\(]||g' ))
+
+# Define two indexed arrays from the above:
+
+keyarray=( ${(k)windowarray}  )
+valuearray=( ${(v)windowarray}  )
+
+# Now generate the list for the GUI:
+ 
+list_items=()
+LIMIT=$#keyarray
+for ((i = 1; i <= $LIMIT; i++ )) do
+        list_items=( $list_items \"$valuearray[i] $keyarray[i]\"\, )
+done
+ 
+list=$list_items
+final_list=$list[1,-2] 
+
+if [[ $list == "" ]];then
+	print ""
+	print "\e[1m No X-windows apprear to be active.\e[0m "
+	print ""
+	return 1
+fi
+
+function osa_choose_list {
+    osascript <<< "    tell app \"Finder\"
+        activate
+        choose from list { $final_list } with prompt \"$prompt_text\"
+        end tell"
+    }
+
+answer=( $(osa_choose_list ))
+
+xwit -pop -id "$answer[2]"
+   
+    
+
+ 

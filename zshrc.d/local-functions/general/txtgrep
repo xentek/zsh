@@ -1,0 +1,5 @@
+#!/bin/zsh -f 
+
+# txtgrep: grep only text files
+
+command  grep -in "$1" `file "${2}"/* | egrep 'script|text' | awk -F: '{print $1}'`;

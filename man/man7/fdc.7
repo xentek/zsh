@@ -1,0 +1,30 @@
+.\" Process this file with
+.\" groff -man -Tascii foo.1
+.\"
+.TH fdc 7 "January 1, 2005" "Mac OS X" "Mac OS X Darwin customization"  
+.SH NAME
+.B fdc 
+\-  change the frontmost finder window to the terminal pwd. 
+.SH SYNOPSIS
+.B fdc [directoryname]
+.SH DESCRIPTION
+.B fdc
+changes the finder window to match the pwd of the terminal in which 
+the command is issued, or to the 
+.I directoryname
+if that argument is specified.
+.B fdc 
+when issued without the optional 
+.I directoryname
+argument,
+is essentially the reciprocal operation of 
+.B cdf.
+The command fdc is an osascript embedded in a shell script that updates the 
+Finder.
+.SH AUTHOR
+ Gary Kerbaugh 
+.SH "SEE ALSO"
+.BR cdf (1),
+.BR posd (1)
+
+

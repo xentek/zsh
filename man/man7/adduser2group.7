@@ -1,0 +1,51 @@
+.\"
+.TH "adduser2group" 7 "August 4, 2005" "Mac OS X" "Mac OS X Darwin ZSH customization" 
+.SH NAME
+.B adduser2group
+\- Add an existing user (or many users) to an existing group to the Directory Service database 
+
+.SH SYNOPSIS
+
+.B adduser2group group_name username 
+[
+.B another_username ...
+]
+.B gid
+
+
+where 
+
+.B group_name 
+is a one-word name of an existing group
+
+.B username 
+is the standard (short, account) one-word username of a Mac OS X account that has
+previously been created.
+
+Both arguments are compulsory 
+and must be
+supplied in the order given above.
+
+.SH DESCRIPTION  
+
+The 
+.B adduser2group
+command must be invoked by an admin user.
+
+Add existing users to a an existing group.
+Adds a user (or many users) to an existing group in NetInfo
+
+.SH SEE ALSO
+.BR add_user(7),
+.BR addgroup(7),
+.BR delete_user(7),
+.BR delete_group(7),
+.BR remove_user_from_group(7),
+.BR adduser2group(7)
+
+.SH AUTHOR
+Obtained and modified from a bash shell script available at
+http://www.osxfaq.com/tips/unix-tricks/week91/friday.ws
+
+.SH MAINTAINER
+W. G. Scott <wgscott@users.sourceforge.net>

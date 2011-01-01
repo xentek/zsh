@@ -1,0 +1,32 @@
+# Converted to zsh prompt theme by bash2zshprompt, written by <adam@spiers.net>
+# Very simple prompt
+# Clear out (reset) all the special functions
+
+function prompt_ResetAll_help {
+	
+print "Issue \e[1m prompt_ResetAll_setup \e[0m to reset prompt and chpwd, preexec and precmd special functions"	
+	
+}
+
+prompt_ResetAll_setup () {
+  PS1="%# "
+  PS2=">> "
+  PS3=">>> "
+  PS4=">>>> "
+  RPS1=""
+  RPS2=""
+  RPS3=""
+  RPS4=""
+
+  prompt_opts=( cr percent )
+
+  precmd_functions=()
+  preexec_functions=()
+  chpwd_functions=()
+  
+  precmd () { }
+  preexec () { }
+  chpwd () { }
+}
+
+prompt_ResetAll_setup "$@"

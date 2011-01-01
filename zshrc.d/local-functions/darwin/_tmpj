@@ -1,0 +1,6 @@
+#compdef tmpj
+ 
+tmprojarray=( $( mdfind "kMDItemKind == 'TextMate project'" ))
+prefxarray=( $tmprojarray:r:t  )
+
+_wanted files expl 'TextMate Projects ----' compadd -a prefxarray

@@ -1,0 +1,40 @@
+#!/bin -f
+
+# Author:  Bart Schaefer
+
+##
+# The "keeper" function suite originally appeared in several zsh-users
+# posts in the fall of 2004.  It was published in summary form in the
+# Shell Corner column on UnixReview.com in January 2005 at the URL
+# <http://www.unixreview.com/documents/s=9513/ur0501a/ur0501a.htm>
+#
+# The "keep" function accepts a set of file patterns as the positional
+# parameters or a series of lines (expected to represent file names) on
+# standard input.  It stores the expansion of those patterns, or the input
+# lines, in the global variable $kept, and then displays the result
+# formatted in columns, similar to an "ls" listing.  Its alias, also named
+# "keep", prevents the file patterns from being expanded when the command
+# line is executed; they're expanded in the assignment to $kept instead,
+# so that the local settings of nonomatch etc. are applied.
+
+    setopt localoptions nomarkdirs nonomatch nocshnullglob nullglob
+    setopt noksharrays noshwordsplit
+    kept=()
+    kept=($~*)
+    if [[ ! -t 0 ]]; then
+        local line
+        while read -r line; do
+            kept+=( $line )
+        done
+    fi
+    print -Rc - ${^kept%/}(T)
+
+    zle -C insert-kept-result complete-word _generic
+    zstyle ':completion:insert-kept-result:*' completer _insert_kept 
+    bindkey '^Xk' insert-kept-result
+
+    zle -C expand-kept-result complete-word _generic
+    zstyle ':completion:expand-kept-result:*' completer _insert_kept
+    bindkey '^XK' expand-kept-result
+
+    zle -C _expand_word complete-word _expand_word_and_keep

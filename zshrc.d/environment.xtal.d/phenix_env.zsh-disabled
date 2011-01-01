@@ -1,0 +1,58 @@
+#!/bin/zsh 
+#
+
+# Find most recent phenix in /usr/local/xtal or /usr/local
+
+TRYFIRST="$(command ls -1td /usr/local/xtal/phenix* | head -n 1 )"  2>|/dev/null
+
+TRYNEXT="$(command ls -1td /usr/local/phenix* | head -n 1 )"  2>|/dev/null
+
+if [[ -d $TRYFIRST ]]; then
+	PHENIX=$TRYFIRST
+elif [[ -d $TRYNEXT ]]; then
+	PHENIX=$TRYNEXT	
+else  
+    # Slowest option
+    PHENIX=$( command ls -1td  /usr/local/**/phenix* | /usr/bin/head -n 1)
+fi
+
+if [[ -d $PHENIX ]]; then
+	export PHENIX
+else  
+	return 1
+fi
+
+TRYFIRST=""
+TRYNEXT=""
+
+
+if [[ -e $PHENIX/conf/installer-time-stamp ]]; then
+  PHENIX_INSTALLER_DATE=`cat $PHENIX/conf/installer-time-stamp`
+  export PHENIX_INSTALLER_DATE
+fi
+PHENIX_VERSION=1.3b
+PHENIX_ENVIRONMENT=1
+PHENIX_MTYPE=`$PHENIX/bin/machine_type`
+PHENIX_MVERSION=`$PHENIX/bin/machine_version`
+export PHENIX_VERSION
+export PHENIX_ENVIRONMENT
+export PHENIX_MTYPE
+export PHENIX_MVERSION
+#
+if [[ "$PHENIX_MTYPE" == "unknown-unknown" ]]; then
+  exit 1
+fi
+#
+PHENIX_USE_MTYPE=`$PHENIX/bin/find-installation --dir=$PHENIX --mtype=$PHENIX_MTYPE`
+export PHENIX_USE_MTYPE
+if [[ "$PHENIX_USE_MTYPE" == "not-found" ]]; then
+  echo no suitable PHENIX installation found
+  exit 1
+else
+  PHENIX_MTYPE=$PHENIX_USE_MTYPE
+  export PHENIX_MTYPE
+fi
+if [[ -e $PHENIX/build/$PHENIX_MTYPE/setpaths.sh ]]; then
+  . $PHENIX/build/$PHENIX_MTYPE/setpaths.sh
+fi
+#

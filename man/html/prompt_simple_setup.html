@@ -1,0 +1,85 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Mac OS X (vers 1st December 2004), see www.w3.org" />
+<meta http-equiv="Content-Type" content=
+"text/html; charset=us-ascii" />
+<title>Manual Page for prompt_simple_setup</title>
+
+<style type="text/css">
+/*<![CDATA[*/
+<!--.red {color: #CC0000}-->
+/*]]>*/
+</style>
+
+<style type="text/css">
+/*<![CDATA[*/
+<!--.hed {color: #000000; font-weight: bold; font-size: larger;}-->
+/*]]>*/
+</style>
+</head>
+<body>
+<pre>
+ <a href=
+"http://sage.ucsc.edu/Library/init/zsh/man/html/prompt_simple_setup.html">prompt_simple_setup(7)</a> Mac OS X Darwin ZSH Customizations  <a href="http://sage.ucsc.edu/Library/init/zsh/man/html/prompt_simple_setup.html">prompt_simple_setup(7)</a>
+
+
+
+<span class="hed">NAME</span>
+       <span class=
+"red">prompt_simple_setup</span>  - function defining a very simple prompt (zsh-% in
+       boldface for the local user), accompanied by dynamically updated title bar and tab labels.
+
+       Issue the command <span class="red">prompt_simple_help</span> for more information.
+
+ 
+	   prompt simple  [color1[color2[color3[string1[string2[string3]]]]]]
+ 
+	   Supply up to three colors and then up to three alternate static prompt strings .
+
+		color1 is the local prompt color: zsh-%    		        color1=default
+		color2 is the remote prompt color: $HOST:r:r-%  		color2=red
+	 	color3 is the screensession prompt color: Screen-%   		color3=default
+
+	   Allowed colorN options include:           
+
+	    default,  black,  red, green, yellow, blue, magenta, cyan, white  
+
+	   stringN can be any (non-dynamic) text string or prompt special characters (eg: %m)
+
+       All dynamic updating is relegated to the title bar and (if present, tabs) so that
+       the prompt content may be kept to a minimum.  The prompt function now incorporates
+       the successor to settab and settitle functions (as well as the chpwd function) within it.
+       It avoids the explicit definition and use of special functions (as of zsh-4.3.4) such as
+       chpwd, precmd, preexec, instead setting appropriate arrays. This is to prevent conflicts
+       with user's prompt functions and so forth. (For older versions, it still uses these functions,
+       but does so in such a way to try to minimize the chance of clobbering prior directives).  
+      
+       This is designed to put by default the computer name and whole directory path 
+       into the title bar (and if availble) the $PWD and penultimate directory 
+       in the tab. Also enables transient display of a running command (eg vim).
+       Currently works with iTerm (OSX) and konsole (KDE) tabs, and should work
+       with any standard X-like term (and Apple's Terminal.app). 
+
+
+<span class="hed">SYNOPSIS</span>
+       prompt_simple_setup
+
+
+<span class="hed">AUTHOR</span>
+       William Scott
+
+
+<span class="hed">MAINTAINER</span>
+       W. G. Scott <a href=
+"mailto:wgscott@users.sourceforge.net">wgscott@users.sourceforge.net</a>
+
+
+
+Mac OS X                        August 5, 2005          <a href=
+"http://sage.ucsc.edu/Library/init/zsh/man/html/prompt_simple_setup.html">prompt_simple_setup(7)</a>
+</pre>
+</body>
+</html>

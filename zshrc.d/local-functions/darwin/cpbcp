@@ -1,0 +1,9 @@
+#!/bin/zsh -f
+
+# cpbcp: copy the full path of a command to the pastboard
+
+eval "echo -n $( echo "$@" | sed -e "s/ / =/g" -e "s/^/=/" ) \
+                 | sed -e \"s:/Users/$USER:\~:g\" | tee /dev/tty | pbcopy" 
+echo
+
+

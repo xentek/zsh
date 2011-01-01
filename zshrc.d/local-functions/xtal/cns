@@ -1,0 +1,167 @@
+#!/bin/zsh -f
+
+# To avoid possible recursions:
+
+alias cns=""; unalias cns
+
+# set -x
+
+		#######################################
+		# CNS 1.2 obtained from David Gohara  #
+		# <http://gohara.wustl.edu/software.html>
+		#######################################
+
+if [[ -d $CNS_SOLVE/mac-intel-darwin/bin && ($(uname) == Darwin && $(uname -p) == i386) ]]; then
+
+    cns_solve_ex="$CNS_SOLVE/mac-intel-darwin/bin/cns"
+    print ""; print "\e[1m Using cns OS X intel from the CNS-1.21 binary distribution \e[0m " ; print ""
+
+elif [[ -d $CNS_SOLVE/intel-i686-linux/bin && (  $(uname) == Linux && $(uname -m) == i686 ) ]]; then
+
+    cns_solve_ex="$CNS_SOLVE/intel-i686-linux/bin/cns"
+    print ""; print "\e[1m Using cns i686 for Linux from the CNS-1.21 binary distribution \e[0m " ; print ""
+
+elif [[ -d $CNS_SOLVE/intel-x86_64bit-linux/bin && ( $(uname) == Linux && ( $(uname -m) == x86_64 || $(uname) == ia64 ) ) ]]; then
+
+    cns_solve_ex="$CNS_SOLVE/intel-x86_64bit-linux/bin/cns"
+    print ""; print "\e[1m Using cns 64bit-linux from the CNS-1.21 binary distribution \e[0m " ; print ""
+	
+		
+elif [[ -d $SWPREFIX/share/xtal/cns1.2_univ ]]; then
+ 
+	cns_solve_ex="$SWPREFIX/share/xtal/cns1.2_univ/binaries/cns_solve"
+	print ""; print "\e[1m Using universal CNS-1.2 binary from David Gohara installed with fink  \e[0m " ; print ""
+	
+elif [[ -d /usr/local/xtal/cns1.2_univ ]];then
+	
+	cns_solve_ex="/usr/local/xtal/cns1.2_univ/binaries/cns_solve"
+	print ""; print "\e[1m Using universal CNS-1.2 binary from David Gohara  \e[0m " ; print ""
+	
+elif [[ -d /usr/local/cns1.2_univ  ]];then
+	
+	cns_solve_ex="/usr/local/cns1.2_univ/binaries/cns_solve"
+	print ""; print "\e[1m Using universal CNS-1.2 binary from David Gohara  \e[0m " ; print ""
+		
+		#######################################
+		# CNS 1.2 obtained from CNS download  #
+		#######################################
+
+elif [[ $(uname -p) == i386 && -d /usr/local/xtal/cns_intel && -x  \
+      $(command ls /usr/local/xtal/cns_solve_1.2/mac-intel-darwin/source/cns_solve*.exe  ) ]];then
+		cns_solve_ex="$(command ls /usr/local/xtal/cns_solve_1.2/mac-intel-darwin/source/cns_solve*.exe  )"
+		print ""; print "\e[1m Using cns intel from the CNS-1.2 distribution \e[0m " ; print ""
+elif [[ $(uname -p) == i386 && -d /usr/local/cns_intel && -x  \
+      $(command ls /usr/local/cns_solve_1.2/mac-intel-darwin/source/cns_solve*.exe  ) ]];then
+		cns_solve_ex="$(command ls /usr/local/cns_solve_1.2/mac-intel-darwin/source/cns_solve*.exe  )"
+		print ""; print "\e[1m Using cns intel from the CNS-1.2 distribution \e[0m " ; print ""
+
+		#######################################
+		# CNS 1.2 obtained from SBGrid        #
+		# <http://www.sbgrid.org/osx.php?software=1&id=0>
+		# You should use David Gohara's newer version instead
+		#######################################
+
+elif [[ -x /usr/local/xtal/cns/1.2/binaries/cns_solve  ]];then
+		cns_solve_ex="/usr/local/xtal/cns/1.2/binaries/cns_solve"
+		print ""; print "\e[1m Using universal CNS-1.2 binary from SBGrid  \e[0m " ; print ""
+elif [[ -x /usr/local/cns/1.2/binaries/cns_solve  ]];then
+		cns_solve_ex="/usr/local/cns/1.2/binaries/cns_solve"
+		print ""; print "\e[1m Using universal CNS-1.2 binary from SBGrid  \e[0m " ; print ""
+elif [[ -x /usr/local/xtal/1.2/binaries/cns_solve  ]];then
+		cns_solve_ex="/usr/local/xtal/1.2/binaries/cns_solve"
+		print ""; print "\e[1m Using universal CNS-1.2 binary from SBGrid  \e[0m " ; print ""
+elif [[ -x /usr/local/1.2/binaries/cns_solve  ]];then
+		cns_solve_ex="/usr/local/1.2/binaries/cns_solve"
+		print ""; print "\e[1m Using universal CNS-1.2 binary from SBGrid  \e[0m " ; print ""
+		
+		###################################
+		#  Obsolete versions			  #
+		###################################
+		
+elif [[ $(uname -p) == i386 && -d /usr/local/xtal/cns_intel && -x  $(command ls /usr/local/xtal/cns_intel/1.1/mac-ppc-darwin/source/cns_solve*.exe )  ]]; then
+        cns_solve_ex="$(command ls /usr/local/xtal/cns_intel/1.1/mac-ppc-darwin/source/cns_solve*.exe )"
+        print ""; print "\e[1m Using cns_intel \e[0m " ; print ""
+        
+elif [[ $(uname -p) == i386 && -d /usr/local/cns_intel && -x  $(command ls /usr/local/cns_intel/1.1/mac-ppc-darwin/source/cns_solve*.exe )  ]]; then
+        cns_solve_ex="$(command ls /usr/local/cns_intel/1.1/mac-ppc-darwin/source/cns_solve*.exe )"  
+        print ""; print "\e[1m Using cns_intel \e[0m " ; print "" 
+        
+elif [[ $(uname -p) == powerpc &&  -d /usr/local/cnsmp/1.1/mac-ppc-darwin/bin ]];then
+
+     processor="$(system_profiler -detailLevel mini | grep "Machine Name" | awk '{print $NF}' )"
+    
+     if [[ $processor == G5 ]];then
+            cns_solve_ex="/usr/local/cnsmp/1.1/mac-ppc-darwin/bin/cns_solve"
+            print ""; print "\e[1m Using xlf compiled cns for ppc G5 \e[0m " ; print ""
+            
+     elif [[ $processor == G4 ]];then       
+            cns_solve_ex="/usr/local/cnsmp/1.1/mac-ppc-darwin/bin/cns_solveG4"
+            print ""; print "\e[1m Using xlf compiled cns for ppc G4 \e[0m " ; print ""
+     else
+            print ""; print "\e[1m Could not determine processor type. \e[0m " ; print ""
+            return 180
+     fi
+
+elif [[ $(uname -p) == powerpc &&  -d /usr/local/xtal/cnsmp/1.1/mac-ppc-darwin/bin ]];then
+
+     processor="$(system_profiler -detailLevel mini | grep "Machine Name" | awk '{print $NF}' )"
+    
+     if [[ $processor == G5 ]];then
+            cns_solve_ex="/usr/local/xtal/cnsmp/1.1/mac-ppc-darwin/bin/cns_solve"
+            print ""; print "\e[1m Using xlf compiled cns for ppc G5 \e[0m " ; print ""
+            
+     elif [[ $processor == G4 ]];then       
+            cns_solve_ex="/usr/local/xtal/cnsmp/1.1/mac-ppc-darwin/bin/cns_solveG4"
+            print ""; print "\e[1m Using xlf compiled cns for ppc G4 \e[0m " ; print ""
+     else
+            print ""; print "\e[1m Could not determine processor type. \e[0m " ; print ""
+            return 180
+     fi
+        
+elif [[ $(uname -p) == powerpc && -x /usr/local/bin/cns_solve_xlf.exe ]];then
+    print ""; print "\e[1m using cns_solve_xlf.exe \e[0m " ; print ""
+    cns_solve_ex="/usr/local/bin/cns_solve_xlf.exe"
+    
+elif [[ $(uname -p) == powerpc && -x /usr/local/xtal/bin/cns_solve_xlf.exe ]];then
+    print ""; print "\e[1m using cns_solve_xlf.exe \e[0m " ; print ""
+    cns_solve_ex="/usr/local/xtal/bin/cns_solve_xlf.exe"
+
+        
+elif [[ -x $CNS_SOLVE/bin/cns_solve ]]; then
+    cns_solve_ex="$CNS_SOLVE/bin/cns_solve"
+    print ""; print "\e[1m using /sw/bin/cns_solve compiled with gfortran \e[0m " ; print ""        
+
+elif [[ -x $CNS_SOLVE/bin/cns ]]; then
+    cns_solve_ex="$CNS_SOLVE/bin/cns"   
+    print ""; print "\e[1m using /sw/bin/cns compiled with gfortran \e[0m " ; print ""       
+    
+elif [[ -x $(which cns) ]]; then
+        cns_solve_ex=$(which cns) 
+        print ""; print "\e[1m using $cns_solve \e[0m " ; print ""
+
+elif [[ -x $(which cns_solve) ]]; then
+        cns_solve_ex=$(which cns_solve) 
+        print ""; print "\e[1m using $cns_solve \e[0m  "; print ""
+
+else
+        print ""; print "\e[1m cns_solve or cns not in $PATH \e[0m " ; print ""
+        return 1
+fi
+
+ ##############################################################
+
+if [[ -x "$cns_solve_ex" ]];then
+    echo -ne "\e]1; cns $1 \a"
+    "$cns_solve_ex" "$@" 
+	if [[ -x $(which growlnotify) && -z $SSH_TTY ]]; then
+		growlnotify -s -m "$0 job has completed"
+	fi
+	
+	if [[ -n "${functions[settab]}" ]];then
+    	settab 2>/dev/null
+	fi
+    
+else
+        print ""; print "\e[1m cns_solve or cns not found \e[0m " ; print ""
+        return 11    
+fi

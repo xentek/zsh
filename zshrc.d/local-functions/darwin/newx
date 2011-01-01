@@ -1,0 +1,51 @@
+#!/bin/zsh -f
+ 
+#  Function to run a program in second X11 display
+#  without disturbing the default 24-bit X11.
+#  See also 8bitx
+
+#  Created by William Scott on 2007-04-26.
+#  Copyright (c) 2007. All rights reserved.
+
+version="0.0.1"
+
+#  Check to make sure /usr/X11R6/bin/Xquartz is present
+
+if [[ ! -x /usr/X11/bin/Xquartz  &&  ! -x /usr/X11R6/bin/Xquartz ]];then
+	print "Requires Apple's X11 with Xquartz to run"
+	return 1
+fi
+
+if [[ $# == 0 ]];then
+	print "Usage:  $0 x-windowsprogram"
+	return 42
+fi
+
+# Do all of this as a subprocess:
+
+(
+		# set the DISPLAY to a two-digit random value
+		# note that this is zsh-specific code
+
+		 DISPLAY=:$$[3]$$[4]
+
+		# start Xquartz on this display  
+
+		 Xquartz $DISPLAY    2>/dev/null  & 
+		# Xquartz $DISPLAY  -depth 8 2>/dev/null  & 
+
+		sleep 1
+
+		# start an instance of the quartz window manager
+
+		 quartz-wm &
+
+		 sleep 1
+
+		# start the desired program in the foreground
+		# the kill commands terminate the background
+		# processes when the foreground process is terminated.
+
+		 "$@" ; kill -9 %1
+)
+

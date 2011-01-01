@@ -1,0 +1,70 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Mac OS X (vers 1st December 2004), see www.w3.org" />
+<meta http-equiv="Content-Type" content=
+"text/html; charset=us-ascii" />
+<title>Manual Page for keep</title>
+
+<style type="text/css">
+/*<![CDATA[*/
+<!--.red {color: #CC0000}-->
+/*]]>*/
+</style>
+
+<style type="text/css">
+/*<![CDATA[*/
+<!--.hed {color: #000000; font-weight: bold; font-size: larger;}-->
+/*]]>*/
+</style>
+</head>
+<body>
+<pre>
+ <a href=
+"http://sage.ucsc.edu/Library/init/zsh/man/html/keep.html">keep(7)</a>                Mac OS X Darwin ZSH customization               <a href="http://sage.ucsc.edu/Library/init/zsh/man/html/keep.html">keep(7)</a>
+
+
+
+<span class="hed">NAME</span>
+       <span class=
+"red">keep</span> - function to capture standard output in the global variable kept
+
+
+<span class="hed">DESCRIPTION</span>
+       The  "keeper"  function  suite originally appeared in several zsh-users
+       posts in the fall of 2004.  It was published in  summary  form  in  the
+       Shell  Corner  column  on  UnixReview.com  in  January  2005 at the URL
+       <a href=
+"http://www.unixreview.com/documents/s=9513/ur0501a/ur0501a.htm">http://www.unixreview.com/documents/s=9513/ur0501a/ur0501a.htm</a>
+
+       The "keep" function accepts a set of file patterns  as  the  positional
+       parameters  or  a series of lines (expected to represent file names) on
+       standard input.  It stores the expansion  of  those  patterns,  or  the
+       input lines, in the global variable $kept, and then displays the result
+       formatted in columns, similar to an  "ls"  listing.   Its  alias,  also
+       named  "keep",  prevents the file patterns from being expanded when the
+       command line is executed; they're expanded in the assignment  to  $kept
+       instead, so that the local settings of nonomatch etc. are applied.
+
+
+
+<span class="hed">SYNOPSIS</span>
+       keep
+
+
+<span class="hed">AUTHOR</span>
+       Bart Schaefer
+
+
+<span class="hed">MAINTAINER</span>
+       W. G. Scott <a href=
+"mailto:wgscott@users.sourceforge.net">wgscott@users.sourceforge.net</a>
+
+
+
+Mac OS X                        August 5, 2005                         <a href="http://sage.ucsc.edu/Library/init/zsh/man/html/keep.html">keep(7)</a>
+</pre>
+</body>
+</html>

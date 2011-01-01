@@ -1,0 +1,79 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Mac OS X (vers 1st December 2004), see www.w3.org" />
+<meta http-equiv="Content-Type" content=
+"text/html; charset=us-ascii" />
+<title>Manual Page for nfs_niloader</title>
+
+<style type="text/css">
+/*<![CDATA[*/
+<!--.red {color: #CC0000}-->
+/*]]>*/
+</style>
+
+<style type="text/css">
+/*<![CDATA[*/
+<!--.hed {color: #000000; font-weight: bold; font-size: larger;}-->
+/*]]>*/
+</style>
+</head>
+<body>
+<pre>
+ <a href=
+"http://sage.ucsc.edu/Library/init/zsh/man/html/nfs_niloader.html">nfs_niloader(7)</a>        Mac OS X Darwin ZSH customization       <a href="http://sage.ucsc.edu/Library/init/zsh/man/html/nfs_niloader.html">nfs_niloader(7)</a>
+
+
+
+<span class="hed">NAME</span>
+       <span class=
+"red">nfs_niloader</span>  - load NFS filesystems listed in /etc/fstab into the Net-
+       Info database.
+
+
+<span class="hed">SYNOPSIS</span>
+       nfs_niloader
+
+
+<span class="hed">DESCRIPTION</span>
+       <span class=
+"red">nfs_niloader</span> is a function that runs the following command
+
+       <span class="red">sudo</span> <span class=
+"red">niload</span> <span class="red">-m</span> <span class=
+"red">-v</span> <span class="red">fstab</span> <span class=
+"red">.</span> <span class="red">&lt;</span> <span class=
+"red">/etc/fstab</span>
+
+       that loads the information contained in the file  /etc/fstab  into  the
+       NetInfo  database.  This step is required before the filesystems listed
+       in /etc/fstab can be mounted for the first time.  The script then  runs
+       the  command <span class="red">df</span> <span class=
+"red">-h</span> to show the user what is already mounted, and prints
+       the relevant column of the contents of the file /etc/fstab, and finally
+       suggest  to the user that the command <span class=
+"red">sudo</span> <span class="red">mount</span> <span class=
+"red">/filesystem</span> be used to
+       mount then new filesystem(s) contained in /etc/fstab. The main point of
+       this function is to help with the hard-to-remember niload syntax.
+
+<span class="hed">SEE ALSO</span>
+       <a href=
+"http://sage.ucsc.edu/Library/init/zsh/man/html/niload.8">niload(8)</a>, <a href="http://sage.ucsc.edu/Library/init/zsh/man/html/fstab.5">fstab(5)</a>, <a href="http://sage.ucsc.edu/Library/init/zsh/man/html/nfsd.8">nfsd(8)</a>, <a href="http://sage.ucsc.edu/Library/init/zsh/man/html/df.html">df(1)</a>, <a href="http://sage.ucsc.edu/Library/init/zsh/man/html/mount.8">mount(8)</a>
+
+<span class="hed">AUTHORS</span>
+       William Scott
+
+
+<span class="hed">MAINTAINER</span>
+       W. G. Scott <a href=
+"mailto:wgscott@users.sourceforge.net">wgscott@users.sourceforge.net</a>
+
+
+
+Mac OS X                         July 19, 2005                 <a href="http://sage.ucsc.edu/Library/init/zsh/man/html/nfs_niloader.html">nfs_niloader(7)</a>
+</pre>
+</body>
+</html>

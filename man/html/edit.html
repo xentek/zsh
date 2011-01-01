@@ -1,0 +1,170 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Mac OS X (vers 1st December 2004), see www.w3.org" />
+<meta http-equiv="Content-Type" content=
+"text/html; charset=us-ascii" />
+<title>Manual Page for edit</title>
+
+<style type="text/css">
+/*<![CDATA[*/
+<!--.red {color: #CC0000}-->
+/*]]>*/
+</style>
+
+<style type="text/css">
+/*<![CDATA[*/
+<!--.hed {color: #000000; font-weight: bold; font-size: larger;}-->
+/*]]>*/
+</style>
+</head>
+<body>
+<pre>
+ <a href=
+"http://sage.ucsc.edu/Library/init/zsh/man/html/edit.html">edit(7)</a>                  Mac OS X Darwin customization                 <a href="http://sage.ucsc.edu/Library/init/zsh/man/html/edit.html">edit(7)</a>
+
+
+
+<span class="hed">NAME</span>
+       <span class=
+"red">edit</span> - attempts to open editable files in an appropriate application.
+
+
+<span class="hed">SYNOPSIS</span>
+       <span class="red">edit</span> <span class=
+"red">[</span> -RfSsqrh <span class="red">]</span> <span class=
+"red">[</span> <u>file</u> <span class="red">]</span>
+
+
+<span class="hed">DESCRIPTION</span>
+       <span class=
+"red">edit</span>  -  attempts to open editable files in an appropriate application.
+       Default values for an <span class=
+"red">ASCII</span> <span class="red">text</span> <span class=
+"red">editor</span>  (eg:  SubEthaEdit),  an  <span class=
+"red">image</span>
+       <span class=
+"red">editor</span>  (eg:  Adobe  Photoshop),  a  <span class=
+"red">postscript</span> <span class=
+"red">display</span> (eg: Preview in
+       10.3.x works), a <span class="red">PDF</span> <span class=
+"red">display</span> (eg: Preview), and a <span class=
+"red">WYSIWYG</span>  <span class="red">HTML</span>  <span class=
+"red">editor</span>
+       (eg:  Mozilla  composer,  a  free alternative to DreamCrusher), are set
+       using  the  function  <span class=
+"red">my_prefs_edit</span>  which  is  called  if   the   file
+       <span class="red">.zsh/my_edit_rc</span> <span class=
+"red">does</span> <span class="red">not</span> <span class=
+"red">exist</span> <span class=
+"red">in</span> the user's home directory.  This file can
+       also be edited by hand and is read (and is required) by  the  functions
+       <span class="red">hydra</span> <span class=
+"red">and</span> <span class="red">nonasciiedit</span> as well.
+
+       The  functions  <span class=
+"red">hydra</span>  and  <span class=
+"red">nonasciiedit,</span> as well as <span class=
+"red">my_prefs_edit,</span> <span class="red">are</span>
+       <span class="red">stand-alone</span> <span class=
+"red">functions</span> <span class="red">and</span> <span class=
+"red">are</span> <span class="red">imported</span> <span class=
+"red">by</span>  <span class=
+"red">this</span>  function  (edit)  that
+       serves as a wrapper and augments a few features.
+
+
+<span class="hed">OPTIONS</span>
+       -R     <span class="red">deletes</span>  <span class=
+"red">the</span>  <span class=
+"red">preferences</span>  <span class="red">file</span> <span class="red">The</span> <span class="red">user</span> <span class="red">is</span> <span class="red">then</span> <span class="red">prompted</span> <span class="red">to</span> <span class="red">set</span>
+              <span class="red">new</span> <span class=
+"red">preferences</span> <span class="red">next</span> <span class=
+"red">time</span> <span class="red">edit</span> <span class=
+"red">is</span> <span class="red">invoked.</span>
+
+
+       -f foo <span class="red">Forces</span> <span class=
+"red">the</span> <span class="red">file</span> <span class=
+"red">foo</span> <span class="red">to</span> <span class=
+"red">be</span> <span class="red">opened</span> <span class=
+"red">with</span>  <span class="red">the</span>  <span class=
+"red">default</span>  <span class="red">ascii</span>  <span class=
+"red">text</span>
+              <span class="red">editor</span> <span class=
+"red">application</span>
+
+
+       -S     <span class="red">Turns</span> <span class=
+"red">on</span> <span class="red">a</span> <span class=
+"red">most</span> <span class="red">delightful</span> <span class=
+"red">speakable</span> <span class="red">dialogue.</span>
+
+
+       -s     <span class="red">Use</span> <span class=
+"red">sudo</span> <span class="red">edit</span> <span class=
+"red">to</span> <span class="red">open</span> <span class=
+"red">a</span> <span class="red">file</span> <span class=
+"red">(presumably</span> <span class=
+"red">owned</span> <span class="red">by</span> <span class=
+"red">the</span> <span class="red">system).</span>
+
+
+       -q bar <span class="red">Turn</span> <span class=
+"red">off</span> <span class="red">spoken</span> <span class=
+"red">and</span> <span class="red">most</span> <span class=
+"red">written</span> <span class="red">dialogue.</span>
+
+
+       -r foo <span class="red">Attempts</span> <span class=
+"red">to</span> <span class="red">refocus</span> <span class=
+"red">to</span> <span class="red">terminal</span> <span class=
+"red">window</span> <span class="red">after</span> <span class=
+"red">opening</span> <span class="red">file</span> <span class=
+"red">in</span> <span class="red">gui</span>
+              <span class="red">editor.</span>
+
+
+       -h     <span class="red">Obtain</span> <span class=
+"red">program</span> <span class="red">help</span> <span class=
+"red">info.</span>
+
+
+<span class="hed">FILES</span>
+       <u>~/.my_</u><u>edit_</u><u>rc</u>
+              A preferences file most easily created by invoking edit and fol-
+              lowing the prompts.  The user is asked to choose a default ascii
+              editor (like SubEthaEdit or BBedit), an image editor (like Adobe
+              Photoshop), a PDF viewer (like Preview) and so on.  You can also
+              invoke the function my_prefs_edit to create this  file,  or  you
+              can  create  it  manually. See <a href=
+"http://sage.ucsc.edu/Library/init/zsh/man/html/my_prefs_edit.html">my_prefs_edit(7)</a> and <a href="http://sage.ucsc.edu/Library/init/zsh/man/html/hydra.html">hydra(7)</a> and
+              <a href=
+"http://sage.ucsc.edu/Library/init/zsh/man/html/nonasciiedit.html">nonasciiedit(7)</a> for further details.
+       <u>hydra</u> <u>my_</u><u>prefs_</u><u>edit</u> <u>nonasciiedit</u> <u>edit</u>
+              are all zsh functions that must be in the $fpath array  for  the
+              <span class=
+"red">edit</span> command to work properly.
+
+
+<span class="hed">AUTHORS</span>
+       The  <span class=
+"red">edit</span> command is authored by by William Scott and is free software;
+       you can redistribute it and/or modify it under the  terms  of  the  GNU
+       General  Public  License  as published by the Free Software Foundation;
+       either version 2 of the License, or (at your option) any later version.
+
+
+<span class="hed">SEE ALSO</span>
+       <a href=
+"http://sage.ucsc.edu/Library/init/zsh/man/html/hydra.html">hydra(7)</a>, <a href="http://sage.ucsc.edu/Library/init/zsh/man/html/nonasciiedit.html">nonasciiedit(7)</a>, <a href="http://sage.ucsc.edu/Library/init/zsh/man/html/my_prefs_edit.html">my_prefs_edit(7)</a> <a href="http://sage.ucsc.edu/Library/init/zsh/man/html/zsh-templates.html">zsh-templates(7)</a> <a href="http://sage.ucsc.edu/Library/init/zsh/man/html/open.html">open(7)</a>
+
+
+
+
+Mac OS X                        March 19, 2005                         <a href="http://sage.ucsc.edu/Library/init/zsh/man/html/edit.html">edit(7)</a>
+</pre>
+</body>
+</html>

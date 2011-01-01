@@ -1,0 +1,98 @@
+#!/bin/zsh -f
+
+
+#----------------------------------------------------------
+# guidirs_pashua
+#
+# Written by Wataru Kagawa (02/20/05)
+# wkagawa@jota.gsc.riken.go.jp
+#
+# A modified version of guidirs (by William Scott), which
+# is a gui version of the pushd command.
+#
+# This function executes the Pashua program and displays
+# previously visited directories in a popup window.
+#
+# guidirs_pashua is dependent on the function, pashua_run.
+#
+# usage:  gdirs [-fF]
+#----------------------------------------------------------
+
+
+
+#-------------------------
+# Defining local variables
+#-------------------------
+
+local CDD CDF guiconf guiconf_dirlist conf SelectedFile pp warning_guiconf warning_conf
+
+#-----------------------------------------------------------
+# gdirs -f cd's both terminal and finder to chosen directory
+# gdirs -F cd's only the Finder to the chosen directory
+# gdirs with no argument changes only the terminal directory
+#-----------------------------------------------------------
+
+if [[ $1 == '-f' ]]; then
+	CDD=ON
+elif [[ $1 == '-F' ]]; then
+	CDF=ON
+else
+	CDD=OFF; CDF=OFF
+fi
+
+
+#-------------------------------------------
+# Store configurations for Pashua in $conf.
+#-------------------------------------------
+
+
+bogusdir='Use down arrow key or type over this text for auto-completion'
+
+guiconf=( pp.encoding=utf8 pp.transparency=0.95 pp.windowtitle=guidirs \
+	pp.type=combobox pp.label='Choose a directory:' pp.width=600 \
+	pp.default=$bogusdir cn.type=cancelbutton )
+
+guiconf_dirlist=$( printf '%s\n' $guiconf pp.option=$global_dirs )
+
+conf=${guiconf_dirlist//_SPACE_/ }
+
+
+#--------------------------------------------------------------
+# Executes the script and stores the selected directory in $pp.
+# If the directory does not exist, a warning dialog is shown;
+# otherwise cd to that directory.
+#--------------------------------------------------------------
+
+pashua_run $conf
+
+SelectedFile=${pp//_SPACE_/ }
+
+if [[ -z $SelectedFile ]]; then
+	return 0
+fi
+
+if [[ -d "$SelectedFile" ]]; then
+
+	if [[ $CDD == 'ON' ]]; then
+		cd "$SelectedFile"; command open .; 
+		print "Finder window opened to $SelectedFile"
+		print "Terminal PWD changed to $PWD"
+		return 0
+	elif [[ $CDF == 'ON' ]]; then
+		command cd "$SelectedFile"; print "Finder window opened to $SelectedFile";  
+        command open .; command cd $OLDPWD; print "Terminal PWD remains in $PWD"; return 0
+	else
+		cd "$SelectedFile" ; pwd ; return 0
+	fi
+
+else
+
+	warning_guiconf=( tx.transparency=0.95 tx.autoclosetime=15 tx.windowtitle=guidirs \
+		tx.type=text \
+		tx.text='The selected directory does not exist.' \
+		tx.width=350 )
+	warning_conf=$( printf '%s\n' $warning_guiconf )
+	pashua_run $warning_conf
+	return 0
+
+fi

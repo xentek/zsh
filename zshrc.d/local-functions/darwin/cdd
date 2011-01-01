@@ -1,0 +1,3 @@
+#!/bin/zsh -f
+# cdd: change the Finder directory along with the pwd
+function cdd { command cd "$@" ; ( fdc >|/dev/null & ) }

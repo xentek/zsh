@@ -1,0 +1,20 @@
+#!/bin/zsh -f
+
+# supporting file for apod.pl
+# made by Harold Bakker, harold@haroldbakker.com
+# http://www.haroldbakker.com/
+# Hacked a bit by WGS to work in any directory
+
+if [[ "$(basename $1)" == "$1" ]];then
+	picturepath="$PWD/$1"
+else
+	picturepath="$1"
+fi
+
+
+/usr/bin/osascript <<END
+tell application "Finder"
+   set pFile to POSIX file "$picturepath" as string
+   set desktop picture to file pFile
+end tell
+END

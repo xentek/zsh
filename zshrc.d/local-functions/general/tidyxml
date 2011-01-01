@@ -1,0 +1,9 @@
+#!/bin/zsh -f
+
+# invoke tidy to do in-place cleanup and conversion to xhtml
+
+if [[ "$@":e == xml ]];then
+    command tidy -m -xml   "$@"
+else
+    command tidy -m -asxml   "$@"
+fi

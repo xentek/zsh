@@ -1,0 +1,8 @@
+#!/bin/zsh -f 
+
+
+# renice_grep: renice by string
+
+ proc=$( ps -auxww | grep -i "${2}" | grep -v "[p ]grep" | awk '{ print $2 }' );
+ renice "${1}" -p "$proc";
+

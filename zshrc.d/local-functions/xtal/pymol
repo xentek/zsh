@@ -1,0 +1,40 @@
+#!/bin/zsh -f
+getargs=("$@")
+
+if [[ -x /usr/bin/mdfind ]];then
+    pymolprefix=($( mdfind MacPyMOL | grep MacPyMOL.app | head -n 1  ))
+else
+    pymolprefix=($( locate MacPyMOL.app | head -n 1 ))
+fi
+
+if [[ -x $pymolprefix/Contents/MacOS/PyMOL ]];then
+    pymolexec=($pymolprefix/Contents/MacOS/PyMOL)
+elif [[ -x $pymolprefix/Contents/MacOS/MacPyMOL ]];then 
+    pymolexec=($pymolprefix/Contents/MacOS/MacPyMOL)
+else
+    pymolexec=""
+fi
+
+ 
+
+pymolparser=($pymolprefix/pymol/modules/pymol/parser.py )
+
+if [[ -z $pymolprefix ]];then
+    print "Can\'t locate MacPyMol in locatedatabase"
+    print "If you have MacPyMol, issue sudo /etc/weekly to get this to work"
+    print "Trying now with X-windows based version..."
+    pymolexec='command pymol'   
+fi
+
+natpymol () {
+
+        $pymolexec -q $getargs 
+}
+
+# function to settab to show pymol running and then reset with settab 
+
+function pymoltab {
+    echo -ne "\e]1; pymol \a"; natpymol; settab
+}
+
+pymoltab

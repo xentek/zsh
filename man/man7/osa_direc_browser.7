@@ -1,0 +1,28 @@
+.TH osa_direc_browser 7 "October 25, 2005" "Mac OS X" "Mac OS X Darwin customization" 
+.SH NAME
+.B osa_direc_browser 
+\-  returns the path matching the directory chosen with the GUI
+.SH SYNOPSIS
+.B osa_direc_browser
+.SH DESCRIPTION
+.B  osa_direc_browser 
+is an osascript embedded in a shell script that returns the path
+corresponding to the directory (folder) selected from the GUI file browser.
+Its real value lies in being able to incorporate it as a module for scripting.  Here is a simple example
+
+.B cdg,
+i.e., 
+
+alias cdg='open "$(osa_direc_browser)"'
+
+The command
+.B cdg
+then changes the pwd of the command-line to the directory selected from 
+the GUI.
+ 
+.SH AUTHOR
+ William Scott
+.SH "SEE ALSO"
+.BR osa_file_browser (7),
+.BR osa_display_dialog (7),
+.BR osa_choose_list (7)

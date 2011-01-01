@@ -1,0 +1,65 @@
+
+if [[ ( $(uname) == Darwin && $(uname -p) == i386 ) || $(uname) == Linux ]]; then
+
+
+	#####################################
+	#
+	#  For CNS 1.21 only:
+	#
+ 
+	if [[ -z $CNS_SOLVE ]];then
+ 
+		#######################################
+		# CNS 1.21 obtained from CNS website   
+		# cns_solve_1.21_all_intel-mac-mp.tar.gz 
+		# < http://cns-online.org/download/ >
+		# Unpack into /usr/local or /usr/local/xtal
+		#######################################
+
+		if [[ -d /usr/local/xtal/cns_solve_1.21 ]];then
+	
+			CNS_SOLVE="/usr/local/xtal/cns_solve_1.21"
+			export CNS_SOLVE
+	
+	 	elif [[ -d /usr/local/cns_solve_1.21 ]];then
+	
+			CNS_SOLVE="/usr/local/cns_solve_1.21"
+			export CNS_SOLVE
+			
+	    fi
+	
+    
+	    if [[ -n $CNS_SOLVE ]];then
+    
+	        export CNS_LIB=$CNS_SOLVE/libraries
+	        export CNS_MODULE=$CNS_SOLVE/modules
+	        export CNS_TOPPAR=$CNS_LIB/toppar
+	        export CNS_CONFDB=$CNS_LIB/confdb
+	        export CNS_XTALLIB=$CNS_LIB/xtal
+	        export CNS_NMRLIB=$CNS_LIB/nmr
+	        export CNS_XRAYLIB=$CNS_LIB/xray
+	        export CNS_XTALMODULE=$CNS_MODULE/xtal
+	        export CNS_NMRMODULE=$CNS_MODULE/nmr
+	        export CNS_HELPLIB=$CNS_SOLVE/helplib
+	
+            if [[  $(uname) == Darwin && $(uname -p) == i386 ]];then
+                PATH=$PATH:$CNS_SOLVE/mac-intel-darwin/bin:$CNS_SOLVE/bin:$CNS_SOLVE/mac-intel-darwin/utils
+            elif [[  $(uname) == Linux && $(uname -m) == i686 ]];then
+			    PATH=$PATH:$CNS_SOLVE/intel-i686-linux/bin:$CNS_SOLVE/bin:$CNS_SOLVE/intel-i686-linux/utils
+            elif [[  $(uname) == Linux && ( $(uname -m) == x86_64 || $(uname) == ia64 ) ]];then			
+                PATH=$PATH:$CNS_SOLVE/intel-x86_64bit-linux/bin:$CNS_SOLVE/bin:$CNS_SOLVE/intel-x86_64bit-linux/utils
+		    fi
+            # Better to apend than prepend this path, as $CNS_SOLVE/bin/install will 
+            # break your future installs of other software!  Better yet, gzip it.
+                
+	        export PATH
+			# print "\e[1m Using $ZDOT/environment.xtal/cns1.21.xtal.zsh to initialize cns \e[0m "
+    
+	    fi
+	fi 
+	#
+	#
+	#######################  (end of CNS initialization ) ########################
+
+ 
+fi

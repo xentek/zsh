@@ -1,0 +1,78 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Mac OS X (vers 1st December 2004), see www.w3.org" />
+<meta http-equiv="Content-Type" content=
+"text/html; charset=us-ascii" />
+<title>Manual Page for macmail</title>
+
+<style type="text/css">
+/*<![CDATA[*/
+<!--.red {color: #CC0000}-->
+/*]]>*/
+</style>
+
+<style type="text/css">
+/*<![CDATA[*/
+<!--.hed {color: #000000; font-weight: bold; font-size: larger;}-->
+/*]]>*/
+</style>
+</head>
+<body>
+<pre>
+ <a href=
+"http://sage.ucsc.edu/Library/init/zsh/man/html/macmail.html">macmail(7)</a>             Mac OS X Darwin ZSH customization            <a href="http://sage.ucsc.edu/Library/init/zsh/man/html/macmail.html">macmail(7)</a>
+
+
+
+<span class="hed">NAME</span>
+       <span class=
+"red">macmail</span>  -  uses  the Apple Mail.app interface as a drop-in replacement
+       for sending mail via the unix <span class=
+"red">mail</span> command.
+
+
+<span class="hed">SYNOPSIS</span>
+       macmail [-v] [-g] [-s subject] [-c cc-addr] [-b bcc-addr] [-F]  to-addr
+       ...
+
+       macmail [&lt;options&gt;] &lt;recipients&gt;
+            options:
+                -v           be verbose
+                -g           activate Mail.app to approve the message
+                -F &lt;from&gt;    specify the From: address
+                -b &lt;bcc&gt;     specify Bcc: recipients in a comma-separated list
+                -c &lt;cc&gt;      specify Cc: recipients in a comma-separated list
+                -s &lt;subject&gt; specify the message subject
+
+       The body of the message is read from standard input.
+
+
+<span class="hed">DESCRIPTION</span>
+       <span class=
+"red">macmail</span> is a zsh function  wrapper  for  a  public-domain  perl  script
+       called  macmail.pl  written  by  Nathaniel  Nystrom. The perl script is
+       included  in   zsh-templates   and   can   also   be   obtained   here:
+       http://xanana.ucsc.edu/Library/init/zsh/local-functions/etc/macmail.pl
+
+       You cannot use this for reading your mail.
+
+
+<span class="hed">AUTHORS</span>
+       Nathaniel  Nystrom  wrote  the perl script (mac)mail.pl.  William Scott
+       wrote the zsh wrapper to import the functionality into zsh as  a  func-
+       tion.
+
+
+<span class="hed">MAINTAINER</span>
+       W. G. Scott <a href=
+"mailto:wgscott@users.sourceforge.net">wgscott@users.sourceforge.net</a>
+
+
+
+Mac OS X                         July 19, 2005                      <a href="http://sage.ucsc.edu/Library/init/zsh/man/html/macmail.html">macmail(7)</a>
+</pre>
+</body>
+</html>

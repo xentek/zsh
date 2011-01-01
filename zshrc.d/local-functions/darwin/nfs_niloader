@@ -1,0 +1,44 @@
+#!/bin/zsh -f
+
+if [[ $(sw_vers -productVersion) < 10.5 ]]; then
+ 
+	sudo niload -m -v fstab . < /etc/fstab 
+	
+else
+
+	print "niload does not exist on 10.5"
+	print "There is no longer a need for this function (command)"
+	print "Simply use the \e[1m automount \e[0m command instead"
+	print "Issue \e[1m man automount \e[0m for more details"
+	print ""
+	print ""
+	print "Issuing \e[1m sudo automount -vc \e[0m "
+	sudo automount -vc
+fi
+
+
+
+print "Here are the currently mounted filesystems: "
+print ""
+            df -h
+print ""
+print ""
+
+if [[ -f /etc/fstab ]];then
+		print "Here are the nfs mountable filesystems listed in /etc/fstab :"
+		print ""
+		            grep " nfs " /etc/fstab | awk '{print $2}' 
+		print ""
+		print "To mount additional filesystems manually, type the command"
+		print "sudo mount /filesystem  or sudo mount -a"
+		print ""
+fi
+
+if [[ -f /etc/auto_master ]];then
+	print "Here are the nfs mountable filesystems listed in /etc/auto_\* :"
+	print ""
+	            less /etc/auto_* | grep -va "\#"
+	print ""	
+	sleep 2
+fi
+ 

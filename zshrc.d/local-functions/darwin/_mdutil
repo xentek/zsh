@@ -1,0 +1,39 @@
+#compdef mdutil
+
+# W. G. Scott
+# July 14 2005, revised Aug 2 2005
+
+_avail_vols(){compadd -X %B"--- available mounted volumes --- "%b /  /Volumes/* }
+        
+        
+_avail_vols2(){
+    if [[ $words == *on* || $words == *off*  ]];then
+        compadd -X %B"--- available mounted volumes --- "%b /  /Volumes/*
+    else
+         _mdutil2
+    fi
+    }
+
+_on_off(){compadd -X %B"--- turn indexing on or off --- "%b on off}
+
+_mdutil(){
+       _arguments -C \
+       '-p[copies metadata stores to their real drives]: :_avail_vols' \
+       '-E[Erase local store for each volume specified]: :_avail_vols' \
+       '-s[Display the indexing status of the listed volumes]: :_avail_vols' \
+       '-i[turns indexing on|off for the listed volume]: :_on_off' \
+       '*: :_avail_vols2' 
+        }
+        
+_mdutil2(){
+       _arguments -C \
+       '-p[copies metadata stores to their real drives]: :_avail_vols' \
+       '-E[Erase local store for each volume specified]: :_avail_vols' \
+       '-s[Display the indexing status of the listed volumes]: :_avail_vols' \
+       '-i[turns indexing on|off for the listed volume]: :_on_off' 
+        }
+ 
+ 
+_mdutil "$@"
+
+

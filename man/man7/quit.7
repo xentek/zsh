@@ -1,0 +1,33 @@
+.\"
+.TH "quit" 7 "March 19, 2005" "Mac OS X" "Mac OS X Darwin ZSH customization" 
+.SH NAME
+.B quit
+\- quits the named application
+
+.SH SYNOPSIS
+quit 
+.B [
+-f
+.B ]
+OSX_Applicaton_Name
+
+.SH DESCRIPTION
+A function to quit Mac OS X applications.  Native applications are
+quitted using an osascript, and X11 applications are quitted by killing
+its pid.
+
+The optional
+.B -f
+flag forces quitting using the
+.B killall
+command.
+
+.SH SEE ALSO
+.BR killall (1)
+
+
+.SH AUTHOR
+Wataru Kagawa (05/17/05)
+
+.SH MAINTAINER
+W. G. Scott <wgscott@users.sourceforge.net>

@@ -1,0 +1,6 @@
+#!/bin/zsh -f
+# zipit: Use ditto to create zip files with resource forks (now default)
+# Function authored by Gary Kerbaugh. Updated syntax W G Scott May 4 2007
+# I have added -V for verbose output.
+function zipit { ditto -c -k -V "$@" "${1}.zip"; }
+

@@ -1,0 +1,13 @@
+#!/bin/zsh -f
+
+# function function_content 
+# list the argument(s) of a supplied function.
+
+if [[ $# == 1 ]];then
+	# strip off the first and last lines of the output
+    command functions $1 | command grep -v "$1 ()" | sed '$d'
+    return 0
+else
+    print "Usage:  function_content [name_of_function] "
+    return 1
+fi

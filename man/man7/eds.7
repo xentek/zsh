@@ -1,0 +1,71 @@
+.\" Process this file with
+.\" groff -man -Tascii foo.1
+.\"
+.TH eds 7 "April 7, 2005" "Mac OS X" "Mac OS X Darwin customization" 
+.SH NAME
+.B eds
+\-  edit the web page on your server that is displayed in Safari
+.SH SYNOPSIS
+.B eds
+.SH DESCRIPTION
+.B eds,
+when issued from the command prompt in Terminal, iTerm, or xterm,  will cd 
+into the directory corresponding to the web page displayed in Safari and will
+then open the corresponding html file on the server in your favorite editor.  
+The
+purpose of this is so that if you own the web page displayed in Safari having the url
+.B http://www.myplace.org/foo/index.html 
+and the file 
+.B index.html 
+resides in (for example) 
+.B ~/Sites/foo, 
+typing the command
+.B eds
+results in the commands
+.B cd ~/Sites/foo; $HTML_EDITOR index.html
+being issued.
+For this to work, you must have exported the environment variable
+. B HTML_EDITOR 
+either explicitly in your .zshrc file, or else by having initialized
+the 
+.B
+edit
+function provided in this collection. (Otherwise the html editor
+defaults to vim, which is a reasonable html editor when used with syntax
+highlighting.)
+In addition, you must have exported
+the environment variables
+.B PUBLIC_HTML
+and
+.B MY_DOMAIN
+from your .zshrc file or equivalent.  For the above example, you would want
+the lines
+.B export HTML_EDITOR='see'
+and
+.B export PUBLIC_HTML="/Users/$USER/Sites"
+and
+.B export MY_DOMAIN="myplace.org"
+in your .zshrc file in order to edit the file index.html on the server using
+the command-line editor utility "see" installed with SubEthaEdit. Other
+command-line options like vim, bbedit, "open -e", and so on may also be used.
+(If you put in www.myplace.org, that will work too, but
+if you use simply myplace.org, BOTH www.myplace.org and myplace.org will be 
+recognized in your browser.  If these are not matched by what is displayed
+in the browser, a message is returned that states that the name does not appear
+to be part of the file system.  The function is a zsh shell script that invokes
+an osascript that invokes a javascript to communicate with Safari. 
+.SH ENVIRONMENT
+The environment variables 
+.B PUBLIC_HTML
+and
+.B PUBLIC_HTML
+and
+.B MY_DOMAIN
+must be exported as described above.
+.SH AUTHOR
+ William Scott 
+.SH "SEE ALSO"
+.BR spath (7),
+.BR cds (7)
+
+

@@ -1,0 +1,470 @@
+#!/bin/zsh -f
+# 
+version="0.3"
+
+##  sca2mtz.zsh
+
+print "#####################################################################################################"
+print ""
+print "  This script will process the sca file output from SCALEPACK using CCP4 programs"
+print "  including truncate, uniquify, and (optionally) mtz2various to"
+print "  produce reduced data in CCP4 format and (optionally) CNS format.  The script employs"
+print "  OS X interface dialogs and is meant to be run interactively.  Use this by issuing"
+print "  sca2mtz.zsh and optionally the sca file to be processed.  It requires CCP4 to be installed"
+print "  (preferably via fink) and the Camino web browser (the Cocoa version of Mozilla/Netscape)."
+print ""
+print "#####################################################################################################"
+print ""
+# 
+#   
+
+# This starts X-windows if it hasn't started already.
+open -a X11
+
+# Make sure CCP4 is initialized  (reality check)
+
+if [[ -z $CCP4_BIN ]]; then
+	if [[ -f /sw/bin/init.sh ]]; then
+      . /sw/bin/init.sh
+	fi
+fi
+
+if [[ -z $CCP4_BIN ]]; then
+	print "I can't find CCP4."
+	print "Terminating program.  Make sure ccp4 is initialized."
+	return 1
+fi
+
+# Now define some functions to get needed input parameters from the user
+
+################################################################################
+# function GetProjectName lets user specify the CCP4 Project Name (optional)
+
+function GetProjectName {
+    osascript << eof-1
+        tell app "Finder"
+            activate
+            set prompt to "Enter a CCP4 PROJECTNAME without spaces (eg: Airborne_HIV) or hit OK to leave blank: "
+            set dialogResult to display dialog prompt default answer ""
+        end tell
+
+eof-1
+
+}
+################################################################################
+# function GetLabel lets user customize the labels for F, Sigma, etc. in the 
+# output mtz file.
+
+function GetLabel {
+    osascript << eof-5
+        tell app "Finder"
+            activate
+            set prompt to "Enter a subscript name for your dataset flags (eg: foo  for F_foo): "
+            set dialogResult to display dialog prompt default answer "foo"
+        end tell
+
+eof-5
+
+}
+
+################################################################################
+# function GetSpaceGroup lets user specify the spacegroup (also available on
+# line 3 of the sca file.  This gives some flexibility.
+
+function GetSpaceGroup {
+    osascript << eof-6
+        tell app "Finder"
+            activate
+            set prompt to "Enter a Space Group name or Number (eg: P212121): "
+            set dialogResult to display dialog prompt default answer "P1"
+        end tell
+
+eof-6
+
+}
+
+################################################################################
+# function GetNumAA lets user specify an estimated number of amino acids in the
+# asymmetric unit of the crystal for quasi-absolute scaling with truncate
+# The number isn't critical; I let it default to 150.
+
+function GetNumAA {
+    osascript << eof-7
+        tell app "Finder"
+            activate
+            set prompt to "Estimate the sum of the number of amino acids and 3 times the number of nucleotides in the ASU (eg: 150): "
+            set dialogResult to display dialog prompt default answer "150"
+        end tell
+
+eof-7
+
+}
+
+################################################################################
+
+# function ChooseFile allows picking from filtered list of files in $PWD
+# returns name of chosen file as a string
+
+function ChooseScaFile {
+#
+# Change this first line for particular filtering needs:
+#
+# =========>
+#
+	filelist=($( command ls -1d *.sca )) 
+#
+	if [[ -z $filelist ]];then
+		return 1
+	fi
+
+	item_list="" 
+
+	for item in "${filelist[@]}" 
+	do 
+		item_list="$item_list""\"${item}\"," 
+	done 
+
+	function filepicker {
+		osascript << eof 
+			tell app "Finder" 
+				activate 
+				choose from list {${item_list%,}} with prompt "Pick one: " 
+			end tell
+eof
+	} 
+
+	SelectedFile=$(filepicker) 
+
+	print "$SelectedFile"
+
+}
+################################################################################
+
+# Function for buttons
+# User must supply $buttonDialog
+
+function buttonfuncKey { 
+osascript <<-eof
+	tell app "Finder"
+	activate
+	set r to display dialog "$buttonDialog" \
+       buttons {"Display", "Dismiss"} default button "Display" giving up after 10
+    set favoriteApp to button returned of r
+    end
+eof
+}
+
+
+function buttonfuncKey2 { 
+osascript <<-eof
+	tell app "Finder"
+	activate
+	set r to display dialog "$buttonDialog2" \
+       buttons {"YES", "NO"} default button "YES" giving up after 10
+    set favoriteApp to button returned of r
+    end
+eof
+}
+
+#################################################################################
+
+# Now for the actual programs:
+
+# If the sca file is not provided as an argument, querry user for the filename.
+
+if [[ $# == 1 ]]; then
+
+   scalepack_file=$1
+
+elif [[ $# == 0 ]];then
+
+   scalepack_file=$(ChooseScaFile)
+
+else 
+
+  scalepack_file=$1
+  print "Reducing $scalepack_file only.  Ignoring other input."
+  print ""
+fi
+
+#############################################################################
+
+# Get the Project Name
+
+PROJECTNAME=$(GetProjectName | cut -d: -f2 | cut -d, -f1)
+
+print "You have chosen $PROJECTNAME as the project name"
+ 
+#############################################################################
+
+# Get the estimated asymmetric unit content.
+
+nresidue=$(GetNumAA | cut -d: -f2 | cut -d, -f1)
+
+print "Estimate asymmetric unit content as $nresidue amino acids."
+ 
+
+
+#############################################################################
+
+# Label assignment:
+
+# Assign the labels for the data used in truncate
+
+fobslabel=$(GetLabel | cut -d: -f2 | cut -d, -f1)
+
+print "You have chosen the data label subscript $fobslabel"
+
+#############################################################################
+
+# Get the space group
+
+spacegroup=$(GetSpaceGroup | cut -d: -f2 | cut -d, -f1)
+
+print "You have chosen the data label subscript $spacegroup"
+ 
+#############################################################################
+
+# get the filename prefix and use it for the output files and title.
+
+mtz_prefix=$scalepack_file:r  
+
+if [[ sca == $scalepack_file:e ]]; then
+
+	print "You chose file $scalepack_file"
+    print "Using prefix $mtz_prefix"
+	print "Running CCP4 scalepack2mtz to convert the data .................."
+
+else
+	print "There are either no sca files present in this directory: $PWD"
+    print "or you have not chosen any of them because you cancelled the selection."
+	print "Program terminating..."
+	return 1
+fi
+
+################################################################################
+################################################################################
+
+# Now run the CCP4 scalepack2mtz program with the user-supplied input:
+
+################################################################################
+
+#
+#  h k l I+ SigI+ I- SigI-   were extracted from aucn.na4
+#  (acentric data only), and put into scalepack format. 
+#  This is simply to illustrate the procedure for getting 
+#  scalepack data into CCP4. I don't really know if it
+#  is a good example.
+#
+#  (You can use the same procedure whether or not you have 
+#  anomalous data.)
+
+#  Compulsory inputs are SYMMETRY followed by space group no.
+#  PROJECTNAME, CRYSTALNAME,DATAsetNAME and Wavelength.
+
+scalepack2mtz hklin $scalepack_file \
+              hklout /tmp/junk1.mtz <<eof
+PROJECTNAME $PROJECTNAME
+CRYSTALNAME $mtz_prefix
+DATAsetNAME $mtz_prefix_$fobslabel
+SYMMETRY $spacegroup
+end
+eof
+
+print ""
+print "The DATAsetNAME specified is $mtz_prefix_$fobslabel"
+print "The CRYSTALNAME specified is $mtz_prefix "
+print "The PROJECTNAME specified is $PROJECTNAME "
+print ""
+sleep 2
+print "Truncating the data ............."
+
+#############################################################################
+#
+# CCP4 Truncate converts intensities to amplitudes:  I(hkl) to F(hkl), DANO(hkl)
+#
+#############################################################################
+
+truncate hklin /tmp/junk1.mtz \
+         hklout /tmp/junk2.mtz \
+         <<EOF-trunc >| truncate_run1_log.html                    
+title $mtz_prefix dataset
+truncate yes
+nresidue $nresidue
+PNAME $PROJECTNAME
+DNAME $mtz_prefix_$fobslabel
+labout  F=F_$fobslabel  SIGF=SIGF_$fobslabel DANO=DANO_$fobslabel SIGDANO=SIGDANO_$fobslabel  
+EOF-trunc
+
+buttonDialog="Shall I display the Truncate log file in the Camino web browser?"
+
+if [[ $(buttonfuncKey) != Dismiss ]];then
+   open -a Camino truncate_run1_log.html
+   sleep 5
+   buttonDialog=""
+fi
+ 
+
+if [[ ! -e /tmp/junk2.mtz ]]; then
+	print "Truncation error.  Program terminating..."
+    print "Please check log file and for possible input mtz file corruption."
+	return 1
+fi
+
+
+################################################################################
+
+#  cad data:  sort and put data in CCP4 asymmetric unit  (this is critical)
+
+################################################################################
+
+print ""
+print "##################################################################"
+print ""
+print " Running cad to sort the data into CCP4's asymmetric unit ............."
+print ""
+print "##################################################################"
+print ""
+sleep 2
+
+
+cad hklin1 /tmp/junk2.mtz hklout /tmp/junk3.mtz <<eof
+labi file 1 ALL
+sort H K L
+end
+eof
+#
+
+
+################################################################################
+
+#  Uniquify data:  sequester 10% of the data for Free-R
+
+################################################################################
+
+# Complete dataset and add free-R column for 10% of data.
+print ""
+print "##################################################################"
+print ""
+print "  Uniqueify the data; flagging 10% of data for Free-R ............."
+print ""
+print "##################################################################"
+print ""
+uniqueify -p 0.1 /tmp/junk3.mtz \
+                 ${mtz_prefix}_unique.mtz >| /dev/null
+
+# Now look at the resulting dataset:
+
+buttonDialog="Shall I examine the new dataset with mtzdmp?"
+
+if [[ $(buttonfuncKey) != Dismiss ]];then
+
+	mtzdmp ${mtz_prefix}_unique.mtz >| check_${mtz_prefix}_mtzdmp.html
+	open -a Camino check_${mtz_prefix}_mtzdmp.html
+    sleep 5
+   buttonDialog=""
+fi
+
+
+# /bin/rm -f /tmp/junk_${mtz_prefix}*.mtz
+
+print ""
+print "##################################################################"
+print "##################################################################"
+print ""
+print "    Saving final dataset ${mtz_prefix}_unique.mtz in $PWD "
+print ""
+print "##################################################################"
+print "##################################################################"
+print ""
+
+buttonDialog="Shall I display the dataset with HKLVIEW?"
+
+if [[ $(buttonfuncKey) != Dismiss ]];then
+
+	hklview ${mtz_prefix}_unique.mtz >| /dev/null &
+
+	open -a X11  # brings hklview window to the front
+    sleep 5
+   buttonDialog=""
+fi
+
+
+################################################################################
+
+#  Optional output of dataset in CNS format (a good idea to do it now):
+
+################################################################################
+
+
+buttonDialog2="Shall I create CNS formatted datasets?"
+
+if [[ $(buttonfuncKey2) != NO ]];then
+
+
+# Non-anomalous data:
+print ""
+print "    Formatting data for CNS using mtz2various ......."
+print ""
+mtz2various HKLIN ${mtz_prefix}_unique.mtz \
+            HKLOUT iso_${mtz_prefix}.hkl << EOF-mtz2cns  >| /dev/null
+RESOLUTION 100000 0.5
+OUTPUT XPLOR
+LABIN FP=F_${fobslabel}    SIGFP=SIGF_${fobslabel}   FREE=FreeR_flag
+# LABIN FP=DANO_${mtz_prefix}    SIGFP=SIGDANO_${mtz_prefix}  FREE=FreeR_flag        
+END
+EOF-mtz2cns
+
+
+buttonDialog2="Shall I create a CNS formatted dataset for Anomalous data?"
+
+if [[ $(buttonfuncKey2) != NO ]];then
+
+# Anomalous data:
+mtz2various HKLIN ${mtz_prefix}_unique.mtz \
+            HKLOUT dano_${mtz_prefix}.hkl << EOF-mtz2cns >| /dev/null
+RESOLUTION 100000 0.5
+OUTPUT XPLOR
+LABIN FP=F_${fobslabel}    SIGFP=SIGF_${fobslabel}   FREE=FreeR_flag DP=DANO_${fobslabel}    SIGDP=SIGDANO_${fobslabel}     
+END
+EOF-mtz2cns
+fi
+
+# Edit the cns hkl files to change FOBS, SIGMA and TEST to something else
+
+
+perl -pi -e "s|FOBS|F${fobslabel}|g"      iso_${mtz_prefix}.hkl
+perl -pi -e "s|SIGMA|SIG${fobslabel}|g"   iso_${mtz_prefix}.hkl
+perl -pi -e "s|TEST|TEST${fobslabel}|g"   iso_${mtz_prefix}.hkl
+
+perl -pi -e "s|FOBS|F${fobslabel}|g"     dano_${mtz_prefix}.hkl
+perl -pi -e "s|SIGMA|SIG${fobslabel}|g"  dano_${mtz_prefix}.hkl
+perl -pi -e "s|TEST|TEST${fobslabel}|g"  dano_${mtz_prefix}.hkl
+
+
+
+print ""
+print "##################################################################"
+print "##################################################################"
+print ""
+print "    Saving final CNS datasets as iso_${mtz_prefix}.hkl"
+print "    and (if applicable) dano_${mtz_prefix}.hkl in $PWD "
+print ""
+print "##################################################################"
+print "##################################################################"
+print ""
+
+
+
+fi
+
+buttonDialog=""
+buttonDialog2=""
+################################################################################
+
+rm -i /tmp/junk*.mtz
+
+ 
+
+
+

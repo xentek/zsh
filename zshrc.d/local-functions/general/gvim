@@ -1,0 +1,22 @@
+#!/bin/zsh -f
+# 
+# Function to invoke sudo gvim if it is needed to edit a protected file
+#
+#
+
+	LIMIT=$# 
+	for ((i = 1; i <= $LIMIT; i++ )) do
+		eval file="\$$i"
+		if [[ -e $file && ! -O $file ]]; then
+                	otherfile=1 
+		else
+			
+		fi
+	done
+
+	if [[ $otherfile = 1 ]]; then
+           echo -ne "\e]1; sudo gvim $1 \a"; sudo gvim -geometry 90x25+50+50  "$@";  settab
+	else
+	   echo -ne "\e]1; gvim $1 \a"; command gvim -geometry 90x25+50+50  "$@"; settab
+	fi
+

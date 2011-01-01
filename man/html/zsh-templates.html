@@ -1,0 +1,309 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Mac OS X (vers 1st December 2004), see www.w3.org" />
+<meta http-equiv="Content-Type" content=
+"text/html; charset=us-ascii" />
+<title>Manual Page for zsh-templates</title>
+
+<style type="text/css">
+/*<![CDATA[*/
+.red {color: #CC0000} .hed {color: #000000; font-weight: bold; font-size: larger;}.blueBox{ background-color: #F1F5F9;padding: 6px 10px 6px 10px; border: 1px #ccc double; color: #000000; font-size: 14px}.indexLink {float:right; margin-top:4px;}
+/*]]>*/
+</style>
+</head>
+<body>
+<pre>
+ <a href=
+"http://xanana.ucsc.edu/Library/init/zsh/man/html/zsh-templates.html">zsh-templates(7)</a>       Mac OS X Darwin ZSH customization      <a href="http://xanana.ucsc.edu/Library/init/zsh/man/html/zsh-templates.html">zsh-templates(7)</a>
+
+
+
+<span class="hed">NAME</span>
+       <span class=
+"red">zsh-templates</span> - Template files for zsh customization
+
+
+<span class="hed">OVERVIEW</span>
+       <span class="red">Template</span>  <span class=
+"red">files</span>  <span class="red">for</span>  <span class=
+"red">zsh</span> <span class=
+"red">customization.</span>  This is a collection of files
+       that help the user to customize the <span class=
+"red">zsh</span> shell for the <span class=
+"red">Mac</span> <span class="red">OS</span> <span class=
+"red">X</span>  operat-
+       ing  system.  It  is entirely optional and is not part of the zsh shell
+       distribution. See <a href=
+"http://www.osxfaq.com/man/1/zsh.ws">zsh(1)</a> for further details on the zsh shell.
+
+
+<span class="hed">INSTALLATION AND USAGE</span>
+       This package can be used as a <u>stand-alone</u> set of files  or  it  can  be
+       installed  with  the  package manager <span class=
+"red">fink.</span>  (See <a href=
+"http://sage.ucsc.edu/Library/init/zsh/man/html/fink.8">fink(8)</a> for details.)
+       Please consult the  on-line  website  for  the  latest  information  on
+       installation,  contents,  and  description  of  the available features,
+       available at: <u><a href=
+"http://tinyurl.com/y3r4kp">http://tinyurl.com/y3r4kp</a></u>
+
+<span class=
+"hed">INSTALLATION AND SETUP AS A STAND-ALONE PACKAGE</span>
+       Download the most current version  from  <u><a href=
+"http://tinyurl.com/3ck36e">http://tinyurl.com/3ck36e</a></u>  and
+       unpack  the  contents  of  the tarball to obtain the directory zsh-tem-
+       plates-1.x.y/.  Move or remove  any  current  /etc/zshenv,  /etc/zshrc,
+       /Library/LaunchAgents/zsh*  and /Library/init/zsh files present on your
+       system.  Then, to install the new version, issue the command
+
+       <span class="red">sudo</span> <span class=
+"red">mkdir</span> <span class="red">-p</span> <span class=
+"red">/Library/init</span>
+
+       followed by
+
+       <span class="red">sudo</span> <span class=
+"red">cp</span> <span class="red">-R</span> <span class=
+"red">zsh-templates-1.x.y/Library/init/zsh</span> <span class=
+"red">/Library/init/.</span>
+
+       and
+
+       <span class="red">sudo</span> <span class=
+"red">cp</span> <span class=
+"red">zsh-templates-1.x.y/etc/zsh*</span> <span class=
+"red">/etc/.</span>
+
+       and then start a new shell. If /bin/zsh is not currently  your  default
+       shell, you can make it so with the command <span class=
+"red">chsh</span> <span class="red">-s</span> <span class=
+"red">/bin/zsh</span>
+
+       After  you  start  a  new shell, you will be provided a <a href="http://xanana.ucsc.edu/~wgscott/xtal/wiki/index.php/Latest_Version#Configuration_GUI"><span class="red">gui</span> <span class="red">interactive</span></a>
+       <a href=
+"http://xanana.ucsc.edu/~wgscott/xtal/wiki/index.php/Latest_Version#Configuration_GUI"><span class="red">dialogue</span></a> to aid in fine-tuning the behavior of the template files.
+
+
+<span class="hed">INSTALLATION AND SETUP WITH FINK</span>
+       Please  <span class="red">move</span>   <span class=
+"red">or</span>   <span class=
+"red">remove</span>   any   extant    /etc/zshenv,   /etc/zshrc,
+       /Library/LaunchAgents/zsh*  and  /Library/init/zsh  files  that  may be
+       present currently on your system, in order to ensure proper functioning
+       of  the zsh-templates package. The best places to put modifications are
+       in  the  corresponding  user  files,  i.e.,  ~/.zshenv,  ~/.zshrc,  and
+       ~/Library/init/zsh within the user's individual home directories.
+
+       If  the <span class=
+"red">zsh-templates</span> package has been installed with fink, the package
+       is designed to work in conjunction with fink's <span class=
+"red">/sw/bin/zsh</span> and no  fur-
+       ther  invervention  should  be  required if /sw/bin/zsh is your default
+       user shell. To <span class="red">make</span> <span class=
+"red">/sw/bin/zsh</span> <span class="red">your</span> <span class=
+"red">default</span> <span class="red">user</span> <span class=
+"red">shell,</span> you must  <span class="red">edit</span>
+       <span class="red">the</span> <span class=
+"red">file</span> <span class=
+"red">/etc/shells</span> and add to it the line <span class=
+"red">/sw/bin/zsh</span>
+
+       If the zsh-templates package has been installed with fink, and you also
+       want these files to work with the system's  zsh,  i.e.,  with  <span class="red">/bin/zsh</span>
+       then issue the two commands
+
+       <span class="red">sudo</span> <span class=
+"red">ln</span> <span class="red">-s</span> <span class=
+"red">/sw/share/zsh/templates/etc/zshenv</span> <span class=
+"red">/etc/.</span>
+
+       and
+
+       <span class="red">sudo</span> <span class=
+"red">ln</span> <span class="red">-s</span> <span class=
+"red">/sw/share/zsh/templates/etc/zshrc</span> <span class=
+"red">/etc/.</span>
+
+       and then start a new shell.
+
+       In  either  case, after you start the new shell, you will be provided a
+       <a href=
+"http://xanana.ucsc.edu/~wgscott/xtal/wiki/index.php/Latest_Version#Configuration_GUI"><span class="red">gui</span> <span class="red">interactive</span> <span class="red">dialogue</span></a> to aid in fine-tuning the behavior of the tem-
+       plate files.
+
+
+
+<span class="hed">OTHER FILES</span>
+       The  files  in Library/LaunchAgents.disabled are experimental, problem-
+       atic, and are currently <span class=
+"red">disabled</span> by default.
+
+       The files in Applications/zsh-templates_extras include  <span class="red">finder</span>  <span class="red">toolbar</span>
+       <span class="red">icons</span>  <span class=
+"red">for</span>  <span class="red">opening</span>  <span class=
+"red">a</span>  <span class="red">Terminal</span> <span class=
+"red">or</span> <span class="red">iTerm</span> <span class=
+"red">session</span> in the directory dis-
+       played in the Finder window. See <u><a href=
+"http://tinyurl.com/36sank">http://tinyurl.com/36sank</a></u>  and  <a href="http://xanana.ucsc.edu/Library/init/zsh/man/html/cdf.html">cdf(7)</a>
+       for further details.
+
+       The  files  in  Applications/Xtal are of use to X-ray crystallographers
+       and probably no one else.
+
+
+
+<span class="hed">ENVIRONMENT</span>
+       The environment variable  <span class=
+"red">$ZDOT</span>  is  defined  as  <span class=
+"red">/Library/init/zsh</span>  if
+       /Library/init/zsh     is     present,    or    <span class=
+"red">$SWPREFIX/share/zsh/tem-</span>
+       <span class=
+"red">plates/Library/init/zsh</span> where <span class=
+"red">$SWPREFIX</span> is <span class=
+"red">/sw</span> or  the  user's  equiva-
+       lent,  if  /Library/init/zsh  is not present. These variables (and many
+       others) are set automatically in /etc/zshenv.
+
+       If   both   the    /Library/init/zsh    and    $SWPREFIX/share/zsh/tem-
+       plates/Library/init/zsh  exist, /Library/init/zsh takes precedence, and
+       an  additional  variable   <span class=
+"red">$ZDOT_TEMPLATE</span>   is   defined   as   <span class=
+"red">$SWPRE-</span>
+       <span class=
+"red">FIX/share/zsh/templates/Library/init/zsh</span>
+
+       The  description  that follows assumes $ZDOT for brevity but applies to
+       the files in $ZDOT_TEMPLATE as well.  If the same file exists  in  both
+       $ZDOT and $ZDOT_TEMPLATE, the file in $ZDOT will be read <u>instead</u> <u>of</u> the
+       corresponding  file  in  $ZDOT_TEMPLATE.  Any  file  that  appears   in
+       /Users/$USER/Library/init/zsh  will  be  read  <u>in</u> <u>addition</u> <u>to</u> the other
+       files. The directories $ZDOT_TEMPLATE/local-functions and  $ZDOT/local-
+       functions are both in the <span class=
+"red">$FPATH</span> by default; a funtion of the same name
+       in $ZDOT/local-functions  takes  precedence  over  that  in  $ZDOT_TEM-
+       PLATE/local-functions.  This structure permits customizations that will
+       be preserved during fink package upgrade.
+
+
+<span class="hed">SIMPLE CUSTOMIZATIONS</span>
+       The best way to customize the zsh-template system is  to  simply  issue
+       the command
+
+       <span class="red">configure_zsh_templates</span>
+
+       while  logged in at the console. This activates an interactive GUI dia-
+       logue to aid in fine-tuning the behavior of the template files.
+
+       To change the prompt theme, issue the command <span class=
+"red">switch_prompt.</span>
+
+       To customize user and host completions, issue the commands
+
+       <span class="red">user_setup</span>
+
+       and
+
+       <span class="red">host_setup</span>
+
+       To modify the behavior of Apple's X11, issue the command
+
+       <span class="red">customize_x11_gui</span>
+
+       or
+
+       <span class="red">customize_x11</span>
+
+       For further (on-line) information and the  latest  updates,  issue  the
+       command
+
+       <span class="red">help_zsh_templates</span>
+
+
+
+<span class="hed">DESCRIPTION OF FILESYSTEM CONFIGURATION</span>
+       These  files  are mostly based upon those distributed by Gary Kerbaugh,
+       but I have made some additions and  deleted  or  commented  out  a  few
+       things  as  well.  I've also tried to make these completely general and
+       easily configurable. zsh is about customizing the user environment,  so
+       these files should be regarded as a starting point for tailoring zsh to
+       your own needs and desires. I have tried to facilitate this by comments
+       throughout the files. If something does not work out of the box, please
+       report it as a bug.
+
+
+       <span class="red">File</span> <span class=
+"red">organization</span> <span class="red">and</span> <span class=
+"red">hierarchy:</span>
+
+       By default, when zsh starts up, it reads  the  configuration  files  in
+       /etc  first,  followed  by  those in the user's home directory. You can
+       make any of these files source any other file on your computer,  so  we
+       take advantage of that to make things as modular and as configurable as
+       possible. There are two files to place in /etc. These  are  <span class="red">/etc/zshenv</span>
+       and  <span class=
+"red">/etc/zshrc,</span>  and  they  are read in that order. These in turn read
+       files that are to be placed in <span class=
+"red">/Library/init/zsh,</span> which is where  Apple
+       suggests  putting  such  things.  (The  main difference between the two
+       files in /etc is that /etc/zshenv gets run any time you start  up  zsh,
+       whereas  /etc/zshrc  gets  run  only  when  you start up an interactive
+       shell.) The various distributed functions, man pages, and so on are  in
+       subdirectories of /Library/init/zsh.
+
+       Further  descriptions  are  located on a page entitled <span class="red">Explanations</span> <span class="red">for</span>
+       <span class="red">each</span> <span class=
+"red">zsh</span> <span class="red">template</span> <span class=
+"red">file</span> that is available at <u><a href=
+"http://tinyurl.com/2ohg9m">http://tinyurl.com/2ohg9m</a></u>
+
+
+
+<span class="hed">MAN PAGES FOR INDIVIDUAL FUNCTIONS</span>
+       man pages for many of the distributed functions are now available, both
+       using  the  man  pager and via html.  The most up-to-date version is on
+       line at <a href=
+"http://xanana.ucsc.edu/Library/init/zsh/man/html/">http://xanana.ucsc.edu/Library/init/zsh/man/html/</a>
+
+
+
+<span class="hed">AUTHORS</span>
+       Modifications and enhancements of zsh distributed templates were  writ-
+       ten  by <span class="red">Gary</span> <span class=
+"red">Kerbaugh,</span> <span class=
+"red">William</span> <span class="red">Scott,</span> <span class=
+"red">Wataru</span> <span class=
+"red">Kagawa</span> and several others.
+       The original (unmodified) completion functions _open, _fink, _hdiutils,
+       _defaults  and their dependencies were written by Motoi Washida and are
+       now included with zsh.
+
+
+<span class="hed">WEBSITE</span>
+        More details are available here: <span class="red"><a href=
+"http://tinyurl.com/y3r4kp">http://tinyurl.com/y3r4kp</a></span>
+
+
+<span class="hed">MAINTAINER</span>
+       W. G. Scott <a href=
+"mailto:wgscott@users.sourceforge.net">wgscott@users.sourceforge.net</a>
+
+
+<span class="hed">SEE ALSO</span>
+       <a href=
+"http://xanana.ucsc.edu/Library/init/zsh/man/html/">http://xanana.ucsc.edu/Library/init/zsh/man/html/</a>
+
+
+
+
+
+Mac OS X                         July 9, 2007                 <a href="http://xanana.ucsc.edu/Library/init/zsh/man/html/zsh-templates.html">zsh-templates(7)</a>
+</pre>
+<div align="center" class="blueBox">Bwana Created by <a href=
+"http://www.bruji.com/">Bruji</a></div>
+</body>
+</html>

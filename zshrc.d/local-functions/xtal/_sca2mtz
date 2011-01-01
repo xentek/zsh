@@ -1,0 +1,6 @@
+#compdef sca2mtz
+autoload -U _files_only
+#local expl
+ _description files  expl %B'--- pdf files available ---'%b
+_files_only "$expl[@]" -g '*.sca'
+

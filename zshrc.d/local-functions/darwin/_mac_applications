@@ -1,0 +1,9 @@
+#autoload
+
+# Author: Motoi Washida
+# November 12 2004 CVS version
+
+_retrieve_mac_apps
+
+local expl
+_wanted commands expl 'Mac OS X application' compadd -- "${(@)${_mac_apps[@]:t}%.app}"

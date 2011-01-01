@@ -1,0 +1,7 @@
+#!/bin/zsh -f
+
+# use mdfind the way you use locate to find a file
+
+mdfind "$@" | grep "$@"
+
+

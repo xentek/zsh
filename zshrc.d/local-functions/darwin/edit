@@ -1,0 +1,209 @@
+#!/bin/zsh -f
+
+# set -x
+
+# Edit function, version 2.0.1
+# October 17, 2006
+# Complete re-write of the cumbersome version 1.x.y
+# Revised July 9, 2007 to fix a major bug
+#------------------------------------------------------------------------------
+
+# Find out what the user prefers to use for various editing tasks
+
+
+	if [[ -f $HOME/.zsh/my_edit_rc ]]; then
+		source $HOME/.zsh/my_edit_rc
+	else
+		print ""
+		print "No $HOME/.zsh/my_edit_rc file found.  Please run the following command to select appropriate editing Applications"
+		print ""
+		print "autoload -U my_prefs_edit; my_prefs_edit"
+		print ""
+		sleep 5
+		# Try to pick some reasonable defaults
+		MyEditor=(open -a "TextEdit")
+		HTML_Editor=(open -a "SeaMonkey")
+		ImageEditor=(open -a "Preview")
+		PDFdisplay=(open -a "Preview")
+	fi
+	
+	# If any individual assignments are missing, fill in
+	# with these default values
+	
+	if [[ -z "$MyEditor" ||  "$MyEditor" == "open -a" ]]; then
+		MyEditor=(open -a "TextEdit" )
+	fi
+	if [[ -z "$HTML_Editor" || "$HTML_Editor" == "open -a" ]]; then
+		HTML_Editor=(open -a "TextEdit")
+	fi
+	if [[ -z "$ImageEditor" || "$ImageEditor" == "open -a" ]]; then
+		ImageEditor=(open -a "Preview")
+	fi
+	if [[ -z "$PDFdisplay" || "$PDFdisplay" == "open -a" ]]; then
+		PDFdisplay=(open -a "Preview")
+	fi
+	
+
+
+#------------------------------------------------------------------------------
+
+# Assign the unix command utilities for common OS X editors, checking first to
+# be sure it has been installed:
+
+function assign_editor_utility {
+	if [[ "$MyEditor[3]" == "TextMate"   ]]; then
+		editor_utility="mate"
+	elif [[ "$MyEditor[3]" == "Smultron"   ]]; then
+		editor_utility="smultron"
+	elif [[ "$MyEditor[3]" == "BBEdit"   ]]; then
+		editor_utility="bbedit"
+	elif [[ "$MyEditor[3]" == "SubEthaEdit"   ]]; then
+		editor_utility="see"	
+	elif [[ "$MyEditor[3]" == "TextWrangler"   ]]; then
+		editor_utility="edit"     # mine came first
+	elif [[ "$MyEditor[3]" == "TextEdit"   ]]; then
+		editor_utility="usetextedit"      # There is none
+	elif [[ -z "$MyEditor[3]" && "$MyEditor[1]" == "$MyEditor"   ]]; then
+		editor_utility="$MyEditor[@]"  # should cover unix command-line editors
+	else
+		editor_utility="vim"  # when in doubt, use vim
+	fi	
+	#export $editor_utility
+}
+
+#------------------------------------------------------------------------------
+
+# Define the four principle editor commands as functions
+	
+function ascii_editor_command {
+	assign_editor_utility
+	if [[ "$editor_utility" == "usetextedit" ]];then
+		command open -e "$@"
+	elif [[ -z "$editor_utility" ]]; then
+		autoload -U vim
+		vim "$@"
+	elif [[ -x "/usr/bin/$editor_utility" || -x "/usr/local/bin/$editor_utility" || -x $(which $editor_utility) ]];then
+	    command "$editor_utility[@]" "$@"
+    fi	
+}
+
+function image_editor_commmand {
+	if [[ -n "$ImageEditor[3]" ]]; then
+		command "$ImageEditor[@]" "$@"
+	elif [[ -z "$ImageEditor[3]" && -n "$ImageEditor[1]" ]]; then
+		command "$ImageEditor[@]" "$@"
+	else
+		open "$@"
+	fi
+}
+
+function html_editor_command {
+	if [[ "$HTML_Editor[3]" == (SeaMonkey|Netscape|Mozilla) ]]; then
+		if [[ $# == 1 ]];then
+			# The "composer" function currently can only handle one file at a time
+			# This works around that limitation
+			autoload -U composer
+			composer "$@"
+		else
+			ascii_editor_command "$@"
+		fi
+	elif [[ -z "$HTML_Editor[3]" && -n "$HTML_Editor[1]" ]]; then
+		 "$HTML_Editor[@]" "$@"
+	else
+		 ascii_editor_command "$@"
+	fi
+}
+
+function pdf_editor_command {
+	if [[ -n "$PDFdisplay[3]" && "$PDFdisplay[3]" != Preview ]]; then
+		"$PDFdisplay" "$@"
+	elif [[ -z "$PDFdisplay[3]" && -n "$PDFdisplay[1]" ]]; then
+		"$PDFdisplay[@]" "$@"
+	else
+		 command open -a Preview "$@"
+	fi
+}
+
+#------------------------------------------------------------------------------
+
+# Check each argument suppled to th command "edit" to see what type of file
+# we need to edit
+
+function file_looper {
+
+	htmlfilearray=()
+	imgfilearray=()
+	pdffilearray=()
+	otherbinaryfilearray=()
+	xtaldatafilearray=()
+	cnseditfilearray=()
+	genericfilearray=()
+
+	LIMIT=$# 
+	for ((i = 1; i <= $LIMIT; i++ )) do
+		eval file="\$$i"	
+		if [[ $file:e == (html|htm|xhtml|xhtm) ]];then
+			htmlfilearray+=( $file )
+		elif [[ $file:e == (png|jpg|jpeg|psd|tiff|tif|gif) ]]; then
+			imgfilearray+=( $file )
+		elif [[ $file:e == (pdf|ps|eps) ]]; then
+			pdffilearray+=( $file )
+		elif [[ $file:e == (doc|xls|rtf|key|pages|ai) ]]; then
+			otherbinaryfilearray+=( $file )
+		elif [[ $file:e == (map|mtz|o|pse|ccp4|cns|phs) ]]; then
+			xtaldatafilearray+=( $file )
+		elif [[ $file:e == (inp|def) ]]; then
+			cnseditfilearray+=( $file )
+		else
+			genericfilearray+=( $file )
+		fi
+	done
+
+
+}
+
+#------------------------------------------------------------------------------
+
+# Function to edit each file using the appropriate designated application
+
+function edit_all_files {
+
+	file_looper "$@"
+
+
+	if [[ -n "$genericfilearray" ]];then
+		ascii_editor_command "$genericfilearray[@]"
+	fi	 
+	
+	if [[ -n "$htmlfilearray" ]];then
+		html_editor_command "$htmlfilearray[@]"
+	fi
+
+	if [[ -n "$imgfilearray" ]]; then	
+		image_editor_commmand "$imgfilearray[@]"
+	fi
+
+	if [[ -n "$pdffilearray"  ]]; then
+		pdf_editor_command  "$pdffilearray[@]"
+	fi
+
+	if [[ -n "$otherbinaryfilearray" ]]; then
+		print skipping "$otherbinaryfilearray"
+	fi
+  
+	if [[ -n "$xtaldatafilearray" ]]; then
+		print skipping "$xtaldatafilearray"
+	fi
+ 
+	if [[ -n "$cnseditfilearray" ]]; then
+		autoload -U cns_edit
+		cns_edit "$cnseditfilearray[@]"
+	fi
+}
+ 
+#------------------------------------------------------------------------------
+
+# Now run the program:
+
+edit_all_files  "$@"
+

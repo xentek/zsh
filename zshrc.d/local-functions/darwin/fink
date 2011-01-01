@@ -1,0 +1,72 @@
+#!/bin/zsh -f
+
+# setopt sh_word_split
+
+#   wrapper function fink to accompany completion function _fink
+#   generates completion cache
+#   displays "fink [first argument]" in tab or title bar while running
+#   leaves functionality of the command fink otherwise unchanged
+
+# Author:  W G Scott
+# Nov 28, 2004  
+# Last revised on October 13, 2006
+
+
+
+# Capture the argument line:
+
+  allargs=("$@")
+
+# This makes $1 the first non-flag command
+
+while getopts ":hqVvyb" opt; do
+        case $opt in                # currently not in use
+        h ) help=true ;;            # apart from preserving
+		q ) quiet=true ;;           # options provided by user
+		V ) Version=true ;;
+		v ) verbose=true ;;
+		y ) default=true ;;
+		b ) binary=true ;;
+	esac
+done
+
+shift $(($OPTIND - 1))
+
+ # Define a function that caches the listings of fink programs that are either
+ # installed, not installed, or installed but need to be updated
+ # for use in _fink completion function
+
+ # This is now a separate function file called _FinkMakeListCache  (see below)
+
+
+
+
+if [[ $1 == (selfupdate|selfupdate-cvs|selfupdate-rsync|install|remove|purge|reinstall|index|update|update-all) ]]; then
+
+  echo -ne "\e]1; fink $1 \a"; command fink $allargs
+  # settab to show the named process running 
+
+  # The LaunchAgent watchpath approach seems buggy for some reason, so let's do this manually.
+
+  # (re)make the cache lists if this is not done by Launchd in 10.4
+  #if [[ -z $(/bin/launchctl list | grep zsh.fink.completion )  ]];then 
+  #  print ""
+  #  print "\e[1mCreating/updating cache of fink package listings for command completions\e[0m"
+  #  print "\e[1mOn 10.4 you should enable /Library/LaunchAgents/zsh.fink.completion.plist to do this automatically\e[0m"
+  #  print ""
+    #
+    autoload -U _FinkMakeListCache
+   # Run this silently in the background as a subshell to avoid the notification.
+    ( _FinkMakeListCache & )
+ # fi
+
+  # reset the iTerm tab or Terminal title bar 
+  settab
+
+else
+
+  echo -ne "\e]1; fink $1 \a";  command fink $allargs; settab
+  # settab to show the named process running and then reset with settab 
+
+fi
+   

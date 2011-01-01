@@ -1,0 +1,257 @@
+#!/bin/zsh -f
+
+# set -x
+
+#######################################################################
+## host_setup                                                        ##
+##                                                                   ##
+## by Wataru Kagawa                                                  ##
+## March 05, 2006                                                    ##
+## wkagawa@jota.gsc.riken.go.jp                                      ##
+##                                                                   ##
+## Sets up host names and its completion using Pashua gui.           ##
+#######################################################################
+
+
+
+#=======================
+# Define local variables
+#=======================
+
+local use_ssh_known_hosts use_custom_hosts use_etc_hosts hostnames \
+conf tx ch1 ch2 ch3 tb btn cn
+
+
+
+#==================================
+# Check current completion settings
+#==================================
+
+if [[ $USE_SSH_KNOWN_HOSTS == 'yes' ]]; then
+	use_ssh_known_hosts='1'
+else
+	use_ssh_known_hosts='0'
+fi
+
+if [[ $USE_CUSTOM_HOSTS == 'yes' ]]; then
+	use_custom_hosts='1'
+else
+	use_custom_hosts='0'
+fi
+
+if [[ $USE_ETC_HOSTS == 'yes' ]]; then
+	use_etc_hosts='1'
+else
+	use_etc_hosts='0'
+fi
+
+
+
+#=============
+# Starting gui
+#=============
+
+hostnames=( $( < ~/.zsh/cache/custom_hosts ) )
+
+if [[ -z $hostnames && -f ~/.ssh/known_hosts ]]; then
+	hostnames=( $( < ~/.ssh/known_hosts |  awk '{print $1}' | cut -d \, -f 1 ) )
+fi
+
+conf=( '*.transparency=0.95' \
+	'*.title=host completion setup' \
+	tx.type=text \
+	tx.width=500 \
+	tx.text='Choose host name completion options:' \
+	ch1.type=checkbox \
+	ch1.label='Use ~/.ssh/known_hosts for host name completion.' \
+	ch1.default=$use_ssh_known_hosts \
+	ch2.type=checkbox \
+	ch2.label='Use user-defined list of hosts.' \
+	ch2.default=$use_custom_hosts \
+	ch3.type=checkbox \
+	ch3.label='Use zsh _etc_hosts completion function with /etc/hosts file.' \
+	ch3.default=$use_etc_hosts \
+	tb.type=textbox \
+	tb.label='Edit host names:' \
+	tb.width=300 \
+	tb.height=20 \
+	btn.type=button \
+	btn.label='Revert to default settings' \
+	cn.type=cancelbutton \
+	db.type=defaultbutton \
+	db.label=Save \
+	tb.default="${(j:[return]:)hostnames}" )
+
+pashua_run "${(F)conf}"
+
+
+
+#=================================
+# Interpreting changes made in gui
+#=================================
+
+if [[ $cn == '1' ]]; then
+
+	#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	# Exit program if Cancel button is pressed
+	#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+	return 0
+
+
+elif [[ $btn == '1' ]]; then
+
+	#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	# Change to initial settings if 'Revert to default settings' button is pressed
+	#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+		#-------------------------------------------------
+		# Use ~/.ssh/known_hosts for host name completion.
+		#-------------------------------------------------
+
+		ch1='1'
+
+
+		#---------------------------------------
+		# Do not use user-defined list of hosts.
+		#---------------------------------------
+
+		ch2='0'
+
+
+		#--------------------------------------------------------------------
+		# Do not use zsh _etc_hosts completion function with /etc/hosts file.
+		#--------------------------------------------------------------------
+
+		ch3='0'
+
+else
+
+	#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	# Save changes made in user names if Save button is pressed
+	#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+	print ${tb//_RETURN_/\\n} >| ~/.zsh/cache/custom_hosts
+
+fi
+
+
+
+#=======================================================================
+# Save completion options in host_user_completion_settings and source it
+#=======================================================================
+
+	if [[ $ch1 == '1' ]]; then
+		perl -pi -e "s|USE_SSH_KNOWN_HOSTS.+|USE_SSH_KNOWN_HOSTS=\'yes\'|g" ~/.zsh/cache/host_user_completion_settings
+	else
+		perl -pi -e "s|USE_SSH_KNOWN_HOSTS.+|USE_SSH_KNOWN_HOSTS=\'no\'|g" ~/.zsh/cache/host_user_completion_settings
+	fi
+
+	if [[ $ch2 == '1' ]]; then
+		perl -pi -e "s|USE_CUSTOM_HOSTS.+|USE_CUSTOM_HOSTS=\'yes\'|g" ~/.zsh/cache/host_user_completion_settings
+	else
+		perl -pi -e "s|USE_CUSTOM_HOSTS.+|USE_CUSTOM_HOSTS=\'no\'|g" ~/.zsh/cache/host_user_completion_settings
+	fi
+
+	if [[ $ch3 == '1' ]]; then
+		perl -pi -e "s|USE_ETC_HOSTS.+|USE_ETC_HOSTS=\'yes\'|g" ~/.zsh/cache/host_user_completion_settings
+	else
+		perl -pi -e "s|USE_ETC_HOSTS.+|USE_ETC_HOSTS=\'no\'|g" ~/.zsh/cache/host_user_completion_settings
+	fi
+
+source ~/.zsh/cache/host_user_completion_settings
+
+
+
+#========================================================
+# Issue a warning message if custom_hosts is empty and if
+# USE_CUSTOM_HOSTS variable is set to 'yes'.
+#========================================================
+
+if [[ -z $( < ~/.zsh/cache/custom_hosts ) && $USE_CUSTOM_HOSTS == 'yes' ]]; then
+
+	if [[ $ENCODING == '1:14' ]]; then
+		print ""
+		print "\e[1m  custom_hostsファイルが空です. host_setupコマンドを実行してください.\e[0m"
+		print ""
+	else
+		print ""
+		print "\e[1m  custom_hosts file is empty.  Please execute host_setup.\e[0m"
+		print ""
+	fi
+
+fi
+
+
+
+#=======================
+# Update $HOSTS variable
+#=======================
+
+	#~~~~~~~~~~~~~~~~~~~~~~~~~
+	# Clear elements in $HOSTS
+	#~~~~~~~~~~~~~~~~~~~~~~~~~
+
+	HOSTS=()
+
+
+	#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	# Define a list of hosts for host name completion
+	#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+	if [[ $USE_SSH_KNOWN_HOSTS == 'yes' && -f ~/.ssh/known_hosts ]]; then
+
+		ssh_hosts=(
+
+		#----------------------------------------------
+		# This gets known hosts from ~/.ssh/known_hosts
+		#----------------------------------------------
+
+		$( cat ~/.ssh/known_hosts | awk '{print $1}' | cut -d \, -f 1 )
+
+		)
+
+		HOSTS+=( $ssh_hosts )
+
+	fi
+
+
+	if [[ $USE_CUSTOM_HOSTS == 'yes' && -f ~/.zsh/cache/custom_hosts ]]; then
+
+		custom_hosts=(
+
+		#----------------------------------
+		# This gets hosts from custom_hosts
+		#----------------------------------
+
+		$( cat ~/.zsh/cache/custom_hosts )
+
+		)
+
+		HOSTS+=( $custom_hosts )
+
+	fi
+
+
+	if [[ $USE_ETC_HOSTS == 'yes' ]]; then
+
+		etc_hosts=(
+
+		#--------------------------------
+		# This gets hosts from /etc/hosts
+		#--------------------------------
+
+		 $( cat /etc/hosts | grep -v localhost | grep -v \# | grep -v broadcast | awk '{print $2}' ) 
+
+		)
+
+		HOSTS+=( $etc_hosts )
+
+	fi
+
+
+	#~~~~~~~~~~~~~~~~~~~~~~~
+	# get rid of the repeats
+	#~~~~~~~~~~~~~~~~~~~~~~~
+
+	typeset -U HOSTS

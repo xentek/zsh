@@ -1,0 +1,52 @@
+.\" Process this file with
+.\" groff -man -Tascii foo.1
+.\"
+.TH cds 7 "April 7, 2005" "Mac OS X" "Mac OS X Darwin customization" 
+.SH NAME
+.B cds
+\-  change the terminal pwd to match that of the frontmost Safari window
+.SH SYNOPSIS
+.B cds
+.SH DESCRIPTION
+.B cds,
+when issued from the command prompt in Terminal, iTerm, or xterm,  will cd 
+into the directory corresponding to the web page displayed in Safari.  The
+purpose of this is so that if you own the web page displayed in Safari having the url
+.B http://www.myplace.org/foo/index.html 
+and the file 
+.B index.html 
+resides in (for example) 
+.B ~/Sites/foo, 
+typing the command
+.B cds
+results in the command
+.B cd ~/Sites/foo
+being issued.
+For this to work, you must have exported the environment variables
+.B PUBLIC_HTML
+and
+.B MY_DOMAIN
+from your .zshrc file or equivalent.  For the above example, you would want
+the lines
+.B export PUBLIC_HTML="/Users/$USER/Sites"
+and
+.B export MY_DOMAIN="myplace.org"
+in your .zshrc file.  (If you put in www.myplace.org, that will work too, but
+if you use simply myplace.org, BOTH www.myplace.org and myplace.org will be 
+recognized in your browser.  If these are not matched by what is displayed
+in the browser, a message is returned that states that the name does not appear
+to be part of the file system.  The function is a zsh shell script that invokes
+an osascript that invokes a javascript to communicate with Safari. 
+.SH ENVIRONMENT
+The environment variables 
+.B PUBLIC_HTML
+and
+.B MY_DOMAIN
+must be exported as described above.
+.SH AUTHOR
+ William Scott 
+.SH "SEE ALSO"
+.BR spath (7),
+.BR eds (7)
+
+

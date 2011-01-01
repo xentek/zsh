@@ -1,0 +1,5 @@
+#!/bin/zsh -f
+# function to settab to show the named process running and then reset with settab 
+# for command screen
+
+    echo -ne "\e]1; screen: $2 \a"; command screen -h 10000  "$@"; settab

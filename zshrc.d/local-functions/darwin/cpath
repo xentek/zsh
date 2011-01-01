@@ -1,0 +1,3 @@
+#!/bin/zsh -f
+echo -n "$PWD" |perl -pi -e 's; ;\\\ ;g'  | pbcopy
+print "\e[7m$PWD\e[0m copied to clipboard"

@@ -1,0 +1,34 @@
+#!/bin/zsh -f
+
+LISTARRAY=( /usr /bin /sbin /private /etc /var /tmp )
+
+if [[ "$1" == "-undo" || "$1" == "--undo" || "$1" == "undo" ]]; then
+     
+	foreach file in $LISTARRAY
+		if [[ -h $file ]];then
+	        sudo /Developer/Tools/SetFile -P -a V $file
+	    else
+	        sudo /Developer/Tools/SetFile -a V $file	
+        fi
+		print "Making $file invisible"
+	end
+
+else
+
+	foreach file in $LISTARRAY
+	if [[ -h $file ]];then
+        sudo /Developer/Tools/SetFile -P -a v $file
+    else
+        sudo /Developer/Tools/SetFile -a v $file	
+    fi
+		print "Making $file visible"
+	end
+
+fi
+
+killall Finder
+sleep 2
+open / 
+
+
+                                      

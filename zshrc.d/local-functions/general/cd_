@@ -1,0 +1,82 @@
+#!/bin/zsh -f
+
+# Bug: I can't get this to work for directories with spaces.  
+# cd $_ will work fine for those cases.
+
+# Execute cd "$(dirname $_)" if $_ is a file
+# Execute cd "$_" if $_ is a directory
+
+# or, more generally, get the numbered string position in the last line and cd to it (or it's directory)
+
+# eg:
+
+# ls one two three four five six
+
+# cd_ 4  is the same as cd four
+# cd_ -2 is the same as cd five
+
+
+function cdunderscoreusage {
+	print ""
+	print "Usage: \e[1mcd_ \e[0m[\e[1m<\e[0margument_number\e[1m>\e[0m] "
+	print ""
+	print "Please supply an nonzero positive or negative \e[1minteger\e[0m."
+	print ""
+	print "\e[1mi.e.,:\e[0m cd_ [command argument array NUMBER (pos. from left, neg. from right. Default is -1 (last command argument)]"
+	print ""
+	print "\e[1mExamples:\e[0m"
+	print For the command "\e[1m ls one two three four five six \e[0m"
+	print "The command \e[1m cd_ 4\e[0m  is the same as \e[1m cd four\e[0m"
+	print "The command \e[1m cd_ -2\e[0m is the same as \e[1m cd five\e[0m"
+	}
+
+if [[ "$1" == "--help" ||  "$1" == "-help" || "$1" == "-h" ]];then
+	cdunderscoreusage
+	return 1
+fi
+
+        lastcommandarray=($( fc -ln -1))
+
+        wantedcommand=""
+
+if [[ $# == 0 ]];then
+	wantedcommand=( "$lastcommandarray[-1]" )
+elif [[ $# == 1 && $(( $1 + 42 )) !=  42 ]];then
+	if [[ $1 -gt 0 ]];then
+		wantedcommand=( "$lastcommandarray[$(($1+1))]" )
+	elif [[ $1 -lt 0 ]];then
+		wantedcommand=( "$lastcommandarray[-$1]" )
+	else
+		print "Usage: \e[1mcd_ \e[0m[\e[1m<\e[0margument_number\e[1m>\e[0m] "
+		print "Issue \e[1mcd_ --help\e[0m for more info"
+	    pwd
+		return 2
+    fi
+else 
+	print "Usage: \e[1mcd_ \e[0m[\e[1m<\e[0margument_number\e[1m>\e[0m] "
+	print "Issue \e[1mcd_ --help\e[0m for more info"
+    pwd
+	return 1
+fi
+
+ 
+if [[ -d "$wantedcommand" || -h "$wantedcommand"  ]]; then
+        cd "$wantedcommand"
+		pwd
+		return 0
+elif [[ -f "$wantedcommand" ]];then 
+        cd $(dirname "$wantedcommand" )
+		pwd
+		return 0
+elif [[ -d $(eval echo "$wantedcommand") ]]; then
+		cd $(eval echo "$wantedcommand")
+		pwd
+		return 0
+else
+    print "The value given \e[1m $wantedcommand \e[0m is not a directory or regular file"
+	print "Usage: \e[1mcd_ \e[0m[\e[1m<\e[0margument_number\e[1m>\e[0m] "
+	print "Issue \e[1mcd_ --help\e[0m for more info"
+	pwd
+    return 1
+fi
+ 

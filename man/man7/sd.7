@@ -1,0 +1,46 @@
+.\" Process this file with
+.\" groff -man -Tascii foo.1
+.\"
+.TH sd 7 "May 14 2006" "Mac OS X" "Mac OS X Darwin customization" 
+.SH NAME
+.B sd 
+\-  change the CodeTek Virtual Desktop Display to the indicated Desktop 
+.SH SYNOPSIS
+.B sd 
+[
+.B -a Application
+] [
+.B DesktopName 
+|
+.B DesktopNumber
+]
+.SH DESCRIPTION
+.B sd
+changes the display to the indicated CodeTek Virtual Desktops DesktopName
+or DesktopNumber.  If the -a flag is provided and followed by the name of
+an application, that application is moved to the indicated Desktop. If no
+application name is provided, it is assumed that the user's terminal program       
+is to be moved to the indicated Desktop. An accompanying zsh completion 
+function called _sd completes applications and DesktopNames.
+.SH REQUIREMENTS
+You must purchase and install CodeTek Virtual Desktops and configure it before 
+this function will be of any use. It can be obtained from the following
+website:  http://www.codetek.com/ctvd/
+Please note this software is not yet intel-compatible.
+.SH EXAMPLES
+The command
+.B sd 4
+switches you and your terminal program to Desktop #4.
+The command
+.B sd Main
+switches you and your terminal program to Desktop named Main. (The completion function finds the names of all of your desktops and presents them in a menu upon hitting the tab key).
+The command
+.B sd -a Mail Main
+switches application Mail.app to the desktop named Main, leaving you and your terminal program in the original location,
+and finally, the command
+.B sd -a Mail 10
+switches application Mail.app to the desktop number 10, leaving you and your terminal program in the original location.
+.SH AUTHOR
+William Scott  
+
+

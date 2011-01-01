@@ -1,0 +1,7 @@
+# Enable this file by renaming it to fink_first
+
+# Change the absolute path if you have installed in a non-standard location.
+
+if [[ $(uname) == Darwin   &&  -f /sw/bin/init.sh ]];then
+    source /sw/bin/init.sh
+fi

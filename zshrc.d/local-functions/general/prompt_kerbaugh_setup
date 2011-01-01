@@ -1,0 +1,91 @@
+#!/bin/zsh -f
+
+################################################################
+# prompt v0.0.2 for use with zsh
+# slight modifications by W G Scott
+# to prevent clobbering precmd
+# prompt v0.0.1 for use with Bash on Darwin-OSX ......
+# by Gary Kerbaugh
+# Send comments, bugs or money to gkerbaugh@nc.rr.com
+#
+# Source this file from you .bashrc to set your prompt to a colored prompt including
+# the PWD trimmed, tcsh-style, to the last 3 levels. Also the history number is colored
+# by success of the last command.
+#
+# This program is free software; you can redistribute it and/or modify 
+# it under the terms of the GNU General Public License as published by 
+# the Free Software Foundation; either version 2 of the License, or 
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, 
+# but WITHOUT ANY WARRANTY; without even the implied warranty of 
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
+# GNU General Public License for more details.
+################################################################
+
+# autoload -U colors
+# colors
+
+function prompt_kerbaugh_help { print "nothing customizable yet"}
+
+function prompt_kerbaugh_setup {
+	#--------------------------------------------------------------------------------------------------------------------
+	# function issucceed: Sets the "HISTORY_COLOR" based on the success of the previous command
+	#--------------------------------------------------------------------------------------------------------------------
+	function issucceed {
+		if [ "$1" -eq 0 ]; then
+			HIST_COLOR="$BOLD_RED"
+			PREFIX=""
+		else
+			HIST_COLOR="$BOLD_BLACK"
+			PREFIX="[$BOLD_RED${1}$BLACK]"
+		fi
+	}
+
+	#------------------------------------------------------------------------------------
+	# function precmd: Calls the other functions and creates the prompt
+	#------------------------------------------------------------------------------------
+	# Store the current argument string for "precmd" to avoid clobbering it
+
+	function prompt_kerbaugh_precmd {
+		issucceed "$?"
+	    PS1="${PREFIX}[$BOLD_BLUE%n$BLACK@$BOLD_GREEN%m$BLACK]$BOLD_MAUVE%3c $HIST_COLOR%! $DEFAULT%# "
+	}
+
+ 
+	#--------------------------------------------
+	# Color constants used in the prompt
+	#--------------------------------------------
+	BLACK="%{[0m%}"
+	BOLD_BLACK="%{[1;30m%}"
+	RED="%{[0;31m%}"
+	BOLD_RED="%{[1;31m%}"
+	GREEN="%{[0;32m%}"
+	BOLD_GREEN="%{[1;32m%}"
+	YELLOW="%{[0;33m%}"
+	BOLD_YELLOW="%{[1;33m%}"
+	BLUE="%{[0;34m%}"
+	BOLD_BLUE="%{[1;34m%}"
+	MAUVE="%{[0;35m%}"
+	BOLD_MAUVE="%{[1;35m%}"
+	CYAN="%{[0;36m%}"
+	BOLD_CYAN="%{[1;36m%}"
+	WHITE="%{[0;37m%}"
+	DEFAULT="%{[0;39m%}"
+
+ 
+
+	#typeset -ga precmd_functions
+	#precmd_functions+=prompt_kerbaugh_precmd
+ 
+	function precmd { prompt_kerbaugh_precmd }
+
+}
+
+
+
+################################################################
+
+prompt_kerbaugh_setup "$@"
+
+

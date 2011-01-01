@@ -1,0 +1,99 @@
+#compdef mdattr
+
+#   mdls [-d] attributeName [string] file ... 
+
+#  _mdattr is a completion function for mdattr
+# Create or revise an existing Apple-type metadata AttributeName of the form kMDItemAttributeName
+
+
+version="0.0.2"
+
+
+###############################################################################
+ 
+#  Created by  W . G. Scott   on   22 January 2009.
+#  Copyright (c) . All rights reserved.
+
+
+#    This program is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation; either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program; if not, write to the Free Software
+#    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+#    USA
+#    
+#    cf. URL:   http://www.fsf.org/licensing/licenses/gpl.html
+#
+###############################################################################
+
+
+zmodload zsh/complist  2>/dev/null
+zstyle ':completion:*' menu select=10  
+zstyle ':completion:*' list-prompt '%S -- more -- %s' 
+
+
+
+# Define a completion function for Apple Metadata Names, and remove kMDItem prefix
+function _attributeNameObtinator {    
+    compadd -X %B' --- Select one of the possible metadata attributes --- %b' \
+        $(/usr/bin/mdimport -A | awk '{print $1}' | perl -p -e "s;('|kMDItem);;g"    )   
+}
+
+# Ask the user to supply a double-quoted string for the corresponding user-supplied value
+function _attributeValueObtinator {
+ 	_message "Enter any string, using double quotes if you have spaces between words."
+}
+
+
+# Conditional tests for the context-dependent completions
+function _conditional_tester {
+	if [[ $words[2] == "-h" ]]; then
+
+		return 0
+	
+	elif [[ $words[2] == "-d" ]]; then
+
+		if  (( CURRENT == 2 )); then
+			true
+		elif (( CURRENT == 3 )); then
+			_attributeNameObtinator
+		else  
+			_files
+		fi
+	
+	else
+
+		if  (( CURRENT == 2 )); then
+			_attributeNameObtinator
+		elif (( CURRENT == 3 )); then
+			_attributeValueObtinator
+		else  
+			_files
+		fi
+	fi
+}
+
+
+
+
+if  (( CURRENT == 2 )); then
+_arguments -C \
+    '-d[delete specified metadata attribute from specified file]'\
+	'-h[help]' 
+fi
+
+
+
+_conditional_tester
+
+
+
+      

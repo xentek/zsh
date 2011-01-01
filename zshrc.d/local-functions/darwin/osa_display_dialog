@@ -1,0 +1,45 @@
+#!/bin/zsh -f
+
+#  function osa_display_dialog takes up to three arguments (button item options)
+#  supplied after invoking the function.
+
+#  Display times out according to the variable $timeout in seconds (defaults to 15 sec).
+
+    if [[ -z $timeout ]];then
+        timeout='15'
+    fi
+
+# The variable $dialogue_text is an array that contains the text displayed in the window.
+
+    if [[ -z $dialogue_text ]];then
+        dialogue_text=( Choose a button: )
+    fi
+    
+    
+    if (( $# > 3 || $# == 0 )); then
+        print "Usage:  list up to 3 button names, with the last as default choice (eg: No 42 OK )"
+        return 11
+    fi
+    
+    # Thanks to Gary Kerbaugh for the next five lines
+    button_items="" 
+    for argument in "$@"; do 
+       button_items=${button_items}\"${argument}'", ' 
+    done 
+    button_items=${button_items%, } 
+  
+    if (( $# == 3 ));then
+        def_but="$3"
+    elif (( $# == 2 ));then
+        def_but="$2"
+    else
+        def_but="$1"    
+    fi
+    
+osascript << eof
+    tell app "Finder"
+    activate
+    set r to display dialog "$dialogue_text" buttons { $button_items } with icon caution giving up after $timeout default button "$def_but"
+    set ButtonChoice to button returned of r
+    end tell
+eof

@@ -1,0 +1,43 @@
+#!/bin/zsh -f
+
+# Function to get the IP address of the computer or router
+
+if [[ $1 == '-r' || $1 == '-R' ]];then
+    # curl -s http://www.showmyipeurope.com/ | head -n 1 | awk '{print $8}' | perl -p -e 's|</TITLE><META||g'   
+    curl -s http://www.showmyip.com/ | head -n 1 | awk '{print $8}' | perl -p -e 's|</TITLE><META||g'
+    return 0
+elif [[ $1 == '-h' || $1 == '--help' || $1 == '-help' || $1 == '--h' || $# -gt 1 ]];then
+    print "Usage:  $0 [-r]  to get ip address of computer [or router]"
+    return 1
+fi
+
+if [[ $# -gt 0 ]];then
+    print "Usage:  $0 [-r]  to get ip address of computer [or router]"
+    return 1
+fi
+
+ipconfig getifaddr en0 2>/dev/null
+
+if [[ $? != 0 ]];then
+    ipconfig getifaddr en1 2>/dev/null
+    if [[ $? != 0 ]];then
+        IPv6IP=($(system_profiler -detailLevel 2 | grep "IPv6 Addresses" | awk '{print $3}' ))
+            if [[ -z $IPv6IP ]];then
+                IPv4IP=($(system_profiler -detailLevel 2 | grep "IPv4 Addresses" | awk '{print $3}' ))
+                if [[ -n $IPv6IP ]];then
+                    print $IPv4IP
+                    return 0
+                else
+                    print "No IP address detected.  Check internet connection."
+                    return 100
+                fi
+            else
+                print $IPv6IP
+                return 0
+            fi
+    else
+        return 0
+    fi    
+else
+    return 0
+fi

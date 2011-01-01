@@ -1,0 +1,30 @@
+.\" Process this file with
+.\" groff -man -Tascii foo.1
+.\"
+.TH gnotify 7 "July 9 2005" "Mac OS X" "Mac OS X Darwin customization" 
+.SH NAME
+.B gnotify 
+\-  invokes growlnotify
+.SH SYNOPSIS
+.B gnotify
+.SH DESCRIPTION
+.B gnotify [command]
+is a pre-command function that notifies the user when the command (provided as an argument)
+completes. It attempts to use 
+.B growlnotify 
+if present, otherwise it prints a message. If the command returns anything other than 0 (i.e., it fails), the growl window remains sticky. 
+
+A command completed that returns 0 will terminate with a non-sticky growlnotify window. Use the 
+command snotify if you want that one to be sticky as well.
+
+.SH EXAMPLE
+
+gnotify date
+
+.SH AUTHOR
+ William Scott 
+.SH "SEE ALSO"
+.BR growlnotify (1)
+.BR snotify (7)
+
+

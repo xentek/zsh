@@ -1,0 +1,29 @@
+#autoload
+
+
+_mac_applications_caching_policy () {
+   # rebuild if cache is more than a day old
+   oldp=( "$1"(mh24) )
+   (( $#oldp ))
+}
+
+
+local cache_policy
+zstyle -s ":completion:${curcontext}:commands" cache-policy cache_policy
+if [[ -z "$cache_policy" ]]; then
+  zstyle ":completion:${curcontext}:commands" cache-policy _mac_applications_caching_policy
+fi
+
+
+  local -a apps
+
+    myapps=( $(cat ~/.zsh/zshapplist ) )
+    apps=( "fred" )
+#     _store_cache Mac_applications apps
+
+_retrieve_cache Mac_applications
+
+
+local expl
+_wanted commands expl 'mac os x applications' compadd $apps
+

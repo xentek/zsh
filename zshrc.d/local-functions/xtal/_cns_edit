@@ -1,0 +1,60 @@
+#compdef cns_edit cns cns_solve
+
+function _cns_edit { 
+
+  _arguments -C \
+    '-def[specify 'defaults-file']: :->use_defaults_file' \
+    '-tem[specify 'template-file']: :->use_template_file' \
+    '-help[specify 'file-name']: :->input_files' \
+    '*: :->input_files'
+
+  case "$state" in
+  
+    (use_defaults_file)
+    
+     compadd -X %B'--- choose cns defaults file to over-ride template file ---'%b \
+            *.def
+    
+     ;;
+    
+    (use_template_file)
+ 
+       compadd -X %B'--- choose example cns input file to edit ---'%b \
+               $CNS_SOLVE/inputs/*/*.(inp|def|sdb)  
+      ;;
+    
+    (input_files)
+      if [[ -n "$words[(r)-help]" ]]; then
+            if [[ -f $(command ls -1 *.(inp|def|sdb) | head -n 1 ) ]];then
+                compadd -X %B'--- choose cns input file to edit with help annotations ---'%b \
+                *.(inp|def|sdb) 
+            elif [[ -d $CNS_SOLVE/inputs ]];then
+                compadd -X %B'--- choose cns template input file to edit with help annotations  ---'%b \
+                $CNS_SOLVE/inputs/**/*.(inp|def|sdb) 
+            else
+                :
+            fi 
+      
+      else
+            if [[ -f $(command ls -1 *.(inp|def|sdb) | head -n 1 ) ]];then
+                compadd -X %B'--- choose cns input file to edit  ---'%b \
+                *.(inp|def|sdb) 
+            elif [[ -d $CNS_SOLVE/inputs ]];then
+                compadd -X %B'--- choose cns template input file to edit  ---'%b \
+                $CNS_SOLVE/inputs/**/*.(inp|def|sdb) 
+            else
+                :
+            fi 
+    
+      fi
+     ;;
+     
+  esac
+  
+}
+
+_cns_edit "$@"
+
+
+
+ 

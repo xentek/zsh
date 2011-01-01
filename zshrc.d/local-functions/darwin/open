@@ -1,0 +1,167 @@
+#!/bin/zsh -f
+
+# Function  open   to augment the Apple command open
+
+
+function UsageBlab {
+    
+    FxnName='open'
+    
+    print ""
+    print "\tusage: $FxnName [-abeFfpstxh] [<application\ name>] [<file\ name>]"
+    print ""
+    print "\t$FxnName -a foo [bar] \t Opens application foo [and file bar]"
+    print "\t$FxnName -b <bundle identifier> \t Opens with the specified application bundle identifier."
+    print "\t$FxnName -d bar \t\t Opens file with default application"
+    print "\t$FxnName -e bar \t\t Force the file bar to open with TextEdit"
+    print "\t$FxnName -f \t\t Reads piped input and opens with TextEdit."
+    print "\t$FxnName -F bar \t\t Force the file bar to open with edit function"
+    print "\t$FxnName -p bar.prefPane \t Open named System Preferences preference pane"
+    print "\t$FxnName -s bar \t\t Force the file bar to open with sudo open"
+    print "\t$FxnName -t foo \t\t Opens file foo with default text editor"
+    print "\t$FxnName -w foo Opens named Widget (10.4+)"
+    print "\t$FxnName -x foo [bar] \t Force the program foo to open [file bar] with open-X11"
+    print "\t$FxnName -h \t\t Obtain this help info"
+    print""
+    helpme=""
+    return 0
+}
+
+
+
+function Initialize {
+    launch_app=false
+    defaultapp=false
+    launch_textedit=false
+    use_edit_fx=false
+    use_stdin=false
+    launch_pane=false
+    launch_default=false
+    launch_bund=false
+    launch_widget=false
+    use_sudo_open=false
+    use_openx11=false
+    helpme=false
+}
+
+
+
+autoload -U edit sudo_open  
+
+    # for debugging comment out above and uncomment the line below
+    # function edit { print "edit function call" }
+
+
+# Initialize variables:
+
+Initialize
+ 
+
+
+# Get options and separate these from genuine file names
+
+while getopts ":abdeFfpstwxh" opt; do
+	case $opt in
+		a ) launch_app=true ;;
+		b ) launch_bund=true ;;
+		d ) defaultapp=true ;;
+		e ) launch_textedit=true ;;
+        F ) use_edit_fx=true ;;
+        f ) use_stdin=true ;;
+        p ) launch_pane=true ;;
+		s ) use_sudo_open=true ;;
+		t ) launch_default=true ;;
+		w ) launch_widget=true ;;
+		x ) use_openx11=true ;;
+		h ) helpme=true ;;
+       \? ) UsageBlab ; return 1 ;;
+	esac
+done
+
+# This makes $1 the file to be edited.
+
+shift $(($OPTIND - 1))
+
+
+
+#################################################
+
+
+if [[ $launch_app == true ]];then
+    command open -a "$@" 2>/dev/null
+    if [[ $? != 0 ]];then
+        command open -a "$1".app "$2" 2>/dev/null
+        if [[ $? != 0 ]];then
+            command open -a "$1":r "$2"  2>/dev/null
+            if [[ $? != 0 ]];then
+                command open -a "$1":r:r "$2"  2>/dev/null
+                if [[ $? != 0 ]];then
+                    command open $(mdfind -onlyin /Applications -onlyin /Developer "$1" | head -n 1 ) "$2" 
+                    if [[ ! -d $(mdfind -onlyin /Applications -onlyin /Developer "$1" | head -n 1 ) ]];then
+                        print "Unable to locate and open the application $1 "
+                        Initialize; return 1
+                    fi
+                fi
+            fi
+        fi
+    fi
+    Initialize; return 0
+elif [[ $defaultapp == true ]];then
+    command open "$@"
+    Initialize; return 0
+elif [[ $launch_textedit == true ]];then
+    command open -e "$@"
+    Initialize; return 0
+elif [[ $launch_bund == true ]];then
+    command open -b "$@"
+    Initialize; return 0
+elif [[ $launch_default == true ]];then
+    command open -t "$@"
+    Initialize; return 0
+elif [[ $use_edit_fx == true ]];then
+    edit "$@"
+    Initialize; return 0
+elif [[ $use_stdin == true ]];then
+    command open -f  
+    Initialize; return 0
+elif [[ $launch_widget == true ]];then
+    # Test to see if Dashboard is activated:
+    DashDisabled=$(command defaults read com.apple.dashboard mcx-disabled)
+    if [[ $DashDisabled == 1 ]];then
+        print "Dashboard is disabled.  Issue \e[1menable_Dashboard\e[0m to re-enable it."
+        return 442
+    else
+        if [[ -d /Library/Widgets/"$@" ]];then
+            open /Library/Widgets/"$@"
+        elif [[ -d ~/Library/Widgets/"$@" ]];then
+            open ~/Library/Widgets/"$@"
+        fi
+    fi
+    Initialize; return 0
+elif [[ $launch_pane == true ]];then
+    if [[ -e /System/Library/PreferencePanes/"$@" ]];then
+        open /System/Library/PreferencePanes/"$@"
+    elif [[ -e /Library/PreferencePanes/"$@" ]];then
+        open /Library/PreferencePanes/"$@"
+    elif [[ -e ~/Library/PreferencePanes/"$@" ]];then
+        open ~/Library/PreferencePanes/"$@"
+    else
+        print "Completion failed."
+        return 1
+    fi
+    Initialize; return 0
+elif [[ $use_sudo_open == true ]];then
+    sudo_open "$@"
+    Initialize; return 0
+elif [[ $use_openx11 == true ]];then
+    command open-x11 "$@"
+    Initialize; return 0
+elif [[ $helpme == true ]];then
+    UsageBlab
+    Initialize; return 0
+else	
+    command open "$@"
+    Initialize; return 0
+fi
+
+Initialize

@@ -1,0 +1,293 @@
+#!/bin/zsh -f
+
+# usage: open-x11 PROGRAM ARG-1 ARG-2 ...  
+
+# The original open-x11 was broken -- when you tried to issue arguments it thought
+# they were programs.
+
+###################################################################################
+# Initialize Fink 
+
+ # If the user has installed fink, find it.
+ 
+if [[ -z $SWPREFIX ]]; then   
+    if [[ -d /sw/fink ]]; then
+        export SWPREFIX='/sw'
+    else
+        SWPREFIX=$(dirname $(dirname $(locate bin/fink | head -n 1 ) ) ) 2>| /dev/null 
+    fi       
+fi
+
+ # If the fink directory exists, then source init.sh to set the PATH and ENV vars.  
+       
+if [[ -d $SWPREFIX ]];then
+    source $SWPREFIX/bin/init.sh
+fi
+ 
+
+###################################################################################
+# Initialize X11  
+
+#--------------------
+# X-windows DISPLAY
+#--------------------
+
+# Set DISPLAY variable to allow X-windows programs to run from Terminal.app
+# Fast User Switching creates the problem of multiple simultaneous instances of
+# X11.app running and how to find the appropriate DISPLAY value to assign to 
+# each.
+# Currently this is only done for X11.app.  It should be done for XDarwin, etc.,
+# but I can't get XDarwin to work with multiple users.
+
+# {====>}
+
+# If the user has Apple's X11 installed, assume that the user wants to use it.
+# If it is not open, open it, and then try to find the appropriate DISPLAY value
+# consistent with multiple instances of X11 running simultaneously.
+
+# If the user doesn't have X11.app installed, the user probably uses a different     
+# X11 application. We then simply set DISPLAY to :0.0 if it is not already set.
+
+if [[ -z $SSH_CONNECTION ]]; then	
+
+    # Find out if user has Apple's X11:
+    
+    # First attempt -- look in the canonical location:
+    if [[ -d /Applications/Utilities/X11.app ]]; then
+        X11APPDIR=/Applications/Utilities/X11.app
+    else
+        X11APPDIR=""
+    fi    
+    
+    # Second attempt:
+    if [[ ! -d $X11APPDIR ]];then
+        if [[ -x /usr/bin/mdfind ]];then
+            X11APPDIR=$( mdfind -onlyin /Applications X11 | grep X11.app )
+        else
+            X11APPDIR=$(/usr/bin/locate X11.app | head -n 1 )
+        fi
+    fi
+    
+    # Third attempt
+    if [[  ! -d $X11APPDIR ]];then
+        # If locate or mdfind didn't work, try hunting for it in the usual places:
+        if [[ -d /Applications/Utilities/X11.app ]]; then
+            X11APPDIR=/Applications/Utilities/X11.app
+        elif [[ -d /Applications/X11.app ]]; then
+            X11APPDIR=/Applications/X11.app
+        else
+            X11APPDIR=''
+            print "It does not appear that you have X11.app installed on your system."
+        fi
+    fi
+     
+        
+    # If we found that the computer has X11.app, assume this is what the
+    # user will want to use to start X11.
+    
+    if [[ -d $X11APPDIR ]];then 
+    
+        # First see if this user has started X11. If not, start it.
+        # Then get the DISPLAY the output of the command "ps"
+        # This guarantees we use the correct DISPLAY number.
+        # If the user has multiple instances of X11 running, take the 
+        # last process using $x11_display_number_array[-1] .  
+        
+        already_running_x11=$( /bin/ps -xwc | grep -v X11DO | grep X11 \
+                                            | head -n 1 | awk '{print $NF}' )
+        
+        if [[ -z $already_running_x11  ]]; then
+            # if [[ $open_apple_x11 != skip ]]; then
+                /usr/bin/open -a X11; print "opening X11"; sleep 3
+                
+                
+
+                if [[ $TERM_PROGRAM == iTerm.app ]]; then
+                    /usr/bin/open -a iTerm
+                    # Returns focus to iTerm.app
+                    #
+                elif [[ $TERM_PROGRAM == Apple_Terminal ]]; then
+                    /usr/bin/open -a Terminal
+                    # Returns focus to Terminal.app
+                    #
+                else
+                    /usr/bin/open -a X11
+                    # Returns focus to xterm, i.e., X11.app
+                fi
+            
+
+            #fi
+        fi
+
+        
+        x11_display_number_array=( $( /bin/ps -xw -o command \
+                     | /usr/bin/sed -n 's/.*\/X11.* \(:[0-9]\{1,2\}\)$/\1/p' ) )
+            
+        if [[ -n $x11_display_number_array ]];then
+           export DISPLAY=$x11_display_number_array[-1].0
+           print "DISPLAY has been set to $DISPLAY "
+        else
+           print "Failed to read DISPLAY from ps"
+           export DISPLAY=:0.0
+           print "DISPLAY has been set to $DISPLAY "
+           print "This may cause problems with Fast User Switching."
+        fi
+                
+    fi # [[ -d $X11APPDIR ]]
+fi   # initial DISPLAY test
+
+
+
+# If this did not succeed, just set it to :0.0
+
+if [[ -z $DISPLAY && -z $SSH_CONNECTION ]];then 
+
+    # In the case of non-Apple X11, just set the display to :0.0
+    # junk=( $( ps -xw -o command | grep xinit | grep XDarwin | \
+    #        awk '{print $5}' ))
+    # DISPLAY=$junk[-1]  works for XDarwin, but I can't get XDarwin
+    # to permit multiple simultaneous users.  Same with OroborOSX.
+    
+    export DISPLAY=:0.0
+    print "DISPLAY has been set to $DISPLAY "
+        
+fi # second DISPLAY test
+
+if [[ ! -d $X11APPDIR ]]; then
+    x11_app=X11
+else
+    x11_app="$X11APPDIR"
+fi
+
+  
+
+###################################################################################
+# Initialize PATH  
+
+###################################
+#                                 #
+#     Here we set the PATH:       #
+#                                 #
+###################################
+
+# You should, as a bare minimum, have these in your OS X $PATH:
+
+MIN_PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/libexec
+
+# Note that $SWPREFIX/bin and $SWPREFIX/sbin were *prepended* at the top of the file
+# if you installed fink in $SWPREFIX, so you don't need to add these again.  However,
+# to ensure the desired priority ordering, I do the following, which together with the
+# typeset -U command, allows fine-tuning of the order without either duplicating or
+# accidently deleting anything from $PATH :
+
+if [[ -d $SWPREFIX/bin ]]; then
+    PREPEND_PATH=$SWPREFIX/bin:$SWPREFIX/sbin:$MIN_PATH
+else
+    PREPEND_PATH=$MIN_PATH
+fi
+    
+
+# Then PREPEND or APPEND these to $PATH only if they exist:
+
+if [[ -d /usr/X11/bin ]]; then
+    PREPEND_PATH=$PREPEND_PATH:/usr/X11/bin 
+elif 	[[ -d /usr/X11R6/bin ]]; then
+	PREPEND_PATH=$PREPEND_PATH:/usr/X11R6/bin
+fi
+
+if [[ -d /Developer/Tools ]]; then
+    PREPEND_PATH=$PREPEND_PATH:/Developer/Tools
+fi
+
+if [[ -d /opt/local/bin ]]; then
+    APPEND_PATH=$APPEND_PATH:/opt/local/bin
+fi
+
+if [[ -d /opt/local/sbin ]]; then
+    APPEND_PATH=$APPEND_PATH:/opt/local/sbin
+fi
+
+if [[ -d /usr/local/bin ]]; then
+    APPEND_PATH=$APPEND_PATH:/usr/local/bin
+fi
+
+if [[ -d /usr/local/sbin ]]; then
+    APPEND_PATH=$APPEND_PATH:/usr/local/sbin
+fi
+
+if [[ -d ~/bin ]]; then
+    APPEND_PATH=$APPEND_PATH:~/bin
+fi
+
+
+# Append current directory at the very end of the path, not the beginning.  
+# Some people consider this to be a minor security hazard.  Putting it at the
+# end of the path minimizes the potential hazard.  Comment it out if this
+# worries you.
+
+
+    APPEND_PATH=$APPEND_PATH:.
+
+# This is taken from the original open-x11 script:       
+    # fix $PATH to include X sub-directories
+    # (not a single one of these exist on my machine)
+
+    for d in /usr/X11/bin /usr/X11R6/bin /usr/bin/X11 /usr/local/bin/X11; do
+      if [ -d $d ]; then
+        case $PATH in
+          '')
+        PATH=$d
+        ;;
+          $d|$d:*|*:$d|*:$d:*)
+        : do nothing
+        ;;
+          *)
+        PATH=$PATH:$d
+        ;;
+        esac
+      fi
+    done  
+
+# Now generate the ordered PATH:
+
+
+    PATH=$PREPEND_PATH:$PATH:$APPEND_PATH
+
+#
+# Export PATH as separate command to avoid dollar signs in export line
+#
+
+        export PATH
+
+
+#
+# Avoid repeats in the path
+#
+
+        typeset -U path
+
+    
+###################################################################################
+# Main 
+
+  "$@" &
+
+# try to launch each app
+
+# If there is one, run it in the foreground, otherwise launch each program
+# and background it so they can be run simultaneously.
+
+# I think it is a bad idea to have this launch more than one program at a time,
+# but this preserves the original functionality of open-x11.
+
+
+#if [[ $# == 0 ]];then
+#    print "Usage: openx11 foo1 [[foo2] foo3] ..."
+#elif [[ $# == 1 ]];then
+#    "$1"
+#else
+#    while [ $# -ge 1 ]; do
+#      app="$1"; shift
+#      "$app"  &
+#    done
+#fi

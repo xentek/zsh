@@ -1,0 +1,20 @@
+#!/bin/zsh -f
+
+# Function to renew a dynamically allocated IP address via BOOTP or DHCP.
+# Try en0 first, and then try en1
+# Finally, test the IP address.
+
+sudo ipconfig set en0 BOOTP 
+if [[ $? != 0 ]];then
+    print "Try this on en1"
+    sudo ipconfig set en1 BOOTP
+fi
+
+sudo ipconfig set en0 DHCP
+if [[ $? != 0 ]];then
+    print "Try this on en1"
+    sudo ipconfig set en1 DHCP
+fi
+
+autoload -U myip
+myip

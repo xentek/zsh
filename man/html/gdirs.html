@@ -1,0 +1,108 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Mac OS X (vers 1st December 2004), see www.w3.org" />
+<meta http-equiv="Content-Type" content=
+"text/html; charset=us-ascii" />
+<title>Manual Page for gdirs</title>
+
+<style type="text/css">
+/*<![CDATA[*/
+<!--.red {color: #CC0000}-->
+/*]]>*/
+</style>
+
+<style type="text/css">
+/*<![CDATA[*/
+<!--.hed {color: #000000; font-weight: bold; font-size: larger;}-->
+/*]]>*/
+</style>
+</head>
+<body>
+<pre>
+ <a href=
+"http://sage.ucsc.edu/Library/init/zsh/man/html/gdirs.html">gdirs(1)</a>                 Mac OS X Darwin customization                <a href="http://sage.ucsc.edu/Library/init/zsh/man/html/gdirs.html">gdirs(1)</a>
+
+
+
+<span class="hed">NAME</span>
+       <span class=
+"red">gdirs</span> - display directory stack as gui menu
+
+<span class="hed">SYNOPSIS</span>
+       gdirs [-f] [-F]
+
+<span class="hed">DESCRIPTION</span>
+       Type  <span class=
+"red">gdirs</span> and you will get a pop-up window that displays up to twenty
+       previously visited directories. Pick whatever directory  you  want  and
+       hit  "OK" and the terminal will cd to that directory. Type <span class="red">gdirs</span> <span class="red">-f</span> and
+       both the terminal and Finder will change to the newly  selected  direc-
+       tory.  Type  <span class="red">gdirs</span>  <span class=
+"red">-F</span>  and  only  the  Finder will change to the newly
+       selected directory.
+
+       The non-gui version is (at present) a bit more flexible and  fully-fea-
+       tured. Type <span class="red">dirstack</span> <span class=
+"red">[n]</span> where n is an integer [defaults to 20] and you
+       will get the n most recent directories  visited,  listed  with  numbers
+       next  to them. The command <span class=
+"red">cd?</span>  is the same. You may then type (eg) cd7
+       and the terminal will change directory to that listed on line 7 of  the
+       dirstack  output.   <span class=
+"red">cp7</span>  or  <span class=
+"red">cpath7</span> copies the directory path in line 7
+       into the clipboard copy/paste buffer.
+
+<span class="hed">OPTIONS</span>
+       -f     both the terminal and Finder will change to the  newly  selected
+              directory.
+
+       -F     the Finder (only) will change to the newly selected directory
+
+<span class="hed">SEE ALSO</span>
+       http://www.chemistry.ucsc.edu/~wgscott/mystuff/gdirs.html
+
+<span class="hed">FILES</span>
+       The following aliases should be defined in one's <u>aliases.local</u> file:
+
+       <span class="red">alias</span> <span class=
+"red">dirstack="dirdump;</span> <span class=
+"red">typeset</span> <span class="red">-U</span> <span class=
+"red">dirs_shared</span> <span class="red">;</span> <span class=
+"red">dirstack"</span>
+
+       <span class="red">alias</span> <span class=
+"red">cd?="dirdump;</span> <span class=
+"red">typeset</span> <span class="red">-U</span> <span class=
+"red">dirs_shared;</span> <span class="red">dirstack"</span>
+
+       <span class="red">alias</span>  <span class=
+"red">gdirs="dirdump;</span>  <span class=
+"red">typeset</span>  <span class="red">-U</span> <span class=
+"red">dirs_shared;</span> <span class=
+"red">dirstack</span> &gt;<span class="red">;</span> <span class=
+"red">/dev/null</span> <span class="red">;</span>
+       <span class="red">guidirs"</span>
+
+
+<span class="hed">BUGS</span>
+       Deleted directories are not purged from the stack.
+
+<span class="hed">AUTHOR</span>
+       W. G. Scott
+
+<span class="hed">SEE ALSO</span>
+       <a href=
+"http://sage.ucsc.edu/Library/init/zsh/man/html/cd?.html">cd?(1)</a>, <a href=
+"http://sage.ucsc.edu/Library/init/zsh/man/html/cpath[n].html">cpath[n](1)</a>, <span class="red">dirstack</span> <a href="http://sage.ucsc.edu/Library/init/zsh/man/html/[n].html">[n](1)</a>
+
+
+
+
+Mac OS X                        January 23 2005                       <a href="http://sage.ucsc.edu/Library/init/zsh/man/html/gdirs.html">gdirs(1)</a>
+</pre>
+</body>
+</html>

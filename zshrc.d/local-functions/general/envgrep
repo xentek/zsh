@@ -1,0 +1,5 @@
+#!/bin/zsh -f
+
+# envgrep: grep the output of set
+function envgrep { set | grep -i --binary-files=text "$1" | grep -v "\(_c\omps\|p\orts\)"; }
+

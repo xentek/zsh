@@ -1,0 +1,200 @@
+#!/bin/zsh -f
+
+#set -x
+
+# For 0.6-pre-1 (revision 2170)
+
+# This is a zsh shell script or function that augments the coot command line 
+# experience. Just type "coot" followed by the names of your pdb files, map files, 
+# mtz files and so on. If you have the unix program screen, it starts coot in a 
+# screen session, which you can then detach with "control-A d" and resume with 
+# "screen -r coot". Using --pdb, --map, --data, --script and 
+# so on will have no detrimental effect.  These flags are just ignored.  The file 
+# type is determined from the file suffix.
+
+#        Usage: coot [--pdb pdb-file-name]
+#                    [--coords pdb/cif/shelx-filename]
+#                    [--map ccp4-map-file-name]
+#                    [--data mtz-file-name]
+#                    [--hklin mtz-file-name]
+#                    [--auto mtz-file-name]
+#                    [--script script-file-name]
+#                    [--no-state-script]
+#                    [--no-splash-screen]
+#                    [--no-graphics]
+#                    [--no-guano]
+#                    [--small-screen]
+#                    [--stereo]
+#                    [--zalman-stereo]
+#                    [--side-by-side]
+#                    [--version]
+
+# Define a function to convert xplor to ccp4 map on the fly
+
+function xplormap_to_ccp4map {
+
+		mapname=$file
+
+		spacegroup="1"
+
+		mapname_prefix=$mapname:r
+
+
+		mapman -b << eof >/dev/null 2>&1
+		!echo on
+		read $mapname_prefix $mapname X-PLOR 
+		spacegroup $mapname_prefix $spacegroup
+		write $mapname_prefix ${mapname_prefix}_ccp4.$mapname:e CCP4
+		quit
+eof
+}
+
+# Pass the version or help argument and then quit:
+
+ if [[ "$@" == "--version" ]];then
+ 	command coot --version
+ 	return 0
+ elif [[ "$@" == "--help" || "$@" == "-help" || "$@" == "-h" || "$@" == "help" ]];then
+ 	command coot --help
+ 	return 0
+ fi
+
+
+# Look for an rc file in the user's home directory
+
+# Note that ~/.coot is always read if it is present	
+
+if [[ -f ~/.cootrc ]];then
+	startupscript=( --script ~/.cootrc )	
+elif [[ -f ~/.coot_zalman.scm ]];then
+	startupscript=( --script ~/.coot_zalman.scm )
+else
+	startupscript=" "
+fi
+
+# If the program "screen" is available, run coot within it, permitting detachment of 
+# a running coot session.  
+
+testforscreen=$(whereis screen | head -n 1 )
+
+if [[ -x $testforscreen ]]; then
+	print "setenv PATH $SWPREFIX/bin:$PATH" >| /tmp/screenrc$$
+	screenarray=( screen -c /tmp/screenrc$$  -S coot )
+else
+	screenarray=( command )
+fi
+
+# Go through each argument and assess file type using the extension, eliminating the
+# need for the flags before each file name. (These can still be supplied but will be ignored.)
+
+pdbfilearray=()
+datafilearray=()
+mapfilearray=()
+scriptfilearray=()
+argarray=()
+
+
+# set -x
+LIMIT=$#
+for ((i = 1; i <= $LIMIT; i++ )) do
+	eval file="\$$i"
+	eval prevfile="\$$((i-1))"
+      
+    if [[ $file == ("--no-state-script"|"--help"|"--stereo"|"--version"|"--no-guano"|"--side-by-side"|"--no-graphics"|"--no-splash-screen"|"--small-screen"|"--zalman-stereo"|"--side-by-side")  ]];then
+		argarray+=( "$file" )
+	elif [[ $file:e == (pdb|ent|brk) ]]; then
+		pdbfilearray+=( --pdb $file )
+	elif [[ $file:e == (mtz|cif|phs) && "$prevfile" == "--auto" ]]; then
+		datafilearray+=( --auto $file  )
+	elif [[ $file:e == cif  && "$prevfile" == "--dictionary" ]]; then
+		datafilearray+=( --dictionary $file )
+	elif [[ $file:e == (mtz|cif|phs)  ]]; then
+		datafilearray+=( --data $file )
+	elif [[ $file:e == ccp4 ]]; then
+		cp $file /tmp/${file}.map
+		mapfilearray+=( --map /tmp/${file}.map )
+	elif [[ $file:e == (map|ext|msk) ]]; then
+		if [[ $( file -b $file ) == "ASCII text" && -z $( head $file | grep MAP | awk '{print $1}' )  ]];then
+			if [[ ! -x $(which mapman | head -n 1) ]];then
+				warningarray=( "\e[1m    This script requires the program \e[0m mapman \e[1m to be in your path" 
+				"    if you want to convert a CNS or Xplor map on the fly." 
+				"    You can obtain it here: http://xray.bmc.uu.se/usf \e[0m" )
+			fi
+			print "\e[1m Converting $file to CCP4 format \e[0m"
+			xplormap_to_ccp4map	
+			mapfilearray+=( --map ${file:r}_ccp4.$file:e )
+			messagearray=("\e[1m $file \e[0m converted to ccp4map \e[1m ${file:r}_ccp4.$file:e	\e[0m")
+		else
+			mapfilearray+=( --map $file )
+		fi
+	elif [[ $file:e == (script|coot|cootrc|scm|py) ]]; then
+		scriptfilearray+=( --script $file )
+	elif [[ $file == -s ]]; then
+		skipscroll='yes'   
+	elif [[ $file != (--help|--pdb|--coords|--map|--data|--hklin|--auto|--script|--no-state-script|--no-splash-screen|--no-guano|--no-graphics|--small-screen|--stereo|--zalman-stereo|--side-by-side|--version) ]];then
+        
+		if [[ $(uname) == Darwin ]];then
+			say "WARNING: $file FILE TYPE is unrecognized!"
+		fi
+		print "WARNING: $file FILE TYPE is unrecognized!"
+		print "Suffix must be .pdb .mtz .phs .map .ext .cif .scm .coot or .cootrc"
+	fi
+done
+
+# set +x
+
+###  Issue the actual coot commands:
+
+cootcommandarray=( $screenarray =coot $argarray $startupscript $scriptfilearray $pdbfilearray \
+		$datafilearray $mapfilearray )
+		
+
+if [[ "$TERM_PROGRAM" == "iTerm.app" ]];then
+	
+	echo -ne "\e]1; screen: coot \a"
+	echo -ne "\e]2; screen session: $cootcommandarray[4,-1] \a"
+	$cootcommandarray
+	echo -ne "\e]1;$( echo -ne $PWD:h:t/$PWD:t|sed 's|.*\(.\{20\}\)$|\1|')\a"
+	echo -ne "\e]2;[zsh]   $HOST:r:r::$PWD\a"	
+
+else
+	echo -ne "\e]0; screen session: $cootcommandarray[4,-1] \a"
+	$cootcommandarray
+	echo -ne "\e]0;[zsh]   $HOST:r:r::$PWD\a"
+fi	
+		
+# Clear everything just to be safe
+
+screenarray=() 
+STATESCRIPT="" 
+GRAPHICS="" 
+STEREO="" 
+startupscript="" 
+scriptfilearray=() 
+pdbfilearray=()
+datafilearray=()
+mapfilearray=()
+argarray=()
+
+  
+if [[ -n "$warningarray" ]]; then
+	print ""; print "$warningarray[1]" ; print "$warningarray[2]" ; print "$warningarray[3]" ; print ""
+	warningarray=()
+elif [[ -n "$messagearray" ]]; then
+	print ""; print "$messagearray" ; print ""
+	messagearray=()
+fi
+
+if [[ -f 0-coot.state.scm && $GUANO == "--no-guano" ]]; then
+	if [[ $(uname) == Darwin ]];then
+		mv 0-coot* ~/.Trash
+	else
+		/bin/rm -f 0-coot*
+	fi
+fi
+
+return 0
+
+
+
+

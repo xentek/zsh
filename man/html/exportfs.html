@@ -1,0 +1,81 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Mac OS X (vers 1st December 2004), see www.w3.org" />
+<meta http-equiv="Content-Type" content=
+"text/html; charset=us-ascii" />
+<title>Manual Page for exportfs</title>
+
+<style type="text/css">
+/*<![CDATA[*/
+<!--.red {color: #CC0000}-->
+/*]]>*/
+</style>
+
+<style type="text/css">
+/*<![CDATA[*/
+<!--.hed {color: #000000; font-weight: bold; font-size: larger;}-->
+/*]]>*/
+</style>
+</head>
+<body>
+<pre>
+ <a href=
+"http://sage.ucsc.edu/Library/init/zsh/man/html/exportfs.html">exportfs(7)</a>            Mac OS X Darwin ZSH customization           <a href="http://sage.ucsc.edu/Library/init/zsh/man/html/exportfs.html">exportfs(7)</a>
+
+
+
+<span class="hed">NAME</span>
+       <span class=
+"red">exportfs</span>  -  export  NFS  filesystems listed in /etc/exports and/or the
+       NetInfo database.
+
+
+<span class="hed">SYNOPSIS</span>
+       sudo exportfs
+
+
+<span class="hed">DESCRIPTION</span>
+       <span class=
+"red">exportfs</span> is a function that emulates (crudely) the <span class="red">exportfs</span> <span class="red">-a</span>  command
+       on  canonical  unix  systems.   Mac  OS  X  does  not currently have an
+       exportfs command.  This makes a minimal attempt at filling the gap.
+
+       If <span class=
+"red">exportfs</span> finds something to export (either using /etc/exports or the
+       exports  NetInfo  directory), then start the NFS daemons (which service
+       NFS requests) and the mount server (which services NFS mount requests).
+
+       Parts  of  this  come  from Apple's NFS startup file, modified by W. G.
+       Scott and many important improvements were then added by Gary Kerbaugh.
+       Specifically,  the  script  now  checks  for successful outcome of disk
+       arbitration, which can take  awhile  for  really  big  disks  and  RAID
+       devices.
+
+       This  is  a stopgap replacement for exportfs, which is not available on
+       OS X.  If the user has in fact installed it, or if it  appears  in  the
+       future,  this  script  warns  the user and gives her or him a chance to
+       bail.
+
+
+<span class="hed">SEE ALSO</span>
+       <a href=
+"http://sage.ucsc.edu/Library/init/zsh/man/html/exports.5">exports(5)</a>
+
+
+<span class="hed">AUTHORS</span>
+       Gary Kerbaugh, William Scott, Apple Computer
+
+
+<span class="hed">MAINTAINER</span>
+       W. G. Scott <a href=
+"mailto:wgscott@users.sourceforge.net">wgscott@users.sourceforge.net</a>
+
+
+
+Mac OS X                         July 19, 2005                     <a href="http://sage.ucsc.edu/Library/init/zsh/man/html/exportfs.html">exportfs(7)</a>
+</pre>
+</body>
+</html>

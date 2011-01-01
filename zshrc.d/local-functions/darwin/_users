@@ -1,0 +1,10 @@
+#compdef passwd groups userdel chage chfn chsh
+
+local expl users
+
+zstyle -a ":completion:${curcontext}:" users users &&
+    _wanted users expl user compadd "$@" -a users && return 0
+
+    realusers=($(command ls /Users | grep -v Shared) root)
+
+_wanted users expl user compadd "$@" -k realusers

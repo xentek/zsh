@@ -1,0 +1,30 @@
+#!/bin/zsh -f
+
+
+
+    if [[ -z $CCP4_BROWSER && $(uname) == Darwin ]];then
+           CCP4_BROWSER='open'
+    fi
+    
+    if [[ -z $CCP4_BROWSER ]];then
+        CCP4_BROWSER=$MOZILLA
+    fi
+
+    if [[ -z $CCP4_BROWSER ]];then
+        CCP4_BROWSER='mozilla'
+    fi
+    
+    if [[ -z $CCP4_BROWSER ]];then
+        CCP4_BROWSER='netscape'
+    fi    
+    
+    # Main:    
+    
+    if [[ $# = 0 ]]; then
+            "$CCP4_BROWSER" $CHTML/INDEX.html
+    else
+            open $CHTML/$1.html
+    fi
+    
+    
+ 

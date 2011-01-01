@@ -1,0 +1,19 @@
+#!/bin/zsh -f
+
+ 
+if [[ $(sw_vers -productVersion) < 10.4 ]];then
+     print "Fast User Switching is not available in OSX version $(sw_vers -productVersion) "
+     return 1
+fi
+
+
+if [[ -z $1 ]]; then
+  /System/Library/CoreServices/Menu\ Extras/User.menu/Contents/Resources/CGSession -suspend
+else
+  USERID=`/usr/bin/id -u $1`;
+  if [[ -z $USERID ]]; then
+    return -1;
+  fi
+  /System/Library/CoreServices/Menu\ Extras/User.menu/Contents/Resources/CGSession -switchToUserID $USERID
+fi
+

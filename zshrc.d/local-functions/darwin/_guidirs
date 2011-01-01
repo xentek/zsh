@@ -1,0 +1,108 @@
+#!/bin/zsh -f
+
+# usage:  gdirs [-fF]
+
+#  gdirs -f cd's both terminal and finder to chosen directory
+#  gdirs -F cd's only the Finder to the chosen directory
+#  gdirs with no argument changes only the terminal directory
+
+CDD=OFF ; CDF=OFF
+
+if [[ $1 == '-f' ]];then
+ CDD=ON
+elif [[ $1 == '-F' ]];then
+ CDF=ON
+else
+ CDD=OFF ; CDF=OFF
+fi
+
+################################################################################
+# function ChooseFile allows picking from filtered list of files in $PWD
+# returns name of chosen file as a string
+
+function ChooseFromStack {
+#
+# Change this first line for particular filtering needs:
+#
+# =========>
+#
+
+	filelist=($(print $global_dirs | perl -pi -e 's| |\n|g' | perl -pi -e 's|_SPACE_|\*|g' ) )
+
+	item_list="" 
+
+	for item in "${filelist[@]}" 
+	do 
+		item_list="$item_list""\"${item}\"," 
+	done 
+
+	function filepicker {
+		osascript << eof 
+			tell app "Finder" 
+				activate 
+				choose from list {${item_list%,}} with prompt "Choose a recent directory: " 
+			end tell
+eof
+	} 
+	
+	
+	
+	SelectedFile=$(filepicker) 
+
+	
+	if [[ $SelectedFile == false ]]; then
+	   print "Selection has been cancelled."
+	   return 1
+    fi
+	
+
+  if [[ $CDD == ON ]];then
+    cd "$SelectedFile"; open . ; pwd
+    return 0
+
+        
+  elif [[ $CDF == ON ]];then
+    cd "$SelectedFile"; open . ; cd "$OLDPWD"
+    return 0
+
+    
+  else
+	cd  "$SelectedFile"; pwd 
+    return 0
+    
+  fi
+}
+
+################################################################################
+
+# run the function:
+
+ChooseFromStack
+
+
+if [[ $CDF != ON ]]; then
+
+    if [[ $TERM_PROGRAM == iTerm.app ]]; then
+        /usr/bin/open -a iTerm   
+        # Returns focus to iTerm.app
+        #
+    elif [[ $TERM_PROGRAM == Apple_Terminal ]]; then
+        /usr/bin/open -a Terminal    
+        # Returns focus to Terminal.app
+        #
+    else
+        /usr/bin/open -a X11  
+        # Returns focus to xterm, i.e., X11.app
+    fi
+
+else
+    # Refocus Finder
+    # print "focus finder"  #Debug
+    /usr/bin/open -a Finder
+
+fi
+
+# re-initialize
+
+CDD=OFF ; CDF=OFF
+

@@ -1,0 +1,266 @@
+#!/bin/zsh -f 
+
+# sudo_open takes a filename as an argument and allows you to select a 
+# Cocoa or unix application with which to open your file using sudo.
+
+
+################################################################################
+################################################################################
+# Function that tells you how to use this
+################################################################################
+################################################################################
+
+function UsageDescr {
+print ""
+print "  Usage:  sudo_open [-esh]  foo.ext"
+print "  Opens the file foo.ext with selected application as super-user"
+print ""
+print "  sudo_open -e foo.ext           opens foo.ext with TextEdit.app"
+print "  sudo_open -s foo.ext           opens foo.ext with SubEthaEdit.app"
+print "  sudo_open -h [foo.ext]         gets you this help description"
+print "  sudo_open foo.ext              opens foo.ext with application selected from GUI"
+print ""
+}
+
+
+
+################################################################################
+################################################################################
+# Function to choose application with which to open our file 
+################################################################################
+################################################################################
+function ChooseApplication { 
+
+osascript <<-eof 
+tell application "Finder" 
+    activate 
+end tell 
+
+tell application "Finder"
+    set theApp to POSIX path of ((choose file with prompt "Choose an APPLICATION to open file as Super User" ) as string) 
+end tell
+eof
+}
+
+# File gui gives us the absolute path to the application; App gui doesn't! 
+
+
+
+################################################################################
+################################################################################
+# Function to determine if we are dealing with a Cocoa, Carbon or Unix Application
+# Thanks to Gary Kerbaugh for figuring out how to do this with a caron app.
+################################################################################
+################################################################################
+
+
+function AppType {
+
+header=$(ChooseApplication) 
+
+if [[ "$header:t:e" == app  && -d "$header" ]]; then
+    print "This is a Cocoa Application"
+    apptype='cocoa'
+    
+elif [[ "$header:t:e" != app && -d "${header}Contents/MacOS" ]]; then
+    print "This is a user-friendly Carbon Application"
+    apptype='okcarbon'
+     
+else
+    junkarray=`file -bL "${header}"`     # Use output from command file to determine file types
+
+    if [[ header == $junkarray[1,6] ]]; then
+        print "This is a standard Carbon Application."
+        apptype='carbon'
+
+    elif [[ -x "$header" && ( ! -d "$header") && "$header:t:e" != app ]]; then
+        print "This appears to be a unix application"
+        apptype='unix'
+
+    else
+        print "I can't figure out what kind of application this is."
+        return 1
+    fi
+fi
+
+}
+
+################################################################################
+################################################################################
+#  Function that does the actual file opening by application type
+################################################################################
+################################################################################
+
+function SudoOpener {
+
+if [[ -z $apptype ]]; then
+UsageDescr
+return 1
+fi
+
+if [[ $apptype == unix ]]; then
+
+    sudo "$header" "$filearg" 
+
+elif [[ $apptype == cocoa ]]; then
+
+    # The Cocoa executable lies within a subdirectory and is usually named the same thing
+
+    fullappPath="${header}Contents/MacOS/$header:t:r" 
+ 
+    if [[ -e "$fullappPath" ]];then 
+
+        sudo "$fullappPath" "$filearg" 2>/dev/null 
+
+    else 
+
+        exeApp=$(ls "${header}Contents/MacOS/" ) 
+
+            if [[ -e "${header}Contents/MacOS/$exeApp" ]];then 
+
+                sudo "${header}Contents/MacOS/$exeApp" "$filearg" 2>/dev/null 
+
+            else 
+                print "Unable to guess how to invoke this application with sudo."; return 1 
+            fi
+
+    fi
+
+elif [[ $apptype ==  okcarbon ]]; then
+
+    # A Cocoa-like Carbon executable lies within a subdirectory and is usually named the same thing
+    # This might not work at all
+
+    fullappPath="${header}Contents/MacOS/$header:r" 
+ 
+    if [[ -e "$fullappPath" ]];then 
+        
+        print "Trying to open using sudo $fullappPath $filearg "
+        sudo "$fullappPath" "$filearg" 2>/dev/null 
+
+    else 
+
+        exeApp=$(ls "${header}Contents/MacOS/" ) 
+
+            if [[ -e "${header}Contents/MacOS/$exeApp" ]];then 
+
+                sudo "${header}Contents/MacOS/$exeApp" "$filearg" 2>/dev/null 
+                if [[ $? != 0 ]];then                
+                    sudo -b \
+                    /System/Library/Frameworks/Carbon.framework/Versions/Current/Support/LaunchCFMApp \
+                    "$header" "$filearg" 
+                        if [[ $? != 0 ]];then
+                            print "Unable to open the application with LaunchCFMApp"
+                            return 101
+                        fi
+                fi
+            else 
+                print "Unable to guess how to invoke this application with sudo."; return 1 
+            fi
+
+    fi
+
+
+elif [[ $apptype == carbon ]]; then
+    sudo -b /System/Library/Frameworks/Carbon.framework/Versions/Current/Support/LaunchCFMApp \
+        "$header" "$filearg" 
+    if [[ $? != 0 ]];then
+        print "Unable to open the application with LaunchCFMApp"
+        return 101
+    fi
+fi
+
+}
+
+
+################################################################################
+################################################################################
+#  Function that allows you to bypass gui and use selected editor
+################################################################################
+################################################################################
+
+
+function DefaultEditor {
+
+# find where default editor is and open file with sudo DefaultEditor
+  print "Opening $filearg with $MyEditor as super-user."
+  print "You MUST QUIT the editor application after saving any changes."
+  print "Please authenticate now or hit return or ctl-C to abort."
+    
+    if [[ -x /usr/bin/mdfind ]];then
+        junkeditarray=($(mdfind $MyEditor | grep $MyEditor.app | head -n 1))
+    else
+        junkeditarray=($(locate $MyEditor.app | head -n 1))  
+    fi
+    
+  sudo $junkeditarray[1]/Contents/MacOS/$MyEditor "$filearg" 2>/dev/null; sudopt=""
+}
+
+
+
+
+################################################################################
+################################################################################
+
+
+ 
+
+
+
+
+
+
+################################################################################
+
+#####################     Now for the actual program  ##########################
+
+################################################################################
+
+txtedit=false
+subetha=false
+helpme=false
+
+# get bypass flag options if given
+
+while getopts ":esh" opt; do
+	case $opt in
+		e ) txtedit=true ;;
+        s ) subetha=true ;;
+		h ) helpme=true ;;
+        \? ) helpme=true ;;
+	esac
+done
+
+
+# This makes $1 the file to be edited.
+
+shift $(($OPTIND - 1))
+
+filearg="$@"
+
+
+# Help and usage description
+if [[ $helpme == true || -z $filearg ]]; then
+    UsageDescr; helpme=false
+    return 0
+fi
+
+# Bypass gui in favor of TextEdit  (sudo analog of open -e )
+if [[ $txtedit == true ]]; then
+    MyEditor=TextEdit
+    DefaultEditor; txtedit=false
+    return 0
+fi
+
+# Bypass gui in favor of SubEthaEdit   
+if [[ $subetha == true ]]; then
+    MyEditor=SubEthaEdit
+    DefaultEditor; subetha=false
+    return 0
+fi
+
+# If no bypass flag is given, select application using the gui
+
+AppType; SudoOpener
+
+

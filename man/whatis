@@ -1,0 +1,176 @@
+_cc(7)                   - completion function for gcc and cc
+_cdd(7)                  - completion function for the cdd function
+_cns_edit(7)             - completion function for cns_edit
+_comp_appgetter(7)       - helper function for open function and command
+_coot(7)                 - completion function for the coot function (doesn't work properly with the command coot)
+_defaults(7)             - completion function for the function defaults
+_edit(7)                 - completion function for the function edit my_prefs_edit function to define default gui editors for use in the edit and hydra functions my_prefs_edit helper function for local edit and hydra functions; assists in setting default apps _cns_edit completion function for cns_edit cns_edit function to edit cns files using web browser interface (crystallography)
+_expand_word_and_keep(7) - completion function for the keep command
+_files_only(7)           - hacked version of _files to prevent directories from being listed
+_fink(7)                 - completion function for the function replacing the command fink _fink_web completion function for the function fink_web
+_fink_web(7)             - completion function for the function fink_web
+_get_running_apps(7)     - helper function for _open
+_guidirs(7)              - helper function for the command gdirs _guidirs.zsh helper script for the command gdirs in pashua mode _guidirs_pashua helper script for the command gdirs in pashua mode _guidirs function wrapped by gdirs (use gdirs to call it)
+_guidirs.zsh(7)          - helper script for the command gdirs in pashua mode
+_guidirs_pashua(7)       - helper script for the command gdirs in pashua mode
+_hdiutil(7)              - completion function for the function hdiutil
+_htmlsuffix(7)           - completion function for html files
+_init_open(7)            - helper function for the open function
+_insert_kept(7)          - helper function for keep command
+_mac_applications(7)     - helper function for _open and open functions my_mac_applications helper function for _open, i.e., "open -a" completions
+_mac_files_for_application(7) - helper function for _open and open functions
+_macmail(7)              - completion function for the function mail
+_main_complete(7)        - corrected version of supplied _main_complete function
+_mtzsuffix(7)            - completion function for commands requiring mtz suffix files
+_open(7)                 - helper function for _open _init_open helper function for the open function _mac_applications helper function for _open and open functions _mac_files_for_application helper function for _open and open functions _open completion function for the function open (replaces command open) _open-x11 completion function for the function open-x11 (replaces command open-x11) enable_faster_open function to enable faster "open -a" completions by establishing a cache before the first call to _open my_mac_applications helper function for _open, i.e., "open -a" completions sudo_open function to start an application as a root user
+_open-x11(7)             - completion function for the function open-x11 (replaces command open-x11)
+_pdbsuffix(7)            - completion function for commands requiring pdb suffix files
+_pdfsuffix(7)            - completion function for pdf files
+_pymol(7)                - completion function for pymol
+_quit(7)                 - completion function for the quit command _retrieve_mac_apps helper function for _quit
+_retrieve_mac_apps(7)    - helper function for _quit
+_sca2mtz(7)              - completion function for sca2mtz
+_setopt(7)               - corrected version of supplied _setopt completion function
+_switch_users(7)         - completion function for the function switch_users (command-line fast user switching)
+_unsetopt(7)             - corrected version of supplied _unsetopt completion function
+_users(7)                - completion function for the function switch_users (command-line fast user switching) _users completion function for only the real users in /Users directory switch_users function to do fast user switching from the command line (eg: switch_users nixon )
+add_user(7)              - Add a user to the Directory Service database and create the user's account
+addgroup(7)              - Add a user group to the Directory Service database
+adduser2group(7)         - Add an existing user (or many users) to an existing group to the Directory Service database
+aeon(7)                  - toggle AppleEvent logging on or off
+bbown(7)                 - function to change file ownership to bbedit
+canonicalize_pdb(7)      - function to put nucleic acid pdb files in canonical format (crystallography)
+ccp4_patches(7)          - function to check for new patches available from the ccp4 website
+ccp4help(7)              - function to open browser to named ccp4 document (eg: ccp4help mlphare) (crystallography)
+cdd(7)                   - cd to new directory and then change the frontmost finder window to it
+cdf(7)                   - change the terminal pwd to match that of the frontmost finder window
+cds(7)                   - change the terminal pwd to match that of the frontmost Safari window
+checkmail(7)             - function to check for new mail using Apple's Mail.app
+chpwd(7)                 - function required to update Terminal.app, xterm, and iTerm.app title bar and iTerm tab
+cns(7)                   - function to run the crystallography and NMR program cns_solve (crystallography)
+cns_edit(7)              - Wrapper function for the cns_edit script distributed with cns to edit cns input files using web browser interface (crystallography)
+cns_solve(7)             - function to run the crystallography and NMR program cns_solve (crystallography)
+composer(7)              - opens Mozilla Composer or Netscape Composer (a free WYSIWYG HTML editor)
+configure_zsh_templates_pashua(7) - invoked by configure_zsh_templates
+coot(7)                  - function to run coot, allowing files to be added as arguments without flags (crystallography)
+cpbcp(7)                 - copy the full path of a command to the pastboard
+cpos(7)                  - copies the path matching that of the frontmost finder window
+customize_x11(7)         - Assist the user in changing (improving) the behavior of Apple's X11.app
+customize_x11_gui(7)     - Assist the user in changing (improving) the behavior of Apple's X11.app -- GUI version
+delete_group(7)          - Delete a group from the Directory Service database
+delete_user(7)           - Delete a user from the Directory Service database and archive's the user's account
+dirstack(1), gdirs(1)    - display directory stack as gui menu
+dotgrep(7)               - function to grep stuff from dot files
+dusize(7)                - function to get filesizes with du and sum them in awk
+edit(7)                  - attempts to open editable files in an appropriate application
+eds(7)                   - edit the web page on your server that is displayed in Safari
+enable_faster_open(7)    - Assist the user in improving the speed of open -a completions
+envgrep(7)               - grep the output of set
+errnum(7)                - function to decode error numbers from MacErrors.h
+exportfs(7)              - export NFS filesystems listed in /etc/exports and/or the NetInfo database
+fdc(7)                   - change the frontmost finder window to the terminal pwd
+fds(7)                   - function to issue find / -name "${1}" -print 2>/dev/null
+fdsa(7)                  - function to issue fds for all files
+finder_update(7)         - refresh a Finder.app window's display and contents
+fink(7)                  - function fink to accompany and fully enable completion function _fink
+fink_web(7)              - search the fink package website database
+fix_namot(7)             - function to fix the buggy pdb files output by namot (nucleic acid modelling program)
+frameerrnum(7)           - function that greps all of the framework header files for numbers associated with error messages
+function_key_toggle(7)   - Activate or inactivate the function keys
+gdirs(7)                 - display directory stack as gui menu
+getpdb(7)                - function to download PDB file from database using assession code
+gnotify(7)               - invokes growlnotify
+go(7)                    - function issues command osascript -e 'open location "$1"'
+guidirs_pashua(7)        - helper function for gdirs used if pashua is present
+gunall(7)                - function to invoke command ls $* | xargs -n 1 tar -zxvf
+gvim(7)                  - function to augment behavior of the command gvim with sudo
+help_template_functions(7) - function to obtain simple one-line help for individual functions
+help_zsh_templates(7)    - function to open the zsh_templates web site in your default browser
+hgrep(7)                 - function to grep a named command from the history list
+host_setup(7)            - Customize completions that use the _hosts completion with a GUI assistant
+joinpdf(7)               - function to catenate pdf files, produces a file called merged.pdf as output
+keep(7)                  - function to capture standard output in the global variable kept
+killit(7)                - obsolete. Use "killall"
+ldirs(7)                 - function to issue command ls -AFlh ${1} | grep "^d"
+ldot(7)                  - list the dot files in a directory
+lf(7)                    - function to invoke command ls -lh ${*} | egrep "^d"
+lgrep(7)                 - function to grep the output of locate to match only the file part of the path
+ll(7)                    - ls -l
+llock(7)                 - List all locked files in subdirectories of the argument
+macmail(7)               - uses the Apple Mail.app interface as a drop-in replacement for sending mail via the unix mail command
+mailit(7)                - function to mail a file using Apple's mail
+make_transparent(7)      - uses ImageMagick
+man(7)                   - Augmented man command that includes run-help and info in addtion to command man
+manmac(7)                - restrict man command to manpath /usr/share/man
+mapcover(7)              - requires CCP4 to be installed
+mapcoverdiff(7)          - requires CCP4 to be installed
+mlocate(7)               - invokes mdfind to locate a file
+mos2fobs(7)              - function to process mosflm mtz file in ccp4 scala, producing Fobs in mtz and cns formats (crystallography)
+my_mac_applications(7)   - helper function for _open, i.e., "open -a" completions
+my_prefs_edit(7)         - function to define default gui editors for use in the edit and hydra functions my_prefs_edit helper function for local edit and hydra functions; assists in setting default apps
+mybom(7)                 - lsbom the listed package with the given arguments, i.e., lsbom -p sfMUG /Library/Receipts/*"$1"*.pkg/Contents/Archive.bom
+myip(7)                  - get the ip address of the computer (or with [-r] the router)
+nfs_niloader(7)          - load NFS filesystems listed in /etc/fstab into the NetInfo database
+ntab(7)                  - open a new iTerm tabbed window, optionally with a new directory specified
+ntrm(7)                  - open a new iTerm terminal window, optionally with a new directory specified
+ono(7)                   - function to start O and display the process in the iTerm tab (crystallography)
+open(7)                  - command-line equivalent of double-clicking to open OS X applications, files, urls, x-windows unix programs, preference panes and directories.  This is an enhanced version (a superset) of Apple's open command, and (unlike Apple's version) uses a powerful and nuanced customizable command completion mechanism for the open command
+open-x11(7)              - function that replaces Apple's open-x11 with one that works better
+osa_choose_list(7)       - returns the path matching the file chosen with the GUI
+osa_direc_browser(7)     - returns the path matching the directory chosen with the GUI
+osa_display_dialog(7)    - displays a dialog box with between one and three buttons
+osa_file_browser(7)      - returns the path matching the file chosen with the GUI
+overlay(7)               - function to overlay pdf files (made for crystallographic Patterson maps but may be more generally useful)
+pashua_run(7)            - helper function for gdirs pashua variant
+pbcp(7)                  - copy the output of a command to the clipboard and to stdout
+pdb_contents(7)          - function to give some pdb file statistics (crystallography -- requires ccp4)
+pgep(7)                  - function to grep from ps output in violation of the Heisenberg Uncertainty Principle
+pidof(7)                 - function like pgep but returns only the PID number
+posd(7)                  - returns the path matching that of the frontmost finder window
+posfind(7)               - runs find in the path matching that of the frontmost finder window
+posgrep(7)               - greps stuff from files in the path matching that of the frontmost finder window
+ppath(7)                 - function to list the Perl #INC path
+prompt_kerbaugh_setup(7) - function defining Gary Kerbaugh's colorful and highly functional prompt
+prompt_simple_setup(7)   - function defining a very simple prompt (zsh-% in boldface)
+pymol(7)                 - function to run pymol and display process in an iTerm tab (crystallography)
+quit(7)                  - quits the named application
+rcommand(7)              - executes a single command on a remote host and returns stdout
+remove_user_from_group(7) - Remove an existing user from an existing group (or all groups) in the Directory Service database
+renew_dhcp(7)            - Function to renew a dynamically allocated IP address via BOOTP or DHCP
+renice_grep(7)           - function to renice by string
+rmm(7)                   - emulates unix rm but uses the OS X Trash
+run-help(7)              - function to get help on zsh functions and builtins (fixed for multiple helpdir entries) man function to augment man command to use info and zsh command run-help in addition to command man
+sca2mtz(7)               - function to process hklview sca files to mtz and cns Fobs (crystallography)
+screen(7)                - function to run Darwin's screen command and put "screen $1" in the iTerm tab
+scrollspeed(7)           - set the scroll wheel speed on a mouse using the System Preferences contol panel
+sd(7)                    - change the CodeTek Virtual Desktop Display to the indicated Desktop
+settab(7)                - function to update iTerm.app tab to current $PWD after cd
+settitle(7)              - function to update xterm, Terminal.app or iTerm.app title bar to current $PWD after cd
+sgrep(7)                 - function to grep the output of set
+snotify(7)               - invokes growlnotify
+spath(7)                 - find the server-based path that corresponds to the page displayed in the frontmost Safari window
+sss(7)                   - Start the Screen Saver
+stoppedjobs(7)           - function to print a list of stopped jobs
+sudo(7)                  - invokes sudo
+switch_prompt(7)         - Function to permit the user to switch the prompt easily
+switch_users(7)          - enables fast user switching from the command line.  An optional argument of another User's username will switch to that user.  If the optional argument is not supplied, the display is rotated to the login window
+sync_fink(7)             - syncronize the /sw folder on a remote computer with that of the host computer
+tcmd(7)                  - iTerm function
+template(7), FUNCTION_NAME(7) - invokes FUNCTION_NAME
+testsplit(7)             - function to test if sh_splitting is on or off
+tidyxml(7)               - function to in-place convert HTML to well-formed XHTML using tidy
+tmpj(7)                  - TextMate auxiliary function
+txtgrep(7)               - fuction to grep only from ascii text files
+user_setup(7)            - Customize completions that use the _users completion with GUI
+usf_installer(7)         - function to download and  install USF programs (X-ray crystallography)
+vi(7)                    - function to enable vi(m) to edit files using sudo vi(m) if required
+vim(7)                   - function to enable vi(m) to edit files using sudo vi(m) if required
+whatsnew(7)              - function to tell you what has been updated in newer zsh_template release when installed with fink
+whichfunctions(7)        - function to list all the autoloaded functions whichfunctions function to list all loaded functions and completion functions
+whichre(7)               - function to augment the command which with regular expressions
+xdldataman(7)            - requires CCP4
+xdlmapman(7)             - requires CCP4
+zipit(7)                 - invokes zipit
+zsh-templates(7)         - Template files for zsh customization
+zsh_cache_cleaner(7)     - function to remove zsh cashes. Do this after updating these distributed functions
+zshf(7)                  - function to cd /Library/init/zsh

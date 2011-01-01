@@ -1,0 +1,145 @@
+#!/bin/zsh -f
+
+# set -x
+
+# function/shell script "composer" for opening html files for editing
+# using Mozilla or Netscape composer
+
+# open Mozilla.app or Netscape.app in composer mode, optionally with 
+# a given file name as an argument.  Uses mozilla.app by default if both
+# it and netscape are present, unless -n flag is issued in which case
+# netscape is then used.
+
+# First, find Mozilla or equivalent.
+ 
+
+
+if [[ -d /Applications/SeaMonkey ]];then
+    seamonkey_path=/Applications/SeaMonkey.app
+elif [[ -d /Applications/Mozzila.app ]];then
+    mozilla_path=/Applications/Mozzila.app
+elif [[  -d /Applications/Netscape.app ]];then
+    netscape_path=/Applications/Netscape.app
+    
+elif [[ -d /Applications/Browsers/SeaMonkey.app ]];then
+    seamonkey_path=/Applications/Browsers/SeaMonkey.app
+elif [[ -d /Applications/Browsers/Mozzila.app ]];then
+    mozilla_path=/Applications/Browsers/Mozzila.app
+elif [[  -d /Applications/Browsers/Netscape.app ]];then
+    netscape_path=/Applications/Browsers/Netscape.app
+
+elif [[ ! -d $netscape_path &&  -x /usr/bin/mdfind ]];then
+    netscape_path=($(mdfind netscape | grep Netscape.app | head -n 1 ))
+elif [[ ! -d $netscape_path && -f /var/db/locate.database ]];then
+    netscape_path=($(command locate Netscape.app | head -n 1 ))
+elif [[ ! -d $seamonkey_path &&  -x /usr/bin/mdfind ]];then
+     seamonkey_path=($(mdfind seamonkey | grep SeaMonkey.app | head -n 1 ))
+elif [[ ! -d $seamonkey_path &&  -f /var/db/locate.database ]];then
+     seamonkey_path=($(command locate SeaMonkey.app | head -n 1 ))
+elif [[ ! -d  $mozilla_path  &&  -x /usr/bin/mdfind ]];then
+    mozilla_path=($(mdfind mozilla | grep Mozilla.app | head -n 1 ))
+elif [[ ! -d  $mozilla_path  &&  -f /var/db/locate.database ]];then
+     mozilla_path=($(command locate Mozilla.app | head -n 1 ))
+
+
+else    
+    print "I cannot find SeaMonkey, Mozilla or Netscape"
+    print "Please run /etc/weekly to generate the locate database"
+    return 1
+fi
+
+ 
+
+
+if [[ $1 == '-n' ||  $1 == '-s' ]];then
+
+    # Add future options in the case statement
+    while getopts ":n" opt; do
+            case $opt in
+                    n ) true ;;
+                    s ) true ;;
+            esac
+    done
+
+    shift $(($OPTIND - 1))
+    
+    if [[ $1 == '-s' ]];then
+        osascript -e "tell app \"Netscape\" to quit"  >/dev/null 2>&1
+        osascript -e "tell app \"mozilla\" to quit"   >/dev/null 2>&1
+        osascript -e "tell app \"SeaMonkey.app\" to quit"   >/dev/null 2>&1
+        print "Editing file $@ using SeaMonkey composer..."
+        fullpath=($seamonkey_path/Contents/MacOS/seamonkey-bin) >/dev/null 2>&1
+        $fullpath -editor file:$PWD/"$@" >/dev/null 2>&1 &
+        return $? 
+    
+    elif [[ $1 == '-n' ]];then
+        osascript -e "tell app \"Netscape\" to quit"  >/dev/null 2>&1
+        osascript -e "tell app \"mozilla\" to quit"   >/dev/null 2>&1
+        osascript -e "tell app \"SeaMonkey.app\" to quit"   >/dev/null 2>&1
+        print "Editing file $@ using Netscape composer..."
+        fullpath=($netscape_path/Contents/MacOS/mozilla-bin) >/dev/null 2>&1
+        $fullpath -editor file:$PWD/"$@" >/dev/null 2>&1 &
+        return $?
+    fi
+    
+    
+    
+else
+
+    if [[ -d $seamonkey_path  && $1 != '-n' ]];then
+    
+        print "Editing file $@ using SeaMonkey composer..."
+        osascript -e "tell app \"Netscape\" to quit"   >/dev/null 2>&1
+        osascript -e "tell app \"mozilla.app\" to quit"   >/dev/null 2>&1
+        osascript -e "tell app \"SeaMonkey.app\" to quit"   >/dev/null 2>&1
+        if [[ -x $seamonkey_path/Contents/MacOS/seamonkey-bin ]];then
+          fullpath=($seamonkey_path/Contents/MacOS/seamonkey-bin) >/dev/null 2>&1
+        elif [[ -x $seamonkey_path/Contents/MacOS/seamonkey ]];then
+          fullpath=($seamonkey_path/Contents/MacOS/seamonkey) >/dev/null 2>&1
+        else
+          print "Unable to locate the SeaMonkey binary.  Try updating the locate database."
+          return 78
+        fi
+        $fullpath -editor file:$PWD/"$@" >/dev/null 2>&1  &
+        return $? 
+
+    
+    elif [[ -d $mozilla_path  && $1 != '-n' ]];then
+    
+        print "Editing file $@ using Mozilla composer..."
+        osascript -e "tell app \"Netscape\" to quit"   >/dev/null 2>&1
+        osascript -e "tell app \"mozilla.app\" to quit"   >/dev/null 2>&1
+        osascript -e "tell app \"SeaMonkey.app\" to quit"   >/dev/null 2>&1
+        if [[ -x $mozilla_path/Contents/MacOS/mozilla-bin ]];then
+          fullpath=($mozilla_path/Contents/MacOS/mozilla-bin) >/dev/null 2>&1
+        elif [[ -x $mozilla_path/Contents/MacOS/mozilla ]];then
+          fullpath=($mozilla_path/Contents/MacOS/mozilla) >/dev/null 2>&1
+        else
+          print "Unable to locate the Mozilla binary.  Try updating the locate database."
+          return 78
+        fi
+        $fullpath -editor file:$PWD/"$@" >/dev/null 2>&1  &
+        return $? 
+        
+    elif [[ -d $netscape_path && $1 != '-n' ]];then
+    
+        print "Editing file $@ using Netscape composer..."
+        osascript -e "tell app \"Netscape\" to quit"
+        osascript -e "tell app \"mozilla.app\" to quit"
+        osascript -e "tell app \"SeaMonkey.app\" to quit"   >/dev/null 2>&1
+        fullpath=($netscape_path/Contents/MacOS/mozilla-bin) >/dev/null 2>&1 
+        $fullpath -editor file:$PWD/"$@" >/dev/null 2>&1  &
+        return $? 
+    
+    else
+    
+        # give up and open with default application
+        print "I cannot find Netscape or Mozilla, so I will open this with the default application..."
+        command open "$@"
+        return $?
+    
+    fi
+fi
+
+ 
+ 

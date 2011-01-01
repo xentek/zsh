@@ -1,0 +1,180 @@
+#!/bin/zsh -f
+
+# eds, when issued from the command prompt in Terminal, iTerm, or xterm,  will cd 
+# into the directory corresponding to the web page displayed in Safari and 
+# will then open the file in whatever HTML editing program you have specified
+# below.       
+
+
+# Define this as you wish:
+
+# HTML_EDITOR='edit'
+
+# HTML_EDITOR='see'
+
+# If my edit function is available, autoload it and use its HTML editor
+# preferences, otherwise default to vim.
+
+if [[ -z $HTML_EDITOR ]];then
+    autoload -U edit
+    which edit 2>/dev/null 1>/dev/null
+    editstatus=$?
+    if [[ $editstatus == 0 ]];then
+        HTML_EDITOR='edit'
+    else
+        HTML_EDITOR='vim'
+    fi
+fi
+
+
+# Define this as your webserver top directory:
+
+
+if [[ -z $PUBLIC_HTML ]];then
+    if [[ -d /Users/$USER/public_html ]];then
+        PUBLIC_HTML=/Users/$USER/public_html
+    else
+        PUBLIC_HTML=/Users/$USER/Sites
+    fi
+fi
+
+##########
+
+# Change this to your domain:
+
+# MY_DOMAIN='chemistry.ucsc.edu'
+
+# This guesses your domain name if you haven't defined MY_DOMAIN 
+
+if  [[ -z $MY_DOMAIN ]];then
+function GetTheDomain {
+osascript << eof
+tell app "Finder"
+    activate
+    tell app "Safari"
+        do javaScript "document.domain" in document 1
+    end tell
+end tell
+
+eof
+       
+}  
+
+MY_DOMAIN="$(GetTheDomain | perl -p -e 's|www.||g' )"
+
+
+
+print ""
+print "\e[1m WARNING:  Improvising with MY_DOMAIN set to $MY_DOMAIN  \e[0m"
+print ""
+print "If this is incorrect, please export your server domain with"
+print "\e[1m export MY_DOMAIN='my.webserver.domain' \e[0m for http://www.my.webserver.domain "
+print ""
+
+
+fi
+
+##########
+
+# set these to your website root, various aliases.  Do not leave unused ones undefined, 
+# unused ones will do no harm.
+
+
+
+
+##############################################################################
+
+function return_focus {
+    if [[ $TERM_PROGRAM == iTerm.app ]]; then
+        /usr/bin/open -a iTerm
+        # Returns focus to iTerm.app
+        #
+    elif [[ $TERM_PROGRAM == Apple_Terminal ]]; then
+        /usr/bin/open -a Terminal
+        # Returns focus to Terminal.app
+        #
+    else
+        /usr/bin/open -a X11
+        # Returns focus to xterm, i.e., X11.app
+                fi
+}
+
+
+function GetTheUrl {
+osascript << eof
+tell app "Finder"
+    activate
+    tell app "Safari"
+        do javaScript "document.URL" in document 1
+    end tell
+end tell
+eof
+
+}
+
+
+output=($(GetTheUrl)  )
+
+print "The URL of the page being displayed in Safari is currently: "
+print $output
+print ""
+
+relfile=($( print $output | perl -p -e "s;http://(www\.)?$MY_DOMAIN/(%7E|%7e|\~)?$USER;$PUBLIC_HTML;g" ))
+
+if [[ -d $relfile ]];then
+    relfile=$relfile/index.html
+fi
+
+reldir=($(dirname $relfile))
+
+
+
+
+#### set -x
+
+if [[ ! -d $reldir ]];then
+	# Try again
+	relfile=($( print $output | perl -p -e "s;http://(www\.)?$MY_DOMAIN;$PUBLIC_HTML;g" ))
+	if [[ $relfile != *.html ]];then 
+		if [[ -d $relfile ]];then
+		    relfile=$relfile/index.html
+			reldir=($(dirname $relfile))
+		fi
+		#reldir=($(dirname $relfile))
+	else
+		relfile=$relfile
+	fi
+	
+	if [[ ! -d $reldir ]];then
+		# Try swapping Sites for public_html
+		PUBLIC_HTML=/Users/$USER/Sites
+		relfile=($( print $output | perl -p -e "s;http://(www\.)?$MY_DOMAIN;$PUBLIC_HTML;g" ))
+		if [[ -d $relfile ]];then
+		    relfile=$relfile/index.html
+		fi
+		reldir=($(dirname $relfile))
+		if [[ -d $relfile ]];then
+    		print "$reldir does not appear to be part of this file-system"
+    		print "$0 now terminating with extreme prejudice."
+    		print ""
+    		return 99
+		fi
+	fi
+fi
+
+#### set +x
+
+
+filename=($(basename $relfile))
+
+cd $reldir
+
+print "Changing directories to $PWD and editing $filename"
+
+$HTML_EDITOR "$filename"
+
+return_focus 
+
+# RE-initialize
+PUBLIC_HTML=""
+MY_DOMAIN=""

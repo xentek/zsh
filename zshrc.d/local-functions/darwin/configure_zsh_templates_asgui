@@ -1,0 +1,254 @@
+#!/bin/zsh -f
+
+# configure_zsh_templates 
+
+#  Created by William Scott on 2007-04-27.
+#  Copyright (c) 2007. All rights reserved.
+
+##############################################################################
+
+version="0.0.1"
+
+##############################################################################
+
+##  emacs or vi keybindings?
+
+function whichkeybindings {
+
+	dialogue_text=( By default, emacs rather than vi keybindings are used. \
+		Do you want to use vi or emacs keybindings\? )
+
+	answer1=$(osa_display_dialog "vi" "emacs" "Change Nothing")
+
+	if [[ "$answer1" == "vi"  ]]; then
+		print "Changing to \e[1mvi keybindings\e[0m."
+		print "Delete the file ~/.zsh/zshvi or run this again to undo this setting."
+		touch ~/.zsh/zshvi
+	elif [[ "$answer1" == "emacs"  ]]; then
+		print "Changing to \e[1memacs keybindings\e[0m."
+		/bin/rm -f ~/.zsh/zshvi
+	else
+		print "Leaving this setting unchanged."
+	fi
+
+}
+
+##############################################################################
+
+function finknowarn {
+
+	dialogue_text=( Do you have fink installed\? )
+
+	answer2=$(osa_display_dialog "No" "Yes")
+
+	if [[ "$answer2" == "No"  ]]; then
+		print "Creating the file \e[1m~/.zsh/finknowarn \e[0mto suppress shell warning dialogue."
+		touch ~/.zsh/finknowarn
+	else
+		print "Leaving this setting unchanged."
+	fi
+
+}
+
+##############################################################################
+
+function uselocalfxn {
+	dialogue_text=( Do you want to use somewhat idiosyncratic functions from \$ZDOT/zshrc.d/functions.local\? )
+
+	answer3=$(osa_display_dialog "No" "Yes" "Change Nothing")
+
+	if [[ "$answer3" == "Yes"  ]]; then
+		print "Creating the file \e[1m~/.zsh/zlocalfxn\e[0m to activate these functions."
+		touch ~/.zsh/zlocalfxn
+	elif [[ "$answer3" == "No"  ]]; then
+		print "Deleting the file \e[1m~/.zsh/zlocalfxn\e[0m to deactivate these functions."
+		/bin/rm -f ~/.zsh/zlocalfxn
+	
+	else
+		print "Leaving this setting unchanged."
+	fi
+	
+}
+
+##############################################################################
+
+function usextalfxn {
+	dialogue_text=( Do you want to use crystallography functions from \$ZDOT/zshrc.d/local-functions/xtal section\? )
+
+	answer4=$(osa_display_dialog "No" "Yes" "Change Nothing")
+
+	if [[ "$answer4" == "Yes"  ]]; then
+		print "Creating the files \e[1m~/.zsh/zxtalfxn\e[0m and \e[1m~/.zsh/use_xtal_env\e[0m to activate these functions."
+		touch ~/.zsh/zxtalfxn
+		touch ~/.zsh/use_xtal_env
+	elif [[ "$answer4" == "No"  ]]; then
+		print "Deleting the file \e[1m~/.zsh/zxtalfxn\e[0m to deactivate these functions."
+		/bin/rm -f ~/.zsh/zxtalfxn  ~/.zsh/use_xtal_env
+	
+	else
+		print "Leaving this setting unchanged."
+	fi
+	
+}
+
+##############################################################################
+
+function user_host_setup {
+	dialogue_text=( Do you want to set up USER and HOST completion \(a good idea\)\? )
+
+	answer5=$(osa_display_dialog "No" "Yes")
+
+	if [[ "$answer5" == "Yes"  ]]; then
+ 		user_setup
+		host_setup		
+	elif [[ "$answer5" == "No"  ]]; then
+		print "When you are ready, issue the commands \e[1muser_setup\e[0m and \e[1mhost_setup\e[0m "
+	else
+		print "Leaving this setting unchanged."
+	fi
+	
+}
+
+##############################################################################
+
+function x11_setup {
+	dialogue_text=( Do you want to customize the behavior of Apple\'s X11\? )
+
+	answer6=$(osa_display_dialog "No" "Yes")
+
+	if [[ "$answer6" == "Yes"  ]]; then
+ 		customize_x11_gui	
+	elif [[ "$answer6" == "No"  ]]; then
+		print "When you are ready, issue the commands \e[1mcustomize_x11_gui\e[0m "
+	else
+		print "Leaving these settings unchanged."
+	fi
+	
+}
+
+##############################################################################
+
+function readmore {
+	dialogue_text=( Do you want to read more about zsh-templates for OS X\? )
+
+	answer7=$(osa_display_dialog "No" "Yes")
+
+	if [[ "$answer7" == "Yes"  ]]; then
+		open http://xanana.ucsc.edu/xtal/wiki/index.php/ZSH_on_OS_X
+	else
+		print "Issue the command \e[1m help_zsh_templates \e[0m for further information."
+	fi
+}
+
+##############################################################################
+##############################################################################
+##############################################################################
+
+mkdir -p ~/.zsh
+
+if [[ $? != 0 ]];then
+	print "\e[1m Cannot create directory ~/.zsh"
+	print "None of this will work!"
+	print "Try (re)moving the file ~/.zsh if present \e[0m "
+	return 1
+fi
+
+##############################################################################
+
+print ""
+print ""
+# print "Keybindings setup"
+whichkeybindings
+print "Answer specified: \e[1m $answer1 \e[0m "
+print ""
+print ""
+
+##############################################################################
+
+sleep 2 ; #clear
+print ""
+print ""
+print "User and Host Setup"
+user_host_setup
+print "Answer specified: \e[1m $answer5 \e[0m "
+print ""
+print ""
+
+##############################################################################
+
+sleep 2 ; #clear
+print ""
+print ""
+print "Ask user if fink is present"
+finknowarn
+print "Answer specified: \e[1m $answer2 \e[0m "
+print ""
+print ""
+
+##############################################################################
+
+sleep 2 ; #clear
+print ""
+print ""
+print "Ask user if idiosyncratic functions should be loaded"
+uselocalfxn
+print "Answer specified: \e[1m $answer3 \e[0m "
+print ""
+print ""
+
+##############################################################################
+
+sleep 2 ; #clear
+print ""
+print ""
+print "Ask user if crystallography functions should be loaded"
+usextalfxn
+print "Answer specified: \e[1m $answer4 \e[0m "
+print ""
+print ""
+
+##############################################################################
+
+sleep 2 ; #clear
+print ""
+print ""
+print "Running the function \e[1m customize_x11_gui \e[0m"
+x11_setup
+print ""
+print ""
+
+##############################################################################
+
+sleep 2 ; #clear
+print ""
+print ""
+# This file keeps the dialogue prompting from happening again
+touch ~/.zsh/configure_zsh_templates
+print "Issue the command \e[1m configure_zsh_templates\e[0m if you need to do this again."
+print ""
+print ""
+ 
+##############################################################################
+
+sleep 2 ; #clear
+print ""
+print ""
+# This opens the web browser to the zsh templates page
+readmore
+print ""
+print ""
+ 
+##############################################################################
+
+sleep 2 ; #clear
+print ""
+print ""
+# switch_prompt 
+print ""
+print "\e[1m +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\e[0m "
+print ""
+print "Issue the command \e[1m switch_prompt \e[0m if you want to change the prompt."
+print ""
+print "\e[1m +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\e[0m "
+print ""
+##############################################################################

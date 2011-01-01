@@ -1,0 +1,6 @@
+#compdef tidyxml tidyx
+autoload -U _files_only
+#local expl
+ _description files  expl 'html files'
+ _files_only "$expl[@]" -g '*.(html|htm|xml|xhtml|xhtm)'
+

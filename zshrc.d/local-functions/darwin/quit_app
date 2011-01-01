@@ -1,0 +1,10 @@
+#!/bin/zsh -f
+
+	osascript -e "tell app \"$1\" to quit"
+
+    if [[ $? != 0 ]];then
+        print "Resorting to hard kill"
+        killall $1
+    fi
+
+

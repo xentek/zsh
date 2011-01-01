@@ -1,0 +1,60 @@
+.TH cns_edit 7 "August 5, 2005" "Mac OS X" "Mac OS X Darwin ZSH customization" 
+.SH NAME
+.B cns_edit
+\- Wrapper function for the cns_edit script distributed with cns to edit cns input files using web browser interface (crystallography)
+
+.SH SYNOPSIS
+cns_edit 
+.B [
+-help
+.B ] [
+-tem 
+.I template-file
+.B ] [ 
+-def 
+.I defaults-file
+.B ] 
+.I input-file-name.inp
+
+.SH DESCRIPTION
+
+.B cns_edit
+enables the user to edit cns.inp and related files with a convenient web-based GUI editor.  
+To get it to work right on OS X, it is best to use one of the Mozilla-family browsers.  
+The nicest option for this is the Camino web browser, as it is Cocoa-based and presents the best
+interface, both in terms of asthetics and functionality.
+
+Camino can be obtained for free at this website:
+.B http://www.caminobrowser.org/
+
+After installing Camino, have each user set a preference as follows:
+        
+.B cd ~/Library/Application\ Support/Camino
+Create, and then edit a file called user.js  and put in it the following line:
+                    
+.B user_pref("browser.download.autoDownload", false);
+
+Doing so will now allow you to choose the directory into which you can save the edited input file.  
+
+The companion 
+.B _cns_edit 
+completion function completes the names of inp, sdb, and def files, 
+and if no inp files are present in the current working directory, or if the flag -tem 
+is given, the user is suppled
+with a menu of template input files present in the cns local installation.
+
+Further suggestions are available here:
+.B http://babyurl.com/i753PW
+
+
+
+.SH SEE ALSO
+Issue the command
+.B cns_web
+for full documentation and to access the GUI interface.  
+
+.SH AUTHOR
+William Scott 
+
+.SH MAINTAINER
+W. G. Scott <wgscott@users.sourceforge.net> 

@@ -1,0 +1,134 @@
+#!/bin/zsh -f
+
+# set -x
+
+# This script will automatically download the USF OS X programs and install them in the directory
+
+
+INSTALLUSFDIR=/usr/local/usf
+
+# (change this to /usr/local/xtal/usf or whatever suits you)
+
+# If you manually download the USF program binaries for OS X and put them in $INSTALLUSFDIR ,
+# this script will take each binary, having the annoying osx_ prefix, and create a link, sans
+# prefix, in /usr/local/bin.  If the file already exists, you will be asked if you want to delete
+# and then replace it.  To force delete and replace, issue -f or -y or --force as the first
+# argument.
+
+# The USF program binaries for OSX can be found here:  http://xray.bmc.uu.se/usf/
+
+
+if [[  $# -gt 1 || $1 == "-h" || $1 == "--help" || $1 == "-help" ]];then
+    print ""
+    print "Usage: $0 [ -f | -h ]"
+    print ""
+    sleep 2
+    print "This script will automatically download the USF OS X programs" 
+    print "and install them in the directory $INSTALLUSFDIR and create symbolic links to executables in /usr/local/bin"
+    print ""
+    print "If you have already manually download the USF program binaries for OS X and put them in $INSTALLUSFDIR,"
+    print "this script will take each binary, having the annoying osx_ prefix, and create a link, sans"
+    print "prefix, in /usr/local/bin.  If the file already exists, you will be asked if you want to delete"
+    print "and then replace it.  To force delete and replace, issue -f or -y or --force as the first"
+    print "argument. The USF program binaries for OSX can be found here:  http://xray.bmc.uu.se/usf/"
+    print""
+    return 42
+fi
+
+
+if [[ ! -d $INSTALLUSFDIR  ]];then
+    print "It does not appear that you have the USF programs.  I will fetch them from the ftp site"
+    print "and will then install them in $INSTALLUSFDIR  for you."
+    print ""
+    print "Hit control-C to abort...."
+    sleep 5
+    print "OK, we will begin the downloads into /tmp  (You can delete these later.)"
+    cd /tmp
+    
+    if [[ -x $(which wget) ]];then   
+        wget ftp://xray.bmc.uu.se/pub/gerard/rave/rave_osx.tar.gz
+        wget ftp://xray.bmc.uu.se/pub/gerard/dejavu/dejavu_osx.tar.gz
+        wget ftp://xray.bmc.uu.se/pub/gerard/sbin/sbin_osx.tar.gz
+        wget ftp://xray.bmc.uu.se/pub/gerard/spasm/spasm_osx.tar.gz
+        wget ftp://xray.bmc.uu.se/pub/gerard/voidoo/voidoo_osx.tar.gz
+        wget ftp://xray.bmc.uu.se/pub/gerard/xutil/xutil_osx.tar.gz
+        wget ftp://xray.bmc.uu.se/pub/gerard/extras/html_manuals/manuals.tar.gz  
+    
+    else
+        print ""
+        print "Using curl -O.  You should consider installing wget."
+        print ""
+        sleep 2
+        curl -O ftp://xray.bmc.uu.se/pub/gerard/rave/rave_osx.tar.gz
+        curl -O  ftp://xray.bmc.uu.se/pub/gerard/dejavu/dejavu_osx.tar.gz
+        curl -O  ftp://xray.bmc.uu.se/pub/gerard/sbin/sbin_osx.tar.gz
+        curl -O  ftp://xray.bmc.uu.se/pub/gerard/spasm/spasm_osx.tar.gz
+        curl -O  ftp://xray.bmc.uu.se/pub/gerard/voidoo/voidoo_osx.tar.gz
+        curl -O  ftp://xray.bmc.uu.se/pub/gerard/xutil/xutil_osx.tar.gz
+        curl -O  ftp://xray.bmc.uu.se/pub/gerard/extras/html_manuals/manuals.tar.gz  
+    fi
+    
+    print ""
+    print "Downloads complete.  Now unpacking and installing into $INSTALLUSFDIR "
+    print ""
+    sudo mkdir -p $INSTALLUSFDIR  
+    sudo mkdir -p /usr/local/bin
+    foreach tarball in /tmp/*_osx.tar.gz
+       sudo cp $tarball  $INSTALLUSFDIR/.
+    end
+       sudo cp manuals.tar.gz  $INSTALLUSFDIR/.
+    cd $INSTALLUSFDIR
+           sudo tar xvfz  manuals.tar.gz
+    foreach tarball in *_osx.tar.gz
+           sudo tar xvfz $tarball
+    end
+    #sudo tar xvfz *.tar.gz
+    sudo rm -f *.tar.gz
+    print ""
+    print "Installation in /usr/local is complete.  Remember to add /usr/local/bin to your \$PATH if it is not there already."
+    print ""  
+    print "We will now create some useful symbolic links so you can run the programs."
+
+fi
+
+# make sure ownership and permissions permit everyone to enjoy this software:
+
+sudo chown -R root:wheel $INSTALLUSFDIR
+sudo chmod -R a+x $INSTALLUSFDIR/*/osx_*
+sudo chmod -R a+x $INSTALLUSFDIR/*
+sudo chmod -R a+x $INSTALLUSFDIR 
+sudo chmod -R a+r $INSTALLUSFDIR
+
+
+
+if [[ $1 == "-f" || $1 == "-y" || $1 == "--force" ]]; then
+    remove=( sudo rm -f )
+else
+    remove=( sudo rm -i )
+fi
+
+
+if [[ -d $INSTALLUSFDIR ]];then
+
+foreach executable in $INSTALLUSFDIR/*/osx_*
+    fullname=$(basename $executable)
+    propername=${fullname/osx_/}
+    if [[ -f /usr/local/bin/$propername ]];then
+        print "/usr/local/bin/$propername already exists.  Remove it?"
+        $remove /usr/local/bin/$propername
+    fi
+    sudo ln -s $executable /usr/local/bin/$propername
+    print ""
+    print "symbolic link from $executable  to  /usr/local/bin/$propername created"
+    print ""
+end
+
+else
+ print "I can't find the $INSTALLUSFDIR directory"
+ return 1
+fi
+
+rehash
+return 0
+
+

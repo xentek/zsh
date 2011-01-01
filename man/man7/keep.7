@@ -1,0 +1,30 @@
+.TH keep 7 "August 5, 2005" "Mac OS X" "Mac OS X Darwin ZSH customization" 
+.SH NAME
+.B keep
+\- function to capture standard output in the global variable kept
+
+.SH DESCRIPTION
+
+The "keeper" function suite originally appeared in several zsh-users
+posts in the fall of 2004.  It was published in summary form in the
+Shell Corner column on UnixReview.com in January 2005 at the URL
+<http://www.unixreview.com/documents/s=9513/ur0501a/ur0501a.htm>
+
+The "keep" function accepts a set of file patterns as the positional
+parameters or a series of lines (expected to represent file names) on
+standard input.  It stores the expansion of those patterns, or the input
+lines, in the global variable $kept, and then displays the result
+formatted in columns, similar to an "ls" listing.  Its alias, also named
+"keep", prevents the file patterns from being expanded when the command
+line is executed; they're expanded in the assignment to $kept instead,
+so that the local settings of nonomatch etc. are applied.   
+
+
+.SH SYNOPSIS
+keep
+
+.SH AUTHOR
+Bart Schaefer
+
+.SH MAINTAINER
+W. G. Scott <wgscott@users.sourceforge.net> 

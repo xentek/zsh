@@ -1,0 +1,87 @@
+#!/bin/zsh -xf
+
+# Start a full-screen enlightenment session but in a nested window.
+
+###############################################################################
+# Do some reality checks:
+
+# No point in using this unless we are on OS X:
+if [[ $(uname) != Darwin ]];then
+	print "This only works for OS X. This does not appear to be OS X."
+	print "Don't use this.  Use the real $0"
+	return 42
+fi
+
+# enlightenment must be present.
+if [[ ! -x $(which enlightenment) ]]; then
+	print "I cannot find the ENLIGHTENMENT window manager."
+	print "Please make sure it is installed properly and in your PATH."
+	return 43
+fi
+
+# The resolution will not be teleported.
+if [[ -n $SSH_TTY ]]; then
+	print "This won't work on a remote display"
+	return 44
+fi
+###############################################################################
+
+
+################ Make a ~/.xinitrc file on the fly ####################
+################ unless one already exists in your home directory #############
+
+if [[ ! -f ~/.xenlightenment ]]; then
+
+cat >| ~/.xenlightenment  << eof
+#!/bin/zsh -f
+# Execute enlightenment. ALWAYS make sure this is at the end of this
+# startup file - and ALWAYS run things before it with an & at the end.
+# For example:
+#   xterm &
+#   kpanel &
+# It is suggested to use Enlightenment's Remember dialog for having apps
+# spawned automatically on login.
+
+# Check for fink
+if [[ -d /sw/bin ]];then
+	source /sw/bin/init.sh &
+fi
+
+# Check for rxvt ( or put your favorite xterminal here)
+
+alias rxvt="" ; unalias rxvt
+
+if [[ -x \$(which rxvt) ]];then
+	command rxvt -T "\$PWD" -bg black -fg white -cr grey -ls -geometry 80X25+100+50 -colorBD yellow -troughColor grey -font 9x15 -sr -scrollColor RoyalBlue3 -internalBorder 5 & 
+	command rxvt -T "\$PWD" -bg black -fg white -cr grey -ls -geometry 80X25+125+75 -colorBD yellow -troughColor grey -font 9x15 -sr -scrollColor RoyalBlue3 -internalBorder 5 & 
+else
+	command xterm -geometry 80X25+100+50 -bg black -fg white -sb -sl 1000 -rightbar  -T "\$PWD" &
+	command xterm -geometry 80X25+125+75 -bg black -fg white -sb -sl 1000 -rightbar  -T "\$PWD" &
+fi
+
+
+exec enlightenment
+
+
+eof
+
+fi
+###############################################################################
+
+
+# Find the resolution of the monitor:
+res_array=($(system_profiler -detailLevel mini | grep Resolution | awk '{print $2 "  "  $4}'))
+ 
+# Shave off 100 or 200 pixels in each dimension
+adj_horiz=$((res_array[1]-200))
+adj_vert=$((res_array[2]-100))
+
+ 
+xinit ~/.xenlightenment --  Xnest :9$$[4] -name "ENLIGHTENMENT nested session (initiated in $PWD on $HOST)" \
+                      -geometry ${adj_horiz}x${adj_vert}+100+0  2>| /dev/null &
+   
+ 
+  
+
+
+ 

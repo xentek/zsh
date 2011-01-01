@@ -1,0 +1,64 @@
+.\"
+.TH "add_user" 7 "August 4, 2005" "Mac OS X" "Mac OS X Darwin ZSH customization" 
+.SH NAME
+.B add_user
+\- Add a user to the Directory Service database and create the user's account
+
+.SH SYNOPSIS
+
+.B add_user username fullname uid account_type
+
+where 
+
+.B username 
+is a one-word short username that becomes the username of the account
+
+.B fullname
+can be a multi-word full name such as
+"Joseph P. Docus"
+provided the double-quotes are present.  
+
+.B uid 
+is an (unused) numerical user id
+integer (Mac OS X starts numbering users consecutively from 501 but any larger integers
+may be used)
+
+.B account_type
+must be either "staff" or "admin". 
+
+All four arguments are compulsory 
+and must be
+supplied in the order given above.
+
+.SH DESCRIPTION  
+
+.B add_user
+Consider using the System Preferences > Accounts preference pane to do this instead.
+
+The 
+.B add_user
+command must be invoked by an admin user.
+
+Takes the user's username (i.e., account name, short name), fullname, uid, and staff|admin
+and creates:
+
+a new user in NetInfo passwd
+
+a new /Users/username home directory
+
+
+.SH SEE ALSO
+.BR add_user(7),
+.BR addgroup(7),
+.BR delete_user(7),
+.BR delete_group(7),
+.BR remove_user_from_group(7),
+.BR adduser2group(7)
+                                
+
+.SH AUTHOR
+Obtained and modified from a bash shell script available at
+http://www.osxfaq.com/tips/unix-tricks/week91/friday.ws
+
+.SH MAINTAINER
+W. G. Scott <wgscott@users.sourceforge.net>

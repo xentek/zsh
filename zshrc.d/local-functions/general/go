@@ -1,0 +1,2 @@
+#!/bin/zsh -f 
+command osascript -e 'open location "$1"'

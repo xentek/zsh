@@ -1,0 +1,81 @@
+#!/bin/zsh -f
+
+if [[ $(uname) != Darwin ]]; then
+	# Don't try this if we are not using OS X
+	print "\e[1m  This only works on Mac OS X. \e[0m "
+	return 1
+fi
+
+#  function osa_display_dialog takes up to three arguments (button item options)
+#  supplied after invoking the function.
+
+
+function osa_display_dialog {
+
+#  Display times out according to the variable $timeout in seconds (defaults to 15 sec).
+
+    if [[ -z $timeout ]];then
+        timeout='15'
+    fi
+
+# The variable $dialogue_text is an array that contains the text displayed in the window.
+
+    if [[ -z $dialogue_text ]];then
+        dialogue_text=( Choose a button: )
+    fi
+    
+    
+    if (( $# > 3 || $# == 0 )); then
+        print "Usage:  list up to 3 button names, with the last as default choice (eg: No 42 OK )"
+        return 11
+    fi
+    
+    # Thanks to Gary Kerbaugh for the next five lines
+    button_items="" 
+    for argument in "$@"; do 
+       button_items=${button_items}\"${argument}'", ' 
+    done 
+    button_items=${button_items%, } 
+  
+    if (( $# == 3 ));then
+        def_but="$3"
+    elif (( $# == 2 ));then
+        def_but="$2"
+    else
+        def_but="$1"    
+    fi
+    
+osascript << eof
+    tell app "Finder"
+    activate
+    set r to display dialog "$dialogue_text" buttons { $button_items } with icon caution giving up after $timeout default button "$def_but"
+    set ButtonChoice to button returned of r
+    end tell
+eof
+}
+
+timeout='45'
+
+dialogue_text=( To configure the zsh templates, you can choose to use a series of
+	small dialog boxes like this one \(better for smaller displays\) or a single
+	larger configuration pane \(more suited to larger displays\). You will be asked
+	a series of questions, and can choose to change things or leave them as they are.
+	You can undo any changes later by issuing the command:  configure_zsh_templates  )
+
+
+
+option_array=($( osa_display_dialog  "do this later" "small dialog boxes"  "one large pane" ))
+
+
+if [[ "$option_array" ==  "one large pane" ]]; then
+	autoload -U configure_zsh_templates_pashua
+	configure_zsh_templates_pashua 
+elif [[ "$option_array" ==  "small dialog boxes" ]]; then
+	autoload -U configure_zsh_templates_asgui
+	configure_zsh_templates_asgui 
+else  
+	# Do nothing
+	print "Issue the command \e[1m configure_zsh_templates \e[0m to restart this process."
+fi
+
+

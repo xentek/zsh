@@ -1,0 +1,10 @@
+#compdef fink_web finkweb
+
+# everything available
+
+all_avail_finkpkgs=($(cat ~/.zsh/cache/uninst_finkpkgs \
+                         ~/.zsh/cache/inst_finkpkgs  2>/dev/null \
+                         | command sort -u ))                                             
+
+
+_wanted packages expl 'packages' compadd "$all_avail_finkpkgs[@]"

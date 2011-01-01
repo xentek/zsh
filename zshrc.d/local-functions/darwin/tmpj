@@ -1,0 +1,33 @@
+#!/bin/zsh -f
+
+# Function to open a named TextMate project file given just the file name prefix.  mdfind does the hunting for you.
+
+
+tmprojarray=( $( mdfind "kMDItemKind == 'TextMate project'" ))
+
+if [[ $# != 1 || "$1" == "-h" || "$1" == "-help" || "$1" == "--help" ]];then
+	print ""
+	print "\e[1mUsage:\e[0m $0 \e[1mprojectname\e[0m"
+	print ""
+	print "where \e[1mprojectname\e[0m is any of the following:"
+	print ""
+	print "\e[1m$(basename $tmprojarray:r)\e[0m"
+	print ""
+	return 1
+fi
+
+foreach arrayitem in $tmprojarray
+
+	directorypath="$(dirname $arrayitem)"
+	filename="$(basename $arrayitem)"
+	
+	if [[ "$1" == "$filename:r"  && "tmproj" == "$filename:e"  ]]; then
+
+		print "Opening \e[1m$arrayitem:r \e[0mwith TextMate.app"
+		command open "$arrayitem"
+	elif [[  "$1" == "-l" || "$1" == "-list" || "$1" == "--list" ]]; then
+		
+		print "$filename:r"
+		
+	fi
+end

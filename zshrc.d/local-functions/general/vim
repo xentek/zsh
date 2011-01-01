@@ -1,0 +1,160 @@
+#!/bin/zsh -f
+# 
+# Function to invoke sudo vim with a .vimrc file if it is needed to edit a protected file
+#
+# set -x  # uncomment to debug
+
+version="2.0.1"
+
+
+###############################################################################
+function resetter {
+
+	# re-initialize everything:
+		unset i
+		binplistfile=""
+		otherfile=""
+		myfile=""
+		myplistfilearray=()
+		otherplistfilearray=()
+		myfilearray=()
+		otherfilearray=()
+		optionarray=()
+		LOCALVIMRC=()
+}
+
+function sudowarn {
+	if [[ ! -f ~/.zsh/vimhushsudo ]]; then	
+		print "\e[1m "
+		print "        Using \e[0m sudo vim \e[1m to edit file(s). "
+		print "\e[0m "
+		sleep 1  # Pause 1 second  to give the user time to read this.
+	fi
+}
+
+function binconvertwarn {
+	if [[ ! -f ~/.zsh/vimhushplist ]]; then	
+		print "\e[1m "
+		print "        Editing a binary plist file by temporarily converting it to XML. "
+		print "\e[0m "
+		sleep 1  # Pause 1 second  to give the user time to read this.
+	fi
+}
+
+###############################################################################
+###############################################################################
+
+
+
+resetter
+
+# See if there is a special vimrc file to use
+
+if [[ -z $LOCALVIMRC ]];then
+	if [[ -f ~/.vimrc_save ]]; then
+    	LOCALVIMRC=( -u ~/.vimrc_save )
+	elif [[ -f ~/.vimrc ]]; then
+		LOCALVIMRC=( -u ~/.vimrc )
+	else
+		LOCALVIMRC=()
+	fi
+fi
+
+###############################################################################
+
+# If no arguments are given, just start vim. If your $PWD is not your own,
+# this starts "sudo vim" and pauses for two seconds to permit the user to 
+# ponder the significance and ramifications of this development.
+
+if [[ $# == 0 ]];then
+	if [[ -O $PWD ]];then
+		command vim "$@"
+	else 
+		print "starting with \e[1m sudo vim \e[0m "
+		sleep 2
+		sudo vim "$@"
+	fi
+	return 0
+fi
+
+LIMIT=$# 
+for ((i = 1; i <= $LIMIT; i++ )) do
+	eval file="\$$i"
+	      # Test existence, ownership and binary-plistness of each file:		
+	if [[ -e $file && $file:e == plist ]];then
+		file_type=$(command file -b $file | awk '{print $2}' )
+		if [[ ($file_type == data || $file_type == binary) &&   ! -O $file ]];then
+			# This is a binary plist file I don't own
+			binplistfile="true"
+			otherfile="true"
+			otherplistfilearray+=( $file )
+		elif [[ ($file_type == data || $file_type == binary) && -O $file ]];then
+			# This is a binary plist file I do own
+			binplistfile="true"
+		 	myfile="true"
+			myplistfilearray+=( $file )				
+		elif [[ $file_type != data &&   ! -O $file ]];then
+			# This is an xml plist file I don't own
+			# binplistfile="false"
+			otherfile="true"
+			otherfilearray+=( $file )
+		elif [[ $file_type != data &&  -O $file ]];then
+			 # This is an xml plist file I do own
+			# binplistfile="false"
+			myfile="true"
+			 myfilearray+=( $file )
+		else
+			: # I think there are no other possibilities
+		fi		
+	elif [[ -e $file && ! -O $file ]]; then
+		# The file exists and someone else owns this file
+		# binplistfile="false"
+		otherfile="true"
+		otherfilearray+=( $file )
+	elif [[ -e $file &&   -O $file ]]; then
+		# The file exists and I own this file
+		# binplistfile="false"
+		myfile="true"
+		myfilearray+=( $file )
+	else 
+		# File does not exist, or an option is given
+		myfile="true"
+		optionarray+=( $file )
+	fi
+done
+
+###############################################################################
+
+
+# Use sudo vim to edit files that I do not own
+if [[ $otherfile == "true" ]]; then
+	sudowarn
+	if [[ $binplistfile == "true" ]]; then
+		binconvertwarn
+		sudo plutil -convert xml1 		$otherplistfilearray
+		sudo vim 	$LOCALVIMRC 			$optionarray		$otherplistfilearray
+		sudo plutil -convert binary1 	$otherplistfilearray
+	else
+		sudo vim 	$LOCALVIMRC 			$optionarray  		$otherfilearray	
+	fi
+fi
+
+
+# Use command vim to edit files that I do own
+if [[ $myfile == "true" ]]; then
+	if [[ $binplistfile == "true" ]]; then
+		binconvertwarn
+		plutil -convert xml1 	$myplistfilearray
+		command vim		$LOCALVIMRC 		$optionarray		$myplistfilearray
+		plutil -convert binary1 $myplistfilearray
+	else
+		command vim		$LOCALVIMRC 		$optionarray  		$myfilearray	
+	fi
+fi
+
+
+resetter    
+    
+    
+    
+    

@@ -1,0 +1,99 @@
+#!/bin/zsh -fx
+
+# Function to permit the user to switch the prompt easily.
+
+# Find the possible options from the themes provided:
+                         
+prompt_theme_options=( $fpath/prompt_*(N:t) )
+
+################################################################################
+# function ChoosePromptTheme allows picking from filtered list of prompt themes
+# returns name of chosen theme as a string
+
+function ChoosePromptTheme {
+#
+# Change this first line for particular filtering needs:
+#
+# =========>
+#
+
+#	filelist=($prompt_theme_options)
+	filelist=( ${(o)${prompt_theme_options#prompt_}%_setup} )
+
+	item_list="" 
+
+	for item in "${filelist[@]}" 
+	do 
+		item_list="$item_list""\"${item}\"," 
+	done 
+
+	function filepicker {
+		osascript << eof 
+			tell app "Finder" 
+				activate 
+				choose from list {${item_list%,}} with prompt "Choose a Prompt Theme: " 
+			end tell
+eof
+	} 
+
+	SelectedPrompt=$(filepicker) 
+
+	if [[ $SelectedPrompt == 'false' ]]; then
+		return 0
+	fi
+
+	if [[ -f $ZDOT/zshrc.d/prompt ]]; then
+	    command cp $ZDOT/zshrc.d/prompt ~/.zsh/zshprompt
+    elif [[ -f $ZDOT_TEMPLATE/zshrc.d/prompt ]]; then
+	    command cp $ZDOT_TEMPLATE/zshrc.d/prompt ~/.zsh/zshprompt
+    else
+        print "Cannot find a template to make ~/.zsh/zshprompt"
+        print "You will have to do this manually."
+    fi
+    
+	perl -pi -e "s|simple|$SelectedPrompt|g" ~/.zsh/zshprompt
+	prompt ResetAll 
+	
+	source ~/.zsh/zshprompt
+
+  }
+
+################################################################################
+
+
+# run the function:
+
+print "Some distributed prompt themes may not work properly without additional fonts."
+
+ChoosePromptTheme
+
+    if [[ $TERM_PROGRAM == iTerm.app ]]; then
+        /usr/bin/open -a iTerm   
+        # Returns focus to iTerm.app
+        #
+    elif [[ $TERM_PROGRAM == Apple_Terminal ]]; then
+        /usr/bin/open -a Terminal    
+        # Returns focus to Terminal.app
+        #
+    else
+        /usr/bin/open -a X11  
+        # Returns focus to xterm, i.e., X11.app
+    fi
+
+typeset -U fpath
+
+
+print "We will now issue the command \e[1m prompt_${SelectedPrompt}_help \e[0m for you to see optional arguments for further customization."
+print ""
+sleep 1
+prompt_${SelectedPrompt}_help 2>/dev/null
+if [[ $? != 0 ]]; then
+	print "\e[1m Prompt help apparently not available for this prompt. \e[0m" 
+fi
+print ""
+sleep 3
+print ""
+print "Prompt themes that accept optional arguments that can be customized by editing the file"
+print " \e[1m    ~/.zsh/zshprompt   \e[0m ."
+print ""
+

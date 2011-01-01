@@ -1,0 +1,103 @@
+README.functions
+Very brief descriptions of each of the functions in $ZDOT_TEMPLATE/local-functions
+
+_cdd                            command completion for cdd function (local)
+_cns_edit                       command completion for cns_edit function (crystallography)
+_coot                           command completion for coot function (crystallography)
+_defaults                       command completion for Darwin's defaults command
+_edit                           command completion for edit function (local)
+_files_only                     command completion to complete with files but not directories
+_fink                           command completion for the various fink commands
+_get_running_apps               completion helper function for quit
+_hdiutil                        command completion for Darwin's hdiutil command
+_mac_applications               helper function required for _open completion
+_mac_files_for_application      helper function required for _open completion
+_mtzsuffix                      command completion for mtz files (crystallography)
+_open                           command completion for open function (local) and Darwin's open command
+_pdbsuffix                      command completion for pdb files (crystallography)
+_pdfsuffix                      command completion for pdf files
+_pymol                          command completions for pymol function (crystallography)
+_quit                           command completion for quit function
+_retrieve_mac_apps              helper function required for _open completion
+_sca2mtz                        command completion for sca2mtz function (crystallography)
+_switch_users                   command completion for switch_users function (local)
+_tidy                           command completion for tidy (lobotomized version of original _tidy completion)
+acro                            function to open Adobe Acrobat Reader
+acrobat                         function to open Adobe Acrobat Reader
+canonicalize_pdb                function to put nucleic acid pdb files in canonical format (crystallography)
+cat                             function to display named command in iterm tab while command is running
+ccp4help                        function to open browser to named ccp4 document (eg: ccp4help mlphare)  (crystallography)
+cdd                             function to change directory simultaneously in terminal and frontmost finder window
+cdf                             function to change directory to what is currently displayed in frontmost finder window
+checkmail                       function to check for new mail using Apple's Mail.app
+chpwd                           function required to update Terminal.app, xterm, and iTerm.app title bar and iTerm tab
+cns                             function to run the crystallography and NMR program cns (crystallography)
+cns_edit                        function to edit cns files using web browser interface (crystallography)
+comp_appgetter                  helper function for open function and command
+coot                            function to run coot, allowing files to be added as arguments without flags (crystallography)
+cpath                           function to copy the $PWD into the copy/paste buffer                         
+cpos                            function to copy the directory of the frontmost Finder window into the copy/paste buffer
+customize_x11                   function to help user tweak the behavior of X11
+cvs_nov12_2004_distributed_open_completion        The zsh CVS version of _open (a subset of the _open completion here)
+dirdump                         helper function to create a directory stack for local function dirstack 
+dirstack                        function to print out a directory stack list shared between terminal sessions
+dusize                          function to get filesizes with du and sum them in awk
+edit                            function to edit pretty much any file type with appropriate application
+enable_faster_open              function to enable faster "open -a" completions by establishing a cache before the first call to _open
+fdc                             function to change the frontmost Finder window to the $PWD on the command line
+finder_update                   function to keep the Finder up to date
+fink                            function to display named command in iterm tab while command is running
+finkupdate                      shortcut for fink selfupdate; fink update-all
+fix_namot                       function to fix the buggy pdb files output by namot (nucleic acid modelling program)
+ftp                             function to display named command in iterm tab while command is running
+getpdb                          function to download PDB file from database using assession code
+gdirs                           gui wrapper (also an aliased command) for dirstack function
+_guidirs                         function wrapped by gdirs (use gdirs to call it)
+ghist                           helper function for command gdirs, which displays a gui stack listing of directories to cd to.
+hydra                           helper function to edit; function to open SubEthaEdit or other named OS X editor
+joinpdf                         function to catenate pdf files, produced merged.pdf as output.
+killit                          function to kill a named process
+ldot                            function to list only dot files in a directory
+less                            function to display named command in iterm tab while command is running
+ls                              function to enhance ls and display ls in the iTerm tab
+lsm                             function to enhance ls and display ls in the iTerm tab
+lt                              function defined as command ls -lhFt "$@"
+MacRm                           Gary Kerbaugh's rmm script made into a function (rm redirected to the Apple Trash can)
+mailit                          function to use the perl mail drop in replacement to send mail
+man                             function to display named command in iterm tab while command is running
+more                            function to display named command in iterm tab while command is running; less is more
+mos2fobs                        function to process mosflm mtz file in ccp4 scala, producing Fobs in mtz and cns formats (crystallography)
+mosflm                          function to run ccp4's mosflm and display named process in iTerm tab (crystallography)            
+my_prefs_edit                   helper function for local edit and hydra functions; assists in setting default apps
+nonasciiedit                    helper function for local edit function
+ntab                            function to open a new tab and cd to the $PWD of the current iTerm session
+ntrm                            function to open a new iTerm window and cd to the $PWD of the current iTerm session
+ono                             function to start O and display the process in the iTerm tab (crystallography)
+open                            function to enhance Darwin's "open" command.  Adds functionality as a superset of open.
+open-x11                        function that replaces Apple's open-x11 with one that works better
+overlay                         function to overlay pdf files (made for crystallographic Patterson maps but may be useful)
+pbcp                            function to copy the output of a command to the clipboard and to stdout
+pdb_contents                    function to give some pdb file statistics (crystallography -- requires ccp4)
+posd                            function to return the directory path corresponding to the frontmost Finder window                    
+posfind                         function to search the directory frontmost in the Finder
+posgrep                         function to grep the directory frontmost in the Finder
+pymol                           function to run pymol and display process in an iTerm tab (crystallography)
+quit                            function to quit the named application (eg:  quit Microsoft\ Word )
+reader                          function to start Adobe Acrobat Reader and open named pdf (eg: reader foo.pdf)
+rmm                             Gary Kerbaugh's rmm script made into a function (rm redirected to the Apple Trash can)
+rwcontents                      function to give some pdb file statistics (crystallography -- requires ccp4)
+sca2mtz                         function to process hklview sca files to mtz and cns Fobs (crystallography)
+screen                          function to run Darwin's screen command and put "screen $1" in the iTerm tab
+scrollspeed                     function to reset mouse scrollspeed (0 slowest to 7 fastest)
+settab                          function to update iTerm.app tab to current $PWD after cd
+settitle                        function to update xterm, Terminal.app or iTerm.app title bar to current $PWD after cd
+sftp                            function to display named process in iTerm tab
+ssh                             function to display named process in iTerm tab
+sudo_open                       function to start an application as a root user
+switch_users                    function to do fast user switching from the command line (eg: switch_users nixon )
+switch_prompt                   function to change prompt theme with interactive GUI menu
+vi                              function to enable vi(m) to edit files using sudo vi(m) if required
+vim                             function to enable vi(m) to edit files using sudo vi(m) if required
+whichfunctions			function to list all loaded functions and completion functions
+zsh_cache_cleaner               function to remove zsh cashes.  Do this after updating these distributed functions
+zshf                            function to cd $ZDOT

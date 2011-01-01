@@ -1,0 +1,2 @@
+#!/bin/zsh -f 
+command history 1 | grep -i "${1}" | grep -v "[hp ]grep"

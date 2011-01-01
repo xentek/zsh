@@ -1,0 +1,118 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Mac OS X (vers 1st December 2004), see www.w3.org" />
+<meta http-equiv="Content-Type" content=
+"text/html; charset=us-ascii" />
+<title>Manual Page for open-x11</title>
+
+<style type="text/css">
+/*<![CDATA[*/
+<!--.red {color: #CC0000}-->
+/*]]>*/
+</style>
+
+<style type="text/css">
+/*<![CDATA[*/
+<!--.hed {color: #000000; font-weight: bold; font-size: larger;}-->
+/*]]>*/
+</style>
+</head>
+<body>
+<pre>
+ <a href=
+"http://sage.ucsc.edu/Library/init/zsh/man/html/open-x11.html">open-x11(7)</a>            Mac OS X Darwin ZSH customization           <a href="http://sage.ucsc.edu/Library/init/zsh/man/html/open-x11.html">open-x11(7)</a>
+
+
+
+<span class="hed">NAME</span>
+       <span class=
+"red">open-x11</span>  - function that replaces Apple's open-x11 with one that works
+       better
+
+
+<span class="hed">SYNOPSIS</span>
+       open-x11 <u>program</u> <span class=
+"red">[</span> args <span class="red">]</span>
+
+
+<span class="hed">DESCRIPTION</span>
+       The <span class=
+"red">open-x11</span> command runs a program within the environment  of  the  X-
+       server  running  in  the current user's session. In this augmented ver-
+       sion, the function first opens the X11.app application if it  finds  it
+       is  not  already  running.  It then correctly assigns the <span class="red">DISPLAY</span> vari-
+       able, permitting <span class="red">Fast</span> <span class=
+"red">User</span> <span class="red">Switching</span> <span class=
+"red">compatibility</span> when hosting several
+       simultaneous  X11  users.   If  fink  is  present,  it detects that and
+       sources the /sw/bin/init.sh file, setting all of the required  environ-
+       ment variables.
+
+
+<span class="hed">USAGE</span>
+       The <u>program</u> can be any X11-dependent executable in the <span class="red">PATH,</span> or you can
+       provide the entire path.  Unlike the Apple  version,  this  version  of
+       <span class=
+"red">open-x11</span> permits you to give arguments to the <u>program</u> in the usual man-
+       ner.  Only one executable can be launched per invokation of <span class="red">open-x11.</span>
+
+
+<span class="hed">EXAMPLES</span>
+       <span class="red">open-x11</span> <span class=
+"red">xeyes</span> runs the 'xeyes' program so that it is able  to  connect
+       to the current X server.
+
+       <span class="red">open-x11</span> <span class=
+"red">rxvt</span> <span class="red">-bg</span> <span class=
+"red">black</span> <span class="red">-fg</span> <span class=
+"red">white</span> <span class="red">-cr</span> <span class=
+"red">grey</span> <span class="red">-ls</span> <span class=
+"red">-geometry</span> <span class="red">80X25</span> <span class=
+"red">-colorBD</span>
+       <span class="red">yellow</span> <span class=
+"red">-troughColor</span> <span class=
+"red">grey</span> <span class="red">-font</span> <span class=
+"red">9x15</span> <span class="red">-sr</span> <span class=
+"red">-scrollColor</span> <span class=
+"red">RoyalBlue3</span> <span class="red">-inter-</span>
+       <span class="red">nalBorder</span>  <span class=
+"red">5</span>  <span class=
+"red">&amp;</span> is an example of a standard unix command that the Apple
+       version seems incapable of coping with.
+
+
+<span class="hed">UNSOLICITED ADVICE</span>
+       If you set up your environment correctly,  as  is  done  with  zsh-tem-
+       plates,  you  can  launch  any X11-based executable in the standard way
+       without having to use <span class=
+"red">open-X11.</span>  The function  <span class=
+"red">customize_x11</span>  will  aid
+       you in doing this, but all you really need to do is put X11.app in your
+       Accounts login items.
+
+
+<span class="hed">HISTORY</span>
+       The <span class=
+"red">open-x11</span> shell script first appeared in Mac OS X 10.3.   I  discov-
+       ered  it  didn't  work  right, and that it did a bad job of setting the
+       <span class=
+"red">DISPLAY</span> variable and accepting arguments, so I rewrote it.
+
+
+<span class="hed">AUTHOR</span>
+       William Scott
+
+
+<span class="hed">MAINTAINER</span>
+       W. G. Scott <a href=
+"mailto:wgscott@users.sourceforge.net">wgscott@users.sourceforge.net</a>
+
+
+
+Mac OS X                        August 5, 2005                     <a href="http://sage.ucsc.edu/Library/init/zsh/man/html/open-x11.html">open-x11(7)</a>
+</pre>
+</body>
+</html>

@@ -1,0 +1,6 @@
+#!/bin/zsh -f 
+
+# llock: List all locked files in subdirectories of the argument
+
+command find $* -exec GetFileInfo {} \; | command sed -n -e '/file/{h;}' -e '/attribute.*L/{g;p;}'
+

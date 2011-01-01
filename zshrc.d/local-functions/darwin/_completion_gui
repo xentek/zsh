@@ -1,0 +1,29 @@
+#autoload
+
+
+
+local final_comp_list guiconf pp cn guiconf_applist conf
+
+if [[ -n "$words[$CURRENT]" ]]; then
+	final_comp_list=( ${(M)comp_list:#(#i)"$words[$CURRENT]"*} ${(M)comp_list:#(#i)* "$words[$CURRENT]"*} )
+	if [[ -z "$final_comp_list" ]]; then
+		final_comp_list=( $comp_list )
+	fi
+else
+	final_comp_list=( $comp_list )
+fi
+
+guiconf=( *.encoding=utf8 *.transparency=0.95 *.windowtitle=$title \
+	tx.type=text tx.text='Press down arrow key or type in text.  Press Esc key to exit.' \
+	pp.type=combobox pp.label=$label pp.width=400 \
+	pp.default=$final_comp_list[1] cn.type=cancelbutton )
+
+guiconf_applist=$( printf '%s\n' $guiconf pp.option=$final_comp_list )
+conf=${guiconf_applist//_SPACE_/ }
+pashua_run $conf
+
+if [[ $cn == '1' ]]; then
+	return 0
+else
+	compadd -U "$pp"
+fi

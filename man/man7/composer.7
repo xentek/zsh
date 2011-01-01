@@ -1,0 +1,36 @@
+.\"
+.TH "composer" 7 "March 19, 2005" "Mac OS X" "Mac OS X Darwin ZSH customization" 
+.SH NAME
+.B composer
+\- opens Mozilla Composer or Netscape Composer (a free WYSIWYG HTML editor)
+
+.SH SYNOPSIS
+
+composer 
+.B [
+-n
+.B ]  [
+foo.html
+.B ]
+
+.SH DESCRIPTION
+
+.B composer
+is a function
+for opening html files for editing
+using Mozilla or Netscape composer
+The command 
+.B composer
+will
+open Mozilla.app or Netscape.app in composer mode, optionally with 
+a given file name as an argument.  Uses mozilla.app by default if both
+it and netscape are present, unless the
+.B -n 
+flag is issued in which case
+netscape is then used.
+
+.SH AUTHOR
+William Scott  
+
+.SH MAINTAINER
+W. G. Scott <wgscott@users.sourceforge.net>

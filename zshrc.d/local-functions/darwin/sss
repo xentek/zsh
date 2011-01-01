@@ -1,0 +1,7 @@
+#!/bin/zsh -f
+
+# function to start the screensaver (and thereby lock the screen if you have set this up)
+
+open /System/Library/Frameworks/Screensaver.framework/Versions/A/Resources/ScreenSaverEngine.app "$@"
+return $?
+

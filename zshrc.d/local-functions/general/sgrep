@@ -1,0 +1,6 @@
+#!/bin/zsh -f 
+
+# sgrep: grep the output of set
+set | grep -i --binary-files=text "$1"
+
+

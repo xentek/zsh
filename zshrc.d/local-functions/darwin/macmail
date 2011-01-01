@@ -1,0 +1,22 @@
+#!/bin/zsh -f
+
+# function to run macmail.pl, an OSX mail drop-in replacement for
+# the unix mail command.  You can define the following alias in your
+# aliases file if you want true drop-in replacement:
+
+# alias mail=macmail
+
+# Author of macmail.pl: Nathaniel Nystrom <nystrom@cs.cornell.edu>
+# His software and this wrapper function is in the public domain.
+
+if [[ -x $ZDOT/zshrc.d/local-functions/etc/macmail.pl ]];then
+    $ZDOT/zshrc.d/local-functions/etc/macmail.pl "$@"
+elif [[ -x $ZDOT_TEMPLATE/zshrc.d/local-functions/etc/macmail.pl ]];then
+    $ZDOT_TEMPLATE/zshrc.d/local-functions/etc/macmail.pl "$@"
+else
+    print "Unable to locate macmail.pl perl script"
+    print "The file macmail.pl must be in $ZDOT/zshrc.d/local-functions/etc and"
+    print "it must be made executable for this to work."
+fi
+
+

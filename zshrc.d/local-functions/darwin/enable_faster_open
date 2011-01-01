@@ -1,0 +1,125 @@
+#!/bin/zsh -f
+
+# The _open completion function in 10.4 should work very quickly.  If it doesn't, this
+# may be due to indexing being turned off for the root partition.  If we are running 10.4
+# check to see if indexing is disabled.  If it is disabled, turn it on.
+
+if [[ $(whereis mdfind) == /usr/bin/mdfind ]];then
+  if [[ ! -f /Library/LaunchAgents/zsh.open.completion.plist ]]; then
+    print ""
+    print "To help speed open completions, I've created a launchd item that initializes"
+    print "indexing of the applications in the background.  It appears that it has not been"
+    print "installed into /Library/LaunchAgents/zsh.open.completion.plist "
+    print -n "Shall I install this for you now? [y]: "
+            read -t 10 -A answerl
+            if [[ -z $answerl || $answerl[1] == (y|Y) ]]; then
+                        print "Installing and activating the launchd item ...."
+                        
+                        if [[ -f $ZDOT_TEMPLATE/../../LaunchAgents/zsh.open.completion.plist ]];then
+                            sudo cp $ZDOT_TEMPLATE/../../LaunchAgents/zsh.open.completion.plist /Library/LaunchAgents/.
+                        else
+                            cd /tmp
+                            curl -O http://xanana.ucsc.edu/Library/LaunchAgents/zsh.open.completion.plist
+                            if [[ $? == 0 ]];then
+                               sudo cp /tmp/zsh.open.completion.plist /Library/LaunchAgents/.
+                            else
+                                print "unable to download http://xanana.ucsc.edu/Library/LaunchAgents/zsh.open.completion.plist "
+                                print "please find and install the zsh.open.completion.plist file manually"
+                            fi
+
+                        fi
+                                                    
+                        if [[ -f /Library/LaunchAgents/zsh.open.completion.plist ]]; then
+                            launchctl load  /Library/LaunchAgents/zsh.open.completion.plist
+                        else
+                            print "The file  /Library/LaunchAgents/zsh.open.completion.plist is absent."
+                        fi
+            fi
+  fi
+
+    if [[ ! -f "${ZDOT}/zshrc.d/local-functions/etc/faster_open.zsh" ]]; then
+        print ""
+        print "Please edit the file /Library/LaunchAgents/zsh.open.completion.plist to"
+        print "reflect the location of \$ZDOT"
+    fi
+
+    print ""
+    print "To check whether the root directory is being indexed, we need to issue the"
+    print "following command:  sudo mdutil -i /   which I will do now."
+    print ""
+    
+    if [[ $(sudo mdutil -s / | grep Disabled | awk '{print $3}' ) == Disabled ]];then
+        print ""
+        print "The root partition is not being indexed."
+        print -n "Shall I turn indexing on for you now? [y]: "
+            read -t 10 -A answerq
+            if [[ -z $answerq || $answerq[1] == (y|Y) ]]; then
+                        print "Turning on indexing for root partition ...."
+                        sudo mdutil -i on / 
+                        return 0
+            fi
+    else
+        print "It appears that the root partition is already being indexed."
+        sudo mdutil -s /
+        return 10
+    fi
+
+else
+        
+        # The _open completion function generates a cache list of applications.  This makes
+        # the function slow the first time it is used after daily cache updating.  To have
+        # the cache updated automatically using the _comp_appgetter function, run this 
+        # function.
+        
+        print "Fast open completion relies on an up-to-date locate database."
+        print -n "Shall I update it for you now? [y]: "
+            read -t 10 -A answerq
+            if [[ -z $answerq || $answerq[1] == (y|Y) ]]; then
+                        print "Updating locate database ...."
+                        sudo /usr/libexec/locate.updatedb
+            fi
+        
+        print "Creating list of application name completions for 'open -a' command..."
+        
+        if [[ -x $ZDOT/zshrc.d/local-functions/darwin/_comp_appgetter ]]; then   
+            $ZDOT/zshrc.d/local-functions/darwin/_comp_appgetter  >|  ~/.zsh/zshapplist
+        
+        elif [[ -x $ZDOT_TEMPLATE/zshrc.d/local-functions/darwin/_comp_appgetter ]]; then
+            $ZDOT_TEMPLATE/zshrc.d/local-functions/darwin/_comp_appgetter  >|  ~/.zsh/zshapplist
+        else
+            print "Unable to generate list of available OS X applications."
+        fi   
+            
+        
+        #############################################################################
+        
+         
+        
+        #############################################################################
+        #  Improve the behavior of the _open function:
+        #############################################################################
+        
+        function hijack_open {
+            # This over-rides the application cache for the new
+            #  _open completion function
+            # to use my own app_getter function to generate an application list
+            # that includes carbon apps missed by _mac_applications
+            #
+            myapps=$(cat ~/.zsh/zshapplist | grep -v  \'  )
+            mkdir -p ~/.zsh/cache/$HOST
+            print _mac_apps\=\(\'"$myapps[@]"\'\) | perl -pi -e "s|\)\n|\)|g" | \
+                        perl -pi -e "s|\n|' '|g" >| ~/.zsh/cache/$HOST/Mac_applications
+          } 
+         
+        
+            # Now use this list to over-ride the cache of _mac_applications
+            # comment out the next line to use the default _open applications list but to retain
+            # the completion style listed below.
+            
+            hijack_open
+            
+            # This allows one to type "open -a wor"  and complete to "open -a Microsoft\ Word"
+            zstyle ':completion:*:*:open:*' matcher 'm:{A-Za-z}={a-zA-Z} r: ||[^ ]=**'
+
+fi
+

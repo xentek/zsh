@@ -1,0 +1,9 @@
+#!/bin/zsh -f
+
+command  ls -AFlh "$1" | sort -ib -k 1.1,1.2r -k 9i 
+
+
+
+# old version:
+
+#command ls -lh ${*} | egrep "^d"; ls -lh $* 2>&-| egrep -v "^d|total "

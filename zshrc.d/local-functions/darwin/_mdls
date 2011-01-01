@@ -1,0 +1,20 @@
+#compdef mdls
+
+zmodload zsh/complist  2>/dev/null
+zstyle ':completion:*' menu select=10  
+zstyle ':completion:*' list-prompt '%S -- more -- %s' 
+ 
+
+#   mdls [-name attributeName] file ...  
+
+function _attributeName {    
+compadd -X %B' --- Select one of the possible metadata attributes --- %b' \
+     -p kMDItem  \
+   $(/usr/bin/mdimport -A | awk '{print $1}' | \
+   perl -p -e "s;('|kMDItem);;g"    )   
+}  
+
+
+   _arguments \
+    '-name[one of the possible metadata attributes]: :_attributeName'\
+    '*: :_files'

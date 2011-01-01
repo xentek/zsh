@@ -1,0 +1,85 @@
+#!/bin/zsh -f
+
+# set the scroll wheel speed on a mouse using the System Preferences contol panel.
+
+if [[ $# == 0 ]];then
+ print "scrollspeed changes the mouse scroll wheel speed via System Preferences"
+ print "Usage:  scrollspeed N  [where N ranges from 0 (slowest) to 7 (fastest)]"
+ print -n "Open the Keyboard and Mouse Preference Pane? [y/N] "
+
+        StopIt=""
+        read -t 5 -A StopIt
+
+        if [[ $StopIt[1] == (y|Y) ]]; then
+            open /System/Library/PreferencePanes/Keyboard.prefPane
+            StopIt=""
+            return 0
+        elif [[ $StopIt = (0|1|2|3|4|5|6|7|8|9|10) ]]; then
+            1=$StopIt ; StopIt=""
+        else
+            return 1
+        fi
+fi
+
+# Find out if we are running a laptop (to take into account the presence
+# of a trackpad control pane which changes the tab number).
+
+machine_type=$(system_profiler -detailLevel -2 | grep Machine | awk '{print $3}' | /usr/bin/head -n 1 )
+
+ if [[ $machine_type == *Book ]]; then 
+    tab_number=3
+    print "Assuming laptop with a trackpad is being used."
+ else
+    tab_number=2
+    print "Assuming desktop without a laptop trackpad is being used."
+ fi
+
+# DEBUG:
+# print "$machine_type implies tab number $tab_number"
+
+if [[ $1 != (0|1|2|3|4|5|6|7|8|9|10) ]]; then
+ print "Usage:  scrollspeed N  [where N ranges from 0 (slowest) to 7 (fastest)]"
+ print "N must be an integer between 0 and 7"
+else
+print "Please wait ...."
+osascript <<-eof
+tell application "Finder"
+	activate
+	activate application "System Preferences"
+	tell application "System Events"
+		if (system attribute "sysv") is greater than or equal to 4144 then -- Mac OS X 10.3.0  
+			if UI elements enabled then
+				tell application process "System Preferences"
+					-- note there is no space after the "&" and Mouse is on a new line 
+					click button "Keyboard &
+Mouse" of scroll area 1 of window "System Preferences"
+					delay 3
+					click radio button $tab_number of tab group 1 of window "Keyboard & Mouse"
+					set value of slider 3 of tab group 1 of window "Keyboard & Mouse" to $1
+				end tell
+			else
+				beep
+				display dialog "GUI Scripting is not enabled" & return & return & "Open System Preferences and check \"Enable access for assistive devices\" in the Universal Access preference pane, then run this script again." with icon stop
+				if button returned of result is "OK" then
+					tell application "System Preferences"
+						activate
+						set current pane to pane "com.apple.preference.universalaccess"
+					end tell
+				end if
+			end if
+		else
+			beep
+			display dialog "This computer can't run this script" & return & return & "The script uses Apple's GUI Scripting technology, which requires an upgrade to Mac OS X 10.3 \"Panther\" or newer." with icon caution buttons {"Quit"} default button "Quit"
+		end if
+	end tell
+	tell application "System Preferences"
+		quit
+	end tell
+end tell
+eof
+if (($1 > 7)); then
+    print "Mouse scroll wheel speed is now set to 7 (the highest value)"
+else 
+    print "Mouse scroll wheel speed is now set to $1"
+fi
+fi

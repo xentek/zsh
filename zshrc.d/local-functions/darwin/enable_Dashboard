@@ -1,0 +1,6 @@
+#!/bin/zsh -f
+
+command defaults write com.apple.dashboard mcx-disabled -boolean NO 
+command killall Dock
+return 0
+

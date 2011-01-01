@@ -1,0 +1,56 @@
+#autoload     
+
+# set -x   # uncomment to debug
+
+# Completion function and definition for command  "open -a" and "launch"
+#
+# Use this fuction with OS X v. 10.4.x and above
+# as it depends upon SpotLight
+
+
+
+#############################################################################
+#  Improve the behavior of the _open function:
+#############################################################################
+
+
+function _tiger_mac_applications () {
+    
+    
+    _mac_apps=${(f)"$( mdfind -onlyin /Applications -onlyin /Developer \
+         "kMDItemContentType == 'com.apple.application-*'" | perl -p -e 's|.app||g' )"}
+    
+    
+    
+    if [[ $OPEN_PASHUA == 'yes' ]]; then
+    
+        comp_list=()
+        title="open -a"
+        label="Select application to open:"
+        comp_list=( ${(oi)${(f)_mac_apps}[@]:t} )
+        _completion_gui
+        
+    else
+    
+        _wanted commands expl 'Mac OS X application' compadd "${${(f)_mac_apps}[@]:t}"
+        
+    fi
+
+}
+
+    # The following style enables one to type (eg) "open -a wor"  and complete to 
+    #  "open -a Microsoft\ Word"
+    
+    
+    zstyle ':completion:*:*:open:*' matcher 'm:{a-z}={A-Z} r: ||[^ ]=**'
+    
+
+    # Now invoke the completion function:
+        
+    _tiger_mac_applications "$@"
+
+  
+    
+
+
+ 

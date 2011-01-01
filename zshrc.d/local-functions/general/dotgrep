@@ -1,0 +1,6 @@
+#!/bin/zsh -f
+
+# dotgrep: grep through invisible files for arguments
+
+command  ls -A1 | sed -n '/^\./p' | xargs -n1 grep -iInH "$1"; 
+

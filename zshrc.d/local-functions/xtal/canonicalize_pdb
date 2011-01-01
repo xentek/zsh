@@ -1,0 +1,15 @@
+#!/bin/sh
+# Fix local nucleic acid pdb files to agree with PDB standards
+ perl -pi -e 's/ADE/A  /g' $1
+ perl -pi -e 's/URA/U  /g' $1 
+ perl -pi -e  's/URI/U  /g' $1
+ perl -pi -e 's/GUA/G  /g' $1
+ perl -pi -e 's/CYT/C  /g' $1
+ perl -pi -e 's/THY/T  /g' $1
+ perl -pi -e s/\'/\*/g $1
+ perl -pi -e 's/(\s\s\s)([CNO]\d\s)/\ \ \2\ /g' $1
+ perl -pi -e 's/\s\s\s\sP\s/\ \ P\ \ \ /g' $1
+ perl -pi -e 's/O5T/O5*/g' $1
+ perl -pi -e 's/O3T/O3*/g' $1
+alias canon_pdb='canonicalize_pdb'
+alias canonical_pdb='canonicalize_pdb'

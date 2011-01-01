@@ -1,0 +1,25 @@
+#autoload
+
+# Author: Bart Schaefer
+
+# The function "_insert_kept" copies the value of $kept to the cursor
+# position.  If a prefix of a name is immediately to the left of the
+# cursor, then only the subset of $kept that matches that prefix is
+# copied, as is usual for completion.  The examples bind it to two
+# different widgets, "insert-kept-result" and "expand-kept-result".  If
+# invoked via the "expand-kept-result" widget, it replaces a pattern on
+# the command line with the matching words from the $kept array.
+
+    (( $#kept )) || return 1
+    local action
+    zstyle -s :completion:$curcontext insert-kept action
+    if [[ -n $action ]]
+    then compstate[insert]=$action
+    elif [[ $WIDGET = *expand* ]]
+    then compstate[insert]=all
+    fi
+    if [[ $WIDGET = *expand* ]]
+    then compadd -U ${(M)kept:#${~words[CURRENT]}}
+    else compadd -a kept
+    fi
+

@@ -1,0 +1,7 @@
+#!/bin/zsh -f
+
+#  function that greps all of the framework header files for numbers associated with error messages
+
+find {/System,}/Library/Frameworks -name "*.h" -exec grep $1 /dev/null "{}" \;; 
+
+

@@ -1,0 +1,171 @@
+#compdef open
+
+# set -x
+
+# Author: Motoi Washida
+# Modified by W. G. Scott based on the Nov 12, 2004 CVS version of _open
+# Now includes additional options for my augmented "open" function
+# Completes filenames to open now without directories.
+
+   
+
+_open_absolute_application_path() {
+  local expl curcontext
+  zstyle -T ":completion:${curcontext}:files" prefix-needed && \
+    [[ "$PREFIX" != /* && compstate[nmatches] -ne 0 ]] && return 1
+   _wanted files expl %B'--- application file ---'%b _path_files -P "$PREFIX[1]" -W /
+}
+
+_open() {
+  local curcontext="$curcontext" state line expl
+
+  _arguments -C \
+    '-a[specify application]: :->open_mac_applications' \
+    '-d[open with default application]' \
+    '-e[open with TextEdit]' \
+    '-f[open piped in file]' \
+    '-F[open with edit function]' \
+    '-p[open PreferencePane of System Preferences]'\
+    '-s[open with sudo_open function]' \
+    '-w[open widget]' \
+    '-x[open with open-X11]' \
+    '*: :->open_files'
+
+  case "$state" in
+    open_mac_applications)
+      if [[ $(sw_vers -productVersion)  < 10.5 ]];then
+	      _init_open
+	      _alternative \
+	          "commands: :_mac_applications" \
+	          "files:: _open_absolute_application_path"
+      else
+        _init_open_tiger
+        _alternative \
+            "commands: :_mac_applications" \
+            "files:: _open_absolute_application_path"
+      fi
+      ;;
+    open_files)
+      local app
+      if [[ -n "$words[(r)-a]" ]]; then
+        app="${(Q)words[words[(i)-a] + 1]}"     
+      elif [[ -n "$words[(r)-d]" ]]; then
+        app="DefaultApp"
+      elif [[ -n "$words[(r)-e]" ]]; then
+        app="Text Edit"
+      elif [[ -n "$words[(r)-f]" ]]; then
+        app=""; return 0
+      elif [[ -n "$words[(r)-F]" ]]; then
+        app="EDIT"  
+      elif [[ -n "$words[(r)-p]" ]]; then
+        app="PREFPANE"       
+      elif [[ -n "$words[(r)-s]" ]]; then
+        app="SUDO"  
+      elif [[ -n "$words[(r)-x]" ]]; then
+        app="X11X"
+      elif [[ -n "$words[(r)-w]" ]]; then 
+        app="WIDGET"   
+      fi
+      
+      if [[ $app == (EDIT|TextEdit|SubEthaEdit) ]]; then
+            _edit_files_to_open () { 
+           compadd -X %B'--- files to open with edit function ---'%b \
+            *(.)   
+            }
+           _edit_files_to_open
+           
+      elif [[ $app == (Adobe\ Photoshop\ 7|Preview|Adobe\ ImageReady\ 7) ]]; then
+            _image_files_to_open () { 
+           compadd -X %B'--- image files to open ---'%b \
+            *.(gif|png|jpg|jpeg|psd|tiff|tif|pdf)   
+            }
+           _image_files_to_open
+           
+      elif [[ $app == (Adobe\ Reader\ 6.0.app)  || $app == (Adobe\ Reader\ 7.0.app) ]]; then
+            _pdf_files_to_open () { 
+           compadd -X %B'--- files to open with Adobe Reader ---'%b \
+            *.(PDF|pdf)   
+            }
+           _pdf_files_to_open
+           
+      elif [[ $app == (Microsoft\ Word|word|Word) ]]; then
+        _word_files_to_open () { 
+       compadd -X %B'--- files to open with Word ---'%b \
+        *.(doc|DOC|rtf|RTF)   
+        }
+       _word_files_to_open
+       
+      elif [[ $app == (Microsoft\ PowerPoint|PowerPoint) ]]; then
+        _ppt_files_to_open () { 
+       compadd -X %B'--- files to open with PowerPoint ---'%b \
+        *.(ppt|PPT)   
+        }
+       _ppt_files_to_open
+       
+      elif [[ $app == (Keynote) ]]; then
+        _keyn_files_to_open () { 
+       compadd -X %B'--- files to open with Keynote ---'%b \
+        *.(key|ppt|PPT)   
+        }
+       _keyn_files_to_open
+       
+       
+      elif [[ $app == (PREFPANE) ]]; then
+        _pref_pane_to_open () { 
+       compadd -X %B'--- Preference Panes of System Preferences ---'%b \
+            "${(f)$(basename {/,/System/,~/}Library/PreferencePanes/*.prefPane )}"
+        }
+       _pref_pane_to_open       
+       
+       
+      elif [[ $app == (WIDGET) ]]; then
+      
+      _widget=${(f)"$( mdfind -onlyin /Library -onlyin ~/Library  "kMDItemKind == Widget" )"}
+
+
+       _wanted commands expl '--- Choose a Widget ---' compadd "${${(f)_widget}[@]:t}"
+     
+       
+      elif [[ $app == (Microsoft\ Excel|Excel) ]]; then
+        _xls_files_to_open () { 
+       compadd -X %B'--- files to open with Excel ---'%b \
+        *.(xls|XLS)   
+        }
+       _xls_files_to_open
+       
+      elif [[ $app == (Netscape|Mozilla|Safari|OmniWeb|Camino|Firefox) ]]; then
+        _html_files_to_open () { 
+       compadd -X %B'--- files or url to open with browser ---'%b \
+        *.(xhtml|html|htm)   http://  ftp://
+        }
+       _html_files_to_open      
+       
+      elif [[ $app == SUDO ]]; then
+      _alternative \
+        "commands: :_mac_applications" \
+        "files:: _open_absolute_application_path"
+
+      elif [[ $app == X11X ]]; then
+            _x11_files_to_open () { 
+           compadd -X %B'--- x-windows programs ---'%b \
+           $(basename command ls /usr/X11/bin/* ) \
+           $(basename command ls /sw/bin/* ) \
+           $(basename command ls /usr/local/bin/* )
+            }
+           _x11_files_to_open  
+              
+      elif [[ $app == DefaultApp ]]; then  
+        compadd -X %B'--- files available to open ---'%b *(.)   
+      
+      elif [[ -n "$app" ]]; then
+        
+       _wanted files expl "file for $app" _mac_files_for_application "$app"
+
+      else
+        _files
+      fi
+      ;;
+  esac
+}
+
+_open "$@"

@@ -1,0 +1,26 @@
+#!/bin/zsh -f
+
+# whichfunctions -a lists completions and functions 
+# whichfunctions -f lists functions but not completions
+# whichfunctions -c lists only completion functions
+
+if [[ $1 == '-f' ]]; then
+
+    function whichfunctions { command functions | command grep "()" | /usr/bin/awk '{print $1}' \
+                              | command grep -v  \^_ | command more }
+
+elif [[ $1 == '-c' ]]; then
+
+    function whichfunctions { command functions | command grep "()" | /usr/bin/awk '{print $1}' \
+                              | command grep \^_  | command more }
+
+else
+
+    function whichfunctions { command functions | command grep "()" | /usr/bin/awk '{print $1}' | command more }
+
+fi
+
+# now run it
+
+whichfunctions
+

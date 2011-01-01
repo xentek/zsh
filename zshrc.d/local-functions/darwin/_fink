@@ -1,0 +1,232 @@
+#compdef fink
+
+# Author:  Motoi Washida
+# modified by W G Scott
+# revised Sept 12, 2008 to get rid of absolute path for fink
+# revised August 13, 2005
+# June 8, 2005 from the
+# November 12 2004 CVS version
+
+## Generate lists of installed, not-installed, and outdated packages
+
+function _MakeListCache {
+        command /bin/mkdir -p ~/.zsh/cache
+            # update the package cache  /sw/var/db/fink.db
+            #	command fink index  # selfupdate should do this automatically.
+            # list of uninstalled programs:
+            #source /sw/bin/init.sh
+ 
+		command fink list -n | command /usr/bin/awk '{print $1}' >| ~/.zsh/cache/uninst_finkpkgs
+	       # list of installed programs:
+		command fink list -i | command /usr/bin/awk '{print $2}'  >| ~/.zsh/cache/inst_finkpkgs
+	       # list installed but out of date programs:
+		command fink list -o | command /usr/bin/awk '{print $2}'  >| ~/.zsh/cache/outdated_finkpkgs
+	}
+
+
+
+function _CacheGetter {
+    command mkdir -p ~/.zsh/cache
+    command touch ~/.zsh/cache/inst_finkpkgs
+    command touch ~/.zsh/cache/outdated_finkpkgs
+    command touch ~/.zsh/cache/outdated_finkpkgs
+    #
+    # These must be defined as arrays:
+    #
+    installed_finkpkgs=($(command cat ~/.zsh/cache/inst_finkpkgs 2>/dev/null))      # includes outdated
+    outdated_finkpkgs=($(command cat ~/.zsh/cache/outdated_finkpkgs 2>/dev/null))   # only outdated installed
+    uninstalled_finkpkgs=($(command cat ~/.zsh/cache/uninst_finkpkgs 2>/dev/null))  # only non-installed
+    installable_finkpkgs=($(command cat ~/.zsh/cache/uninst_finkpkgs \
+                         ~/.zsh/cache/outdated_finkpkgs 2>/dev/null \
+                         | command sort -u ))                                             # installable or updatable
+    all_finkpkgs=($(cat ~/.zsh/cache/uninst_finkpkgs \
+                         ~/.zsh/cache/inst_finkpkgs  2>/dev/null \
+                         | command sort -u ))                                             # everything available
+                         
+}
+
+
+function _fink_get_packages {
+    
+    _CacheGetter
+    
+    if [[ -z $installed_finkpkgs ]];then
+        _MakeListCache
+        _CacheGetter
+    fi
+}
+
+
+## END OF: Generate lists of installed, not-installed, and outdated packages
+
+
+
+
+
+_fink(){
+  local -a _1st_arguments
+  _1st_arguments=(
+    'install:install or update packages'
+    'remove:remove packages'
+    'purge:remove packages and configuration files'
+    'update:update the named packages'
+    'update-all:update all installed packages to the latest version'
+    'list:search package name or conditions and list'
+    'apropos:search package descriptions or conditions and list'
+    'describe:display a description of the package'
+    'index:force rebuild of package cache'
+    'fetch:download package source files'
+    'fetch-all:downloads all package source files'
+    'fetch-missing:download all missing package source files'
+    'build:build .deb packages'
+    'rebuild:rebuild .deb packages'
+    'reinstall:reinstall packages'
+    'configure:rerun the fink configuration process'
+    'selfupdate:upgrade to a new fink release'
+    'selfupdate-cvs:upgrade to a new fink release'
+    'selfupdate-rsync:upgrade to a new fink release'
+    'validate:validate files'
+    'scanpackages:call dpkg-scanpackages'
+    'checksums:validate the MD5 digest of all tarballs'
+    'cleanup:removes obsolete package files'
+    'dumpinfo:show how fink parses parts of a package .info file'
+    'show-deps:list run-time and compile-time package dependencies'
+  )
+
+  local context state line expl
+  local -A opt_args
+
+  _arguments \
+    '(-h --help)'{-h,--help}'[display help text]' \
+    '(-q --quiet)'{-q,--quiet}'[causes fink to be less verbose]' \
+    '(-V --version)'{-V,--version}'[display version information]' \
+    '(-v --verbose)'{-v,--verbose}'[causes fink to be more verbose]' \
+    '(-y --yes)'{-y,--yes}'[assume default answer for interactive questions]' \
+    '(-K --keep-root-dir)'{-K,--keep-root-dir}'[keep root directory in /sw/src/root-foo]' \
+    '(-k --keep-build-dir)'{-k,--keep-build-dir}'[keep build directory in /sw/src/foo]' \
+    '(-b --use-binary-dist)'{-b,--use-binary-dist}'[Download pre-compiled binary packages]' \
+    '--build-as-nobody''[Drop to a non-root user for debugging]' \
+    '--no-use-binary-dist''[Do not download pre-compiled binary packages]' \
+	'(-m --maintainer)'{-m,--maintainer}'[Perform actions useful to package maintainers]' \
+    '*:: :->subcmds' && return 0
+
+  if (( CURRENT == 1 )); then
+    _describe -t commands "fink subcommands" _1st_arguments
+    return
+  fi
+
+ 
+ 
+
+  local -a packages
+
+  case "$words[1]" in
+    
+    update)
+      _fink_get_packages
+      _wanted packages expl 'outdated fink packages' compadd "$outdated_finkpkgs[@]" ;;
+  
+    install|enable|activate|use|build)
+      _fink_get_packages
+      _wanted packages expl 'not installed or outdated fink packages' compadd "$installable_finkpkgs[@]" ;;
+      
+    remove|disable|deactivate|unuse|delete|purge)
+      _fink_get_packages
+      _wanted packages expl 'installed packages' compadd "$installed_finkpkgs[@]" ;;
+      
+    #update-all)
+    
+    list)
+      local cfl
+      cfl=(
+        "(-t --tab)"
+        "(-i --installed -n --notinstalled)"
+	"(-u --uptodate -o --outdated)"
+	"(-b --buildonly)"
+	"(-s --section)"
+	"(-m --maintainer)"
+	"(--tree)"
+	"(-w --width)"
+	"(: - -h --help)"
+      )
+      _arguments \
+	"$cfl[(r)*--tab*]"{-t,--tab}'[outputs the list with tabs as field delimiter]' \
+	"$cfl[(r)*--installed*]"{-i,--installed}'[packages currently installed]' \
+	"$cfl[(r)*--updtodate*]"{-u,--uptodate}'[packages up to date]' \
+	"$cfl[(r)*--outdated*]"{-o,--outdated}'[packages a newer version is available]' \
+	"$cfl[(r)*--notinstalled*]"{-n,--notinstalled}'[packages not installed]' \
+	"$cfl[(r)*--buildonly*]"{-b,--buildonly}'[packages Build Only Depends]' \
+	"$cfl[(r)*--section*]"{-s=,--section=}'[sections]:section name' \
+	"$cfl[(r)*--maintainer*]"{-m=,--maintainer=}'[maintainer]:maintainer name' \
+	"$cfl[(r)*--tree*]"--tree='[tree]:tree name' \
+	"$cfl[(r)*--width*]"{-w=,--width=}'[sets the width of the display]:number or "auto"' \
+	"$cfl[(r)*--help*]"{-h,--help}'[display help text]' \
+	"$cfl[(r)*1*]"'1: :->pkgs' && return 0
+
+        _fink_get_packages
+        _wanted packages expl 'package name hints' compadd "$all_finkpkgs[@]" ;;
+        
+    apropos)
+      _arguments \
+        '(-t --tab)'{-t,--tab}'[outputs the list with tabs as field delimiter]' \
+        '(-w --width)'{-w=,--width=}'[sets the width of the display]:number or "auto"' \
+        '(: -)'{-h,--help}'[display help text]' \
+        '1: :->pkgs' && return 0
+        
+        _fink_get_packages
+        _wanted packages expl 'package hints' compadd "$all_finkpkgs[@]" ;;
+        
+    describe|desc|description|info|dumpinfo)
+      _fink_get_packages
+      _wanted packages expl 'packages' compadd "$all_finkpkgs[@]" ;;
+      
+    fetch)
+      _fink_get_packages
+      _wanted packages expl 'packages' compadd "$all_finkpkgs[@]" ;;
+      
+    #fetch-all)
+    
+    fetch-missing)
+      _arguments \
+        '(-i --ignore-restrictive)'{-i,--ignore-restrictive}'\
+        [do not fetch packages that are "License: Restrictive"]' ;;
+        
+    #build)
+    
+    rebuild|reinstall)
+      _fink_get_packages
+      _wanted packages expl 'packages' compadd "$installed_finkpkgs[@]" ;;
+      
+    #configure)
+    #selfupdate)
+    
+    validate|check)
+      _wanted files expl 'finkinfo files' _files -g '*.(info|deb)'  ;;
+      
+    #scanpackages)
+    #checksums)
+    #cleanup)
+    
+  esac
+}
+
+_fink "$@"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

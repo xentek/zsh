@@ -1,0 +1,35 @@
+.TH coot 7 "August 5, 2005" "Mac OS X" "Mac OS X Darwin ZSH customization" 
+.SH NAME
+.B coot
+\- function to run coot, allowing files to be added as arguments without flags (crystallography)
+
+.SH SYNOPSIS
+coot 
+.B [
+.I pdbfile.pdb
+.B ] [
+.I mtzfile.mtz
+.B ] [
+.I ccp4mapfile.map
+.B ] [
+.I ...
+.B ]
+
+.SH DESCRIPTION
+
+This is a zsh shell script or function that augments the coot command line 
+experience. Just type "coot" followed by the names of your pdb files, map files, 
+mtz files and so on. If you have the unix program screen, it starts coot in a 
+screen session, which you can then detach with "control-A d" and resume with 
+"screen -r coot".  If you are running OS X and have my "scrollspeed function, it 
+will invoke that to slow the scroll wheel response until you quit coot, at which 
+point it resets.  Issuing -s anywhere after coot in the string of
+arguments will suppress that behavior.  Using --pdb, --map, --data, --script and 
+so on will have no detrimental effect.  These flags are just ignored.  The file 
+type is determined from the file suffix.   
+
+.SH AUTHOR
+William Scott 
+
+.SH MAINTAINER
+W. G. Scott <wgscott@users.sourceforge.net> 

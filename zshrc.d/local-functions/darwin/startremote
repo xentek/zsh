@@ -1,0 +1,87 @@
+#!/bin/zsh -f
+
+# set -x
+
+# Start a remote xwindowmanager session but in a nested window.
+
+###############################################################################
+# Do some reality checks:
+
+# if [[ ! -x $(which Xnest) &&  ! -x  /usr/X11/bin/Xephyr  ]];then
+if [[ ! -x $(which Xnest) ]];then
+    print "Xnest and Xephyr do not appear to be on this system"
+    print "running the vanilla $0 command"
+    command $0
+    return 42
+fi
+
+#  if [[ $# != 1 ]];then
+#  	print "Usage: $0 windowmanager-executable-name"
+#  	print "where the argument is eg: enlightenment, twm, startkde, or a similar command."
+#  	return 100
+#  fi
+
+# No point in using this unless we are on OS X:
+if [[ $(uname) != Darwin ]];then
+	print "This only works for OS X. This does not appear to be OS X."
+	print "Don't use this.  Use the real $0"
+	return 42
+fi
+
+# The window manager must be present.
+#  if [[ ! -x $(which $1) ]]; then
+#  	print "I cannot find the $1 window manager."
+#  	print "Please make sure it is installed properly and in your PATH."
+#  	return 43
+#  fi
+
+# The resolution will not be teleported.
+if [[ -n $SSH_TTY ]]; then
+	print "This won't work on a remote display"
+	return 44
+fi
+###############################################################################
+
+
+################ Make a ~/.xinitrc file for the specific wm on the fly ####################
+################ unless one already exists in your home directory      ####################
+
+#if [[ ! -f ~/.x$1 ]]; then
+
+mkdir -p /tmp/$USER
+cat >| /tmp/$USER/.x$1  << eof
+#!/bin/zsh -f
+
+ssh -Y $1 $2   
+
+eof
+
+#fi
+###############################################################################
+
+
+# Find the resolution of the monitor:
+res_array=($(system_profiler -detailLevel mini | grep Resolution | awk '{print $2 "  "  $4}'))
+ 
+# Shave off 100 or 200 pixels in each dimension
+adj_horiz=$((res_array[1]-200))
+adj_vert=$((res_array[2]-100))
+
+
+# set -x
+
+if [[  -x  /usr/X11/bin/Xnest   ]]; then
+     xinit /tmp/$USER/.x$1 -- /usr/X11/bin/Xnest :$$[3]$$[4]  -br -name "$1 nested session (initiated in $PWD on $HOST)" \
+                      -geometry ${adj_horiz}x${adj_vert}+100+0 2>| /dev/null & 
+  
+elif [[ -x  /usr/X11R6/bin/Xnest  ]]; then
+     xinit /tmp/$USER/.x$1 -- /usr/X11/bin/Xnest :$$[3]$$[4]  -br  -name "$1 nested session (initiated in $PWD on $HOST)" \
+                      -geometry ${adj_horiz}x${adj_vert}+100+0 2>| /dev/null & 
+
+else
+	print "Could not find Xnest or Xephyr"
+	return 1000
+fi
+
+
+ 

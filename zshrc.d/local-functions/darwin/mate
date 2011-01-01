@@ -1,0 +1,14 @@
+#!/bin/zsh -f
+
+# If editing a single html file in TextMate, open it in both Safari and TextMate
+# simultaneously
+
+function mate {
+    if [[ $# == 1 && ( $1:e == html || $1:e == htm ) ]];then
+        open -a Safari $1 ; command mate $1
+    else
+        command mate "$@"
+    fi
+}
+
+

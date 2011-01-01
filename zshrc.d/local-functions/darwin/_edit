@@ -1,0 +1,4 @@
+#compdef edit
+#local expl
+ _description files  expl %B'--- files for function edit ---'%b
+_files "$expl[@]"  -g '(*|.*)'

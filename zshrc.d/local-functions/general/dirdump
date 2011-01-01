@@ -1,0 +1,32 @@
+#!/bin/zsh 
+
+	# use this in conjunction with the local functions
+	# called chpwd and dirstack
+
+	# In an attempt to have a shared directory stack (i.e.,
+	# shared between different shell sessions), this appends
+	# the pwd onto the bottom of a file called ~/.zsh/zdirdump
+
+
+print ${PWD// /_SPACE_}  >>| ~/.zsh/zdirdump  
+
+	# Now create an array called global_dirs.  It is generated
+	# from the entries in the above file. 
+
+ junk=()
+ junk=( $(<  ~/.zsh/zdirdump ) )
+
+lines=${#junk}
+
+for (( i = 1; i <=$lines; i++ )) do  
+    if [[ -n $junk[i] ]];then
+		invjunk[i]=$junk[-i]
+	fi
+done
+
+unset i
+
+ dirs_shared=( $invjunk )
+ typeset -U dirs_shared
+ export dirs_shared
+

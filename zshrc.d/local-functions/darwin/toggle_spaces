@@ -1,0 +1,23 @@
+#!/bin/zsh -f
+
+if [[ $(uname) != "Darwin" ]]; then
+	print "This function is specific to OS X"
+	return 1
+fi
+
+if [[ $(sw_vers -productVersion) < 10.5 ]]; then
+	print "Spaces requires OS X v. 10.5 or newer"
+
+else
+
+	if [[ $( defaults read  com.apple.dock workspaces ) = 1 ]]; then
+	        defaults write com.apple.dock workspaces -bool false
+	        killall Dock
+			print "\e[1m Turning \"Spaces\" off. \e[0m "
+	elif [[ $( defaults read com.apple.dock workspaces ) = 0 ]]; then
+	        defaults write com.apple.dock workspaces -bool true
+	        killall Dock
+			print "\e[1m Turning \"Spaces\" on. \e[0m "
+	fi
+
+fi

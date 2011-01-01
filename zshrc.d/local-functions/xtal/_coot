@@ -1,0 +1,82 @@
+#compdef coot
+autoload -U _files_only
+
+#        Usage: coot [--pdb pdb-file-name]
+#                    [--coords pdb/cif/shelx-filename]
+#                    [--map ccp4-map-file-name]
+#                    [--data mtz-file-name]
+#                    [--hklin mtz-file-name]
+#                    [--auto mtz-file-name]
+#                    [--script script-file-name]
+#                    [--no-state-script]
+#                    [--no-splash-screen]
+#                    [--no-graphics]
+#                    [--no-guano]
+#                    [--small-screen]
+#                    [--stereo]
+#                    [--zalman-stereo]
+#                    [--side-by-side]
+#                    [--version]
+
+_coot() {
+  local curcontext="$curcontext" state line expl
+
+  _arguments -C \
+	'--coords[specify a pdb/cif/shelx-filename]: :->coord_coot_files' \
+	'--map[specify a ccp4-map-file-name]: :->map_coot_files' \
+	'--data[specify an mtz-file-name]: :->data_coot_files' \
+	'--hklin[specify an mtz-file-name]: :->hklin_coot_files' \
+	'--auto[specify an mtz-file-name]: :->auto_coot_files' \
+	'--script[specify a script-file-name]: :->script_coot_files' \
+	'--no-state-script' \
+	'--no-splash-screen' \
+	'--no-graphics' \
+	'--no-guano' \
+	'--small-screen' \
+	'--stereo' \
+	'--zalman-stereo' \
+	'--side-by-side' \
+	'--version' \
+	'*: :->all_coot_files'
+
+case   "$state" in
+	( all_coot_files )
+	#local expl
+	 _description files  expl %B'--- all files readable by coot ---'%b
+	_files_only "$expl[@]" -g '*.(pdb|brk|ent|map|mtz|cif|ccp4|scm|py|phs)'	
+	;;
+	( coord_coot_files )
+	#local expl
+	 _description files  expl %B'--- coord files readable by coot ---'%b
+	_files_only "$expl[@]" -g '*.(pdb|brk|ent)'	
+	;;
+	( map_coot_files )
+	#local expl
+	 _description files  expl %B'--- map files readable by coot ---'%b
+	_files_only "$expl[@]" -g '*.(map|ccp4)'	
+	;;
+	( data_coot_files )
+	#local expl
+	 _description files  expl %B'--- data files readable by coot ---'%b
+	_files_only "$expl[@]" -g '*.(mtz|cif|phs)'	
+	;;
+	( hklin_coot_files )
+	#local expl
+	 _description files  expl %B'--- hklin files readable by coot ---'%b
+	_files_only "$expl[@]" -g '*.(mtz|cif|phs)'		
+	;;
+	( auto_coot_files )
+	#local expl
+	 _description files  expl %B'--- mtz files readable by coot ---'%b
+	_files_only "$expl[@]" -g '*.(mtz)'		
+	;;
+	( script_coot_files )
+	#local expl
+	 _description files  expl %B'--- script files readable by coot ---'%b
+	_files_only "$expl[@]" -g '*.(scm|py)'	
+	;;
+esac
+}
+
+_coot "$@"
+

@@ -1,0 +1,68 @@
+.\" Process this file with
+.\" groff -man -Tascii foo.1
+.\"
+.TH man 7 "March 19, 2005" "Mac OS X" "Mac OS X Darwin customization"  
+.SH NAME
+.B man
+\-  Augmented man command that includes run-help and info in addtion to command man.. 
+.SH SYNOPSIS
+.B man [-options] [foo]
+.SH DESCRIPTION
+The augmented 
+.B man 
+zsh function requires the 
+.I corrected and enhanced 
+zsh function
+.B run-help 
+and 
+.B /usr/bin/info 
+or 
+.B /sw/bin/info
+as well as the 
+.B command man. 
+I had to fix up a few things in run-help
+so be sure to autoload the corrected version that handles multiple
+.B $HELPDIR 
+entries and also gives usable error codes.  These features
+are required to get this function to work right.
+
+.B man
+combines the zsh 
+.B run-help 
+function with the traditional 
+.B command man 
+and 
+the 
+.B GNU info 
+function.  If a help-file is found in 
+.B $HELPDIR, 
+it is read
+by the zsh-function 
+.B run-help
+, otherwise run-help defaults to the man
+command and displays the man page.  The first aspect of this functionality
+.B requires that you first generate the help files from the ZSH man page.
+When this is done, each individual function and built-in command in the
+ZSH will have its own help-file entry.  
+.B Run the function build-helpfiles
+to generate these the first time.  The file 
+.B $ZDOT/environment 
+will then
+automatically set the 
+.B $HELPDIR 
+variable the next time a shell is started.
+
+This function also uses the function
+.B settab 
+to show the named process 
+running and then resets itself with settab (so iTerm users will have 
+man commandname or more commandname or info commandname displayed in the tab.
+
+.SH AUTHOR
+ William Scott
+.SH "SEE ALSO"
+.BR man (1),
+.BR info (1),
+.BR run-help (1)
+
+

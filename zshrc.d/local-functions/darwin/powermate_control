@@ -1,0 +1,59 @@
+#!/bin/zsh -f
+
+# Ben Holt
+# http://www.macosxhints.com/article.php?story=2007122622572152
+# Modified for most recent powermate version.
+
+function find_version {
+	if [[ -f  /Library/PreferencePanes/PowerMate.prefPane/Contents/Info.plist ]];then 
+        version_num=$(grep "PowerMate version" /Library/PreferencePanes/PowerMate.prefPane/Contents/Info.plist | awk '{print $3}' | perl -p -e 's|,||g')
+		
+		autoload -U is-at-least
+		if   is-at-least 2 $version_num   ;then
+			PM_app=PowerMateDaemon
+		else
+		    PM_app=PowerMateDriver
+		fi
+	else
+	    PM_app=PowerMateDriver
+	fi
+}
+
+function showMenu {
+	echo "-----------------"
+	echo "PowerMate Control"
+	echo "-----------------"
+	echo
+	echo "pulse x	= Pulse at x rate, from 0-100."
+	echo "on x	= Device stays on with brightness x, from 0-100."
+	echo
+	echo "These two settings are mutually exclusive."
+}
+
+if [[ $# = 0 ]]; then
+    showMenu;
+fi
+
+arg=$1
+
+if [[ "$arg" = "pulse" ]]; then
+	num=$2
+	
+	realnum=$(echo "scale=0; ($num * 20) / 100" | bc)
+	
+	find_version
+	osascript -e "tell application \"$PM_app\" to set pulse always to true"
+	osascript -e "tell application \"$PM_app\" to set pulse rate to $realnum"
+fi
+
+if [[ "$arg" = "on" ]]; then
+	num=$2
+	
+	realnum=$(echo "scale=0; ($num * 255) / 100" | bc)
+	
+	find_version
+	osascript -e "tell application \"$PM_app\" to set pulse always to false"
+	osascript -e "tell application \"$PM_app\" to set brightness to $realnum"
+fi
+
+

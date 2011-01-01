@@ -1,0 +1,103 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Mac OS X (vers 1st December 2004), see www.w3.org" />
+<meta http-equiv="Content-Type" content=
+"text/html; charset=us-ascii" />
+<title>Manual Page for cns_edit</title>
+
+<style type="text/css">
+/*<![CDATA[*/
+<!--.red {color: #CC0000}-->
+/*]]>*/
+</style>
+
+<style type="text/css">
+/*<![CDATA[*/
+<!--.hed {color: #000000; font-weight: bold; font-size: larger;}-->
+/*]]>*/
+</style>
+</head>
+<body>
+<pre>
+ <a href=
+"http://sage.ucsc.edu/Library/init/zsh/man/html/cns_edit.html">cns_edit(7)</a>            Mac OS X Darwin ZSH customization           <a href="http://sage.ucsc.edu/Library/init/zsh/man/html/cns_edit.html">cns_edit(7)</a>
+
+
+
+<span class="hed">NAME</span>
+       <span class=
+"red">cns_edit</span>  -  Wrapper  function for the cns_edit script distributed with
+       cns to edit cns input files using web browser interface  (crystallogra-
+       phy)
+
+
+<span class="hed">SYNOPSIS</span>
+       cns_edit <span class="red">[</span> -help <span class=
+"red">]</span> <span class=
+"red">[</span> -tem <u>template-file</u> <span class=
+"red">]</span> <span class=
+"red">[</span> -def <u>defaults-file</u> <span class=
+"red">]</span> <u>input-</u>
+       <u>file-name.inp</u>
+
+
+<span class="hed">DESCRIPTION</span>
+       <span class=
+"red">cns_edit</span> enables the user to edit cns.inp and related files with a con-
+       venient  web-based  GUI editor.  To get it to work right on OS X, it is
+       best to use one of the Mozilla-family browsers.  The nicest option  for
+       this  is  the Camino web browser, as it is Cocoa-based and presents the
+       best interface, both in terms of asthetics and functionality.
+
+       Camino can be obtained for free  at  this  website:  <span class="red">http://www.camino-</span>
+       <span class="red">browser.org/</span>
+
+       After installing Camino, have each user set a preference as follows:
+
+       <span class="red">cd</span>  <span class=
+"red">~/Library/Application</span> <span class=
+"red">Support/Camino</span>  Create,  and then edit a file
+       called user.js  and put in it the following line:
+
+       <span class=
+"red">user_pref("browser.download.autoDownload",</span> <span class="red">false);</span>
+
+       Doing so will now allow you to choose the directory into which you  can
+       save the edited input file.
+
+       The companion <span class=
+"red">_cns_edit</span> completion function completes the names of inp,
+       sdb, and def files, and if no inp files  are  present  in  the  current
+       working  directory,  or  if the flag -tem is given, the user is suppled
+       with a menu of template input files present in the cns local  installa-
+       tion.
+
+       Further suggestions are available here: <span class=
+"red">http://babyurl.com/i753PW</span>
+
+
+
+
+<span class="hed">SEE ALSO</span>
+       Issue  the command <span class=
+"red">cns_web</span> for full documentation and to access the GUI
+       interface.
+
+
+<span class="hed">AUTHOR</span>
+       William Scott
+
+
+<span class="hed">MAINTAINER</span>
+       W. G. Scott <a href=
+"mailto:wgscott@users.sourceforge.net">wgscott@users.sourceforge.net</a>
+
+
+
+Mac OS X                        August 5, 2005                     <a href="http://sage.ucsc.edu/Library/init/zsh/man/html/cns_edit.html">cns_edit(7)</a>
+</pre>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Mac OS X (vers 1st December 2004), see www.w3.org" />
+<meta http-equiv="Content-Type" content=
+"text/html; charset=us-ascii" />
+<title>Manual Page for sd</title>
+
+<style type="text/css">
+/*<![CDATA[*/
+<!--.red {color: #CC0000}-->
+/*]]>*/
+</style>
+
+<style type="text/css">
+/*<![CDATA[*/
+<!--.hed {color: #000000; font-weight: bold; font-size: larger;}-->
+/*]]>*/
+</style>
+</head>
+<body>
+<pre>
+ <a href=
+"http://sage.ucsc.edu/Library/init/zsh/man/html/sd.html">sd(7)</a>                    Mac OS X Darwin customization                   <a href="http://sage.ucsc.edu/Library/init/zsh/man/html/sd.html">sd(7)</a>
+
+
+
+<span class="hed">NAME</span>
+       <span class=
+"red">sd</span> -  change the CodeTek Virtual Desktop Display to the indicated Desk-
+       top
+
+<span class="hed">SYNOPSIS</span>
+       <span class="red">sd</span> [ <span class=
+"red">-a</span> <span class=
+"red">Application</span> ] [ <span class=
+"red">DesktopName</span> | <span class="red">DesktopNumber</span> ]
+
+<span class="hed">DESCRIPTION</span>
+       <span class=
+"red">sd</span> changes the display to the indicated CodeTek Virtual Desktops  Desk-
+       topName  or  DesktopNumber.  If the -a flag is provided and followed by
+       the name of an application, that application is moved to the  indicated
+       Desktop.  If  no  application  name is provided, it is assumed that the
+       user's terminal program is to be moved to  the  indicated  Desktop.  An
+       accompanying  zsh completion function called _sd completes applications
+       and DesktopNames.
+
+<span class="hed">REQUIREMENTS</span>
+       You must purchase and install CodeTek Virtual Desktops and configure it
+       before  this  function  will be of any use. It can be obtained from the
+       following website:  http://www.codetek.com/ctvd/ Please note this soft-
+       ware is not yet intel-compatible.
+
+<span class="hed">EXAMPLES</span>
+       The  command <span class="red">sd</span> <span class=
+"red">4</span> switches you and your terminal program to Desktop #4.
+       The command <span class="red">sd</span> <span class=
+"red">Main</span> switches you and your terminal program  to  Desktop
+       named  Main.  (The  completion  function finds the names of all of your
+       desktops and presents them in a menu upon hitting the  tab  key).   The
+       command  <span class="red">sd</span>  <span class=
+"red">-a</span>  <span class="red">Mail</span> <span class=
+"red">Main</span> switches application Mail.app to the desktop
+       named Main, leaving you and your terminal program in the original loca-
+       tion,  and  finally,  the  command  <span class=
+"red">sd</span>  <span class="red">-a</span> <span class=
+"red">Mail</span> <span class="red">10</span> switches application
+       Mail.app to the desktop number 10, leaving you and your  terminal  pro-
+       gram in the original location.
+
+<span class="hed">AUTHOR</span>
+       William Scott
+
+
+
+
+
+Mac OS X                          May 14 2006                            <a href="http://sage.ucsc.edu/Library/init/zsh/man/html/sd.html">sd(7)</a>
+</pre>
+</body>
+</html>

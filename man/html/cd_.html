@@ -1,0 +1,69 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Mac OS X (vers 1st December 2004), see www.w3.org" />
+<meta http-equiv="Content-Type" content=
+"text/html; charset=us-ascii" />
+<title>Manual Page for cd_</title>
+
+<style type="text/css">
+/*<![CDATA[*/
+.red {color: #CC0000} .hed {color: #000000; font-weight: bold; font-size: larger;}.blueBox{ background-color: #F1F5F9;padding: 6px 10px 6px 10px; border: 1px #ccc double; color: #000000; font-size: 14px}.indexLink {float:right; margin-top:4px;}
+/*]]>*/
+</style>
+</head>
+<body>
+<pre>
+ <a href=
+"http://sage.ucsc.edu/Library/init/zsh/man/html/cd_.html">cd_(7)</a>                   Mac OS X Darwin customization                  <a href="http://sage.ucsc.edu/Library/init/zsh/man/html/cd_.html">cd_(7)</a>
+
+
+
+<span class="hed">NAME</span>
+       <span class="red">cd_</span>
+
+<span class="hed">SYNOPSIS</span>
+       <span class="red">cd_</span> <span class="red">[n]</span>
+
+<span class="hed">DESCRIPTION</span>
+       <span class=
+"red">cd_</span> enables you to cd to the directory (or the directory containing the
+       file) named in the last argument of  the  previous  command.  With  the
+       optional numeric argument, you can choose positions other than the last
+       in the previous command string, i.e.,
+
+       Execute cd "$(dirname $_)" if $_ is a file
+
+       Execute cd "$_" if $_ is a directory
+
+       or, more generally, get the numbered string position in the  last  line
+       and cd to it (or it's directory)
+
+       eg:
+
+       ls one two three four five six
+
+       cd_ 4  is the same as cd four
+
+       cd_ -2 is the same as cd five
+
+
+
+<span class="hed">AUTHOR</span>
+        William Scott
+
+<span class="hed">SEE ALSO</span>
+       <a href="http://www.hmug.org/man/1/cd.php">cd(1)</a>
+
+
+
+
+
+Mac OS X                          July 9 2005                           <a href="http://sage.ucsc.edu/Library/init/zsh/man/html/cd_.html">cd_(7)</a>
+</pre>
+<div align="center" class="blueBox">Bwana Created by <a href=
+"http://www.bruji.com/">Bruji</a></div>
+</body>
+</html>

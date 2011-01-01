@@ -1,0 +1,46 @@
+#!/bin/zsh -f
+
+# Activate the function keys.
+ 
+ 
+     tab_number=1
+     
+     print "Please wait ...."
+     
+     
+osascript <<-eof
+tell application "Finder"
+	activate
+	activate application "System Preferences"
+	tell application "System Events"
+		if (system attribute "sysv") is greater than or equal to 4144 then -- Mac OS X 10.3.0  
+			if UI elements enabled then
+				tell application process "System Preferences"
+					-- note there is no space after the "&" and Mouse is on a new line 
+					click button "Keyboard &
+Mouse" of scroll area 1 of window "System Preferences"
+					delay 3
+					click radio button $tab_number of tab group 1 of window "Keyboard & Mouse"
+					click checkbox of tab group 1 of window "Keyboard & Mouse"  
+				end tell
+			else
+				beep
+				display dialog "GUI Scripting is not enabled" & return & return & "Open System Preferences and check \"Enable access for assistive devices\" in the Universal Access preference pane, then run this script again." with icon stop
+				if button returned of result is "OK" then
+					tell application "System Preferences"
+						activate
+						set current pane to pane "com.apple.preference.universalaccess"
+					end tell
+				end if
+			end if
+		else
+			beep
+			display dialog "This computer can't run this script" & return & return & "The script uses Apple's GUI Scripting technology, which requires an upgrade to Mac OS X 10.3 \"Panther\" or newer." with icon caution buttons {"Quit"} default button "Quit"
+		end if
+	end tell
+	tell application "System Preferences"
+		quit
+	end tell
+end tell
+eof
+ 

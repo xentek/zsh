@@ -1,0 +1,3 @@
+#!/bin/zsh -f
+# killit: lookup pid of the argument and kill it
+ ps -auxww | awk /"$1"/'{ if ( $0 !~ "awk" && $2 > 200 ) print $2 }' | xargs kill

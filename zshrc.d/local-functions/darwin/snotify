@@ -1,0 +1,54 @@
+#!/bin/zsh -f
+
+# This is a pre-command function that notifies the user when the command (provided as an argument)
+# completes. It attempts to use growlnotify if present, otherwise it prints a message. If the command
+# returns anything other than 0 (i.e., it fails), the growl window remains sticky. 
+
+# In each case the command terminates with a sticky growlnotify window.  
+
+if [[ $# == 0 ]]; then
+	print ""
+	print "\e[1m Usage: \e[0m $0 command-string"
+	print ""
+	return 42
+fi
+
+# If growlnotify is present, use it to notify
+
+ "$@" 
+  returnvalue=$?
+
+if [[ -x $(which growlnotify) && -z $SSH_TTY ]]; then
+
+
+	if [[ "$TERM_PROGRAM" == "iTerm.app" ]]; then
+		icon_array=( --appIcon iTerm.app )
+	else  
+		icon_array=()
+	fi
+
+	if [[ "$returnvalue" == 0 ]]; then
+
+		growlnotify -s $icon_array -m "$1 completed."  
+
+	else
+ 
+		growlnotify -s $icon_array -m "$1 failed."  
+
+	fi
+
+else
+
+	if [[ "$returnvalue" == 0 ]]; then
+
+		print "" ; print "$1 completed."  ; print ""
+
+	else
+
+		print "" ; print "$1 failed."  ; print "" 
+
+	fi
+
+fi
+
+return "$returnvalue"

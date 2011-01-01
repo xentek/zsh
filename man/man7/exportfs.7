@@ -1,0 +1,43 @@
+.\"
+.TH "exportfs" 7 "July 19, 2005" "Mac OS X" "Mac OS X Darwin ZSH customization" 
+.SH NAME
+.B exportfs
+\- export NFS filesystems listed in /etc/exports and/or the NetInfo database.
+
+.SH SYNOPSIS
+
+sudo exportfs 
+
+.SH DESCRIPTION
+
+.B exportfs
+is a function that emulates (crudely) the 
+.B exportfs -a 
+command on canonical unix systems.  Mac OS X does not currently have an exportfs command.  This
+makes a minimal attempt at filling the gap.
+
+If 
+.B exportfs 
+finds something to export (either using /etc/exports or the
+exports NetInfo directory), then start the NFS daemons (which service
+NFS requests) and the mount server (which services NFS mount requests).
+
+Parts of this come from Apple's NFS startup file, modified
+by W. G. Scott and many important improvements were then
+added by Gary Kerbaugh.  Specifically, the script now checks
+for successful outcome of disk arbitration, which can take
+awhile for really big disks and RAID devices.
+
+This is a stopgap replacement for exportfs, which is not
+available on OS X.  If the user has in fact installed it, or
+if it appears in the future, this script warns the user and
+gives her or him a chance to bail.
+
+.SH SEE ALSO
+exports(5)
+
+.SH AUTHORS
+Gary Kerbaugh, William Scott, Apple Computer
+
+.SH MAINTAINER
+W. G. Scott <wgscott@users.sourceforge.net>

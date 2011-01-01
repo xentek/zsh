@@ -1,0 +1,10 @@
+#compdef unsetopt
+
+#------------------------------------------
+# Completes only set options.  To return to
+# default settings, remove this file.
+#------------------------------------------
+
+local _options_set
+_options_set=(${(k)options[(R)on]})
+_options_set || _options

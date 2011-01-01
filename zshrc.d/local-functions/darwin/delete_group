@@ -1,0 +1,97 @@
+#!/bin/zsh -f
+
+version="2.0.0"
+
+# The script must be run as an admin user 
+#
+if [[ -z $(/usr/bin/id -p $USER | grep admin) ]];then
+	print "You must be an administrative user with sudo privileges in order to run $0"
+fi
+
+# For 10.5:  Eliminated niutil commands in favor of Directory Service
+
+# Obtained and modified from a bash shell script available at
+# http://www.osxfaq.com/tips/unix-tricks/week91/friday.ws
+
+# Delete a group.
+# Takes the group name and deletes it from NetInfo
+
+declare quiet="no"  # -q option not specified
+declare group       # hold te given group name
+declare gid         # hold the group id derived from the group name 
+declare ans         # reply from prompt
+
+thiscommand=$0
+
+function usage {
+  echo "Delete a group"
+  echo "Usage: $thiscommand [-q] groupname"
+  echo "       -q - quiet: no warnings or prompts for confirmation" 
+  echo "            otherwise a warning is issued if the group to"
+  echo "            be deleted is a user's primary group"
+  if [[ "$*" != "" ]]; then echo; echo "Error: $*"; fi
+  return 1
+}
+
+# Check parameters
+#
+if [[ "$1" = "-q" ]]; then
+  quiet="yes"
+  shift
+fi
+
+if [[ $# -ne 1 ]]; then
+  usage
+  return 1
+fi
+
+group="$1"
+
+# search Directory Service for the given group - it should exist
+# str="$(nifind /groups/$group .)"
+str="$( dscl . -list /Groups | grep -w $group )"
+if [[ -z "$str" ]]; then
+  usage "Group $group does not exist"
+  return 11
+fi
+
+
+# Check if this is a primary group for some user and warn if so
+#   but not in quiet mode
+if [[ $quiet = "no" ]]; then
+
+  # get the group number from the name
+  gid="$(dscl . -list /Groups PrimaryGroupID | grep -w "^$group" |  awk '{print $2}' )"
+
+  # print a warning if it is any user's primary group
+  # str="$(nireport . /users gid | grep -w $gid)"
+  str="$(dscl . -list /users PrimaryGroupID | grep -w "$gid" )"
+
+
+  if [[ ! -z "$str" ]]; then
+    echo "WARNING: this is a primary group:"
+    # nireport . /users gid name | grep -w "^$gid"
+    dscl . -list /users PrimaryGroupID | grep -w "^$gid"
+ 
+    print -n "Do you really want to do this? "
+    read -t 10 -A ans
+    if [[ "$ans" != (yes|Yes|y|Y|YES) ]]; then
+      print ""
+      print "Abandoning deletion of the group $group ."
+      print "Terminating with extreme prejudice."
+      return 100
+    fi
+  fi
+fi
+
+
+# Delete the group from NetInfo
+#
+# sanity check
+if [[ "$group" = "" ]]; then return 42; fi
+
+sudo dscl . delete /groups/$group
+
+echo "Group $group deleted"
+return 0
+

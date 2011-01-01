@@ -1,0 +1,28 @@
+.\" Process this file with
+.\" groff -man -Tascii foo.1
+.\"
+.TH posd 7 "January 1, 2005" "Mac OS X" "Mac OS X Darwin customization" 
+.SH NAME
+.B posd
+\-  returns the path matching that of the frontmost finder window
+.SH SYNOPSIS
+.B posd
+.SH DESCRIPTION
+.B  posd 
+is an osascript embedded in a shell script that returns the pwd
+corresponding to the frontmost finder window.  Its real value is when
+aliased to the command 
+.B cdf,
+i.e., cdf='cd "$(posd)"'.  The command
+.B cdf 
+then changes the terminal pwd to match that of the frontmost finder window.
+.B fdc 
+is essentially the reciprocal operation of cdf.  It changes the finder 
+window to match the pwd of the terminal in which the command is issued.
+.SH AUTHOR
+ Gary Kerbaugh 
+.SH "SEE ALSO"
+.BR fdc (1),
+.BR cdf (1)
+
+

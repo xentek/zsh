@@ -1,0 +1,11 @@
+#!/bin/zsh -f
+
+
+# aeon: toggle AppleEvent logging on or off
+
+if [ -z "$AEDebug" ]; then
+            export AEDebug=1 AEDebugSend=1 AEDebugReceives=1;
+else
+            unset AEDebug AEDebugSend AEDebugReceives;
+fi
+

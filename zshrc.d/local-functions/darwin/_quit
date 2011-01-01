@@ -1,0 +1,35 @@
+#compdef quit
+
+
+
+#-----------------------------
+# _quit
+#
+# by Wataru Kagawa (05/17/05)
+# wkagawa@jota.gsc.riken.go.jp
+#
+# Completion function for quit
+#-----------------------------
+
+
+
+function _quit () {
+
+	local context state line expl
+	local -A opt_args
+
+	_arguments -C \
+		'-f[force quit application]' \
+		'*:: :->get_running_applications'
+
+	case "$state" in
+		get_running_applications)
+			_get_running_apps
+			_wanted commands expl 'currently running applications' compadd "${_running_apps[@]}"
+	esac
+
+}
+
+
+
+_quit "$@"

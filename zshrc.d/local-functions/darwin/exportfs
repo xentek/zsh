@@ -1,0 +1,191 @@
+#!/bin/zsh -f
+
+# Parts of this come from Apple's NFS startup file, modified
+# by W. G. Scott and many important improvements were then
+# added by Gary Kerbaugh.  Specifically, the script now checks
+# for successful outcome of disk arbitration, which can take
+# awhile for really big disks and RAID devices.
+
+# This is a stopgap replacement for exportfs, which is not
+# available on OS X.  If the user has in fact installed it, or
+# if it appears in the future, this script warns the user and
+# gives her or him a chance to bail.
+
+print ""
+print " This shell script mimics the \"exportfs -a\" command"
+print " on more canonical unix systems."
+print ""
+
+# emulation of the unix exportfs command for OS X
+
+# Look for a real exportfs and warn the user if we find one:
+
+if [[ -x $(whereis exportfs) ]];then
+  print "There appears to be a real exportfs command in $(whereis exportfs)"
+  print "You probably will want to use that instead of this limited zsh function."
+  print "If so, type \"unfunction exportfs\" and then use the real command."
+  print "Type control-C now to terminate this function, or do nothing to continue."
+  sleep 20
+fi
+
+ 
+
+# Robbed from /System/Library/StartupItems/NFS/NFS
+
+
+
+if [[ $(sw_vers -productVersion) < 10.5 ]]; then
+
+		# Specific to 10.4 or earlier
+
+		if ! ps -axwwo command | grep 'nfs\iod' &>/dev/null; then
+			sudo nfsiod -n 4
+		fi
+		
+		# gather list of NFS exports into a variable we
+		# will call "exports"
+
+		print " Gathering a list of NFS exports ...."
+		print ""
+
+		exports_ni=$(niutil -list . /exports 2> /dev/null | wc -w)
+
+		# Look for exports in /etc/exports, ignoring comments and blank lines.
+		exports_etc=$(grep -v '^[[:space:]]*\(#\|$\)' /etc/exports 2> /dev/null | wc -l)
+		exports=$(($exports_ni + $exports_etc))
+
+		# If exportfs finds something to export (either using /etc/exports or the
+		# exports NetInfo directory), then start the NFS daemons (which service
+		# NFS requests) and the mount server (which services NFS mount requests).
+
+		# Clear the table of exported filesystems.
+
+		print " Removing /var/db/mountdtab "
+		print ""
+
+		sudo rm -f /var/db/mountdtab
+
+		if [[ "${exports}" -gt 0 ]]; then
+			if ! ps -axwwo command | grep "rpc\.statd" &>/dev/null; then
+				sudo rpc.statd
+			fi
+			# if ps -axwwo command | grep "rpc\.lockd" &>/dev/null; then
+			#	for LOCKPID in $( ps -axwwo pid,command | awk '/rpc\.lockd/{ print $1 }' )
+			#	do
+			#		kill $LOCKPID
+			#	done
+			# fi
+			if ps -axwwo command | grep "rpc\.lockd -w" &>/dev/null; then
+				LOCKPID=$( ps -axwwo pid,command | awk '/rpc\.lockd -w/{ print $1 }' )
+				sudo kill $LOCKPID
+			fi
+			if ! ps -axwwo command | grep "rpc\.lockd" &>/dev/null; then
+				sudo rpc.lockd
+			fi
+			echo " Starting Network File System server"
+			if ps -axwwo command | grep "mount\d" &>/dev/null; then
+				MOUNTPID=$( ps -axwwo pid,command | awk '/mount\d/{ print $1 }' )
+				sudo kill -HUP $MOUNTPID
+			else
+				sudo mountd
+			fi
+
+			# If the NetInfo config/nfsd directory contains startup args for nfsd, use those.
+			arguments=$(niutil -readprop . /config/nfsd arguments 2>/dev/null )
+			if [[ "${arguments}" = "" ]]; then
+				arguments=( -t -u -n 6 )
+			fi
+			print ""
+			print " Starting nfs daemon"
+			print ""
+			if ! ps -axwwo command | grep 'nf\sd' &>/dev/null; then
+				sudo nfsd ${arguments}
+			fi
+		else
+			print " NFS server (mountd and nfsd) has not been started"
+			print " because no /etc/exports or netinfodb exports were found."
+			print " Please check /etc/exports to make sure the file exists and the syntax is correct."
+			print ""
+			if ps -axwwo command | grep "mount\d" &>/dev/null; then
+				MOUNTPID=$( ps -axwwo pid,command | awk '/mount\d/{ print $1 }' )
+				sudo kill $MOUNTPID
+			fi
+
+			print ""
+			print " Stopping nfs daemon"
+			print ""
+			if ps -axwwo command | grep 'nf\sd' &>/dev/null; then
+				for NFSPID in $( ps -axwwo pid,command | awk '/nf\sd/{ print $1 }' ); do
+					sudo kill -9 $NFSPID
+				done
+			fi
+			if [ "${NFSLOCKS:=-AUTOMATIC-}" = "-YES-" ]; then
+				# we definitely want locks on, so turn them on now
+				if ! ps -axwwo command | grep "rpc\.statd" &>/dev/null; then
+					sudo rpc.statd
+				fi
+				if ps -axwwo command | grep "rpc\.lockd -w" &>/dev/null; then
+					LOCKPID=$( ps -axwwo pid,command | awk '/rpc\.lockd -w/{ print $1 }' )
+					sudo kill $LOCKPID
+				fi
+				if ! ps -axwwo command | grep "rpc\.lockd" &>/dev/null; then
+					sudo rpc.lockd
+				fi
+			fi
+			if [ "${NFSLOCKS:=-AUTOMATIC-}" = "-AUTOMATIC-" ]; then
+				# delay starting daemons until we know we need them
+
+				# invoke rpc.statd to send any SM_NOTIFY messages and quit.
+				if ps -axwwo command | grep "rpc\.statd" &>/dev/null; then
+					STATPID=$( ps -axwwo pid,command | awk '/rpc\.statd/{ print $1 }' )
+					sudo kill $STATPID
+				fi
+				
+				sudo rpc.statd -n
+
+				# -w says to wait for signal from kernel, then start daemons
+				if ps -axwwo command | grep "rpc\.lockd$" &>/dev/null; then
+					for LOCKPID in $( ps -axwwo pid,command | awk '/rpc\.lockd/{ print $1 }' )
+					do
+						sudo kill $LOCKPID
+					done
+				fi
+				if ! ps -axwwo command | grep "rpc\.lockd" &>/dev/null; then
+					sudo rpc.lockd -w
+				fi
+			fi
+		fi
+
+else
+		# For 10.5 and later
+
+		if [[ -f /etc/exports ]];then
+			 print "Issuing the command \e[1m sudo /sbin/nfsd restart \e[0m "
+			 print ""
+			 sudo /sbin/nfsd restart
+			 print ""
+			 sleep 2
+			 print "Issuing the command \e[1m sudo /sbin/nfsd status \e[0m "
+			 print ""
+			 sudo /sbin/nfsd status 
+			 print ""
+			 sleep 2
+			 print "Issuing the command \e[1m showmount -e \e[0m "
+			 print "There will be a 20 second delay to allow equilibration and disk arbitration ... "
+			 print " "
+			 sleep 20
+			 showmount -e
+			 print " "
+			 print "This should match what is in your \e[1m /etc/exports \e[0m file:"
+			 cat /etc/exports
+			 return 0
+		
+		else
+			print "\e[1m You must create an \e[0m /etc/exports \e[1m file and put something in it. \e[0m "
+			print ""
+			return 100
+		fi
+
+
+
+fi

@@ -1,0 +1,50 @@
+#!/bin/zsh   -f
+
+if [[ -z $CCP4 || ! -d $CCP4 ]];then
+    print "CCP4 is either not present or the enviornment has not been set up"
+    return 1
+fi
+
+# Make a map to cover the molecule from refmac output
+
+refmac_prefix=$1
+
+if [[ $# != 1 ]];then
+    print "Usage: $0 refmac_output_filename_prefix"
+    return 10
+fi
+
+if [[ $refmac_prefix:e == pdb || $refmac_prefix:e == mtz ]];then
+    refmac_prefix=$refmac_prefix:r  
+fi
+
+if [[ ! -f ${refmac_prefix}.pdb ]];then
+    print "File ${refmac_prefix}.pdb not found"
+    return 20
+fi
+
+if [[ ! -f ${refmac_prefix}.mtz ]];then
+    print "File ${refmac_prefix}.mtz not found"
+    return 30
+fi
+
+ 
+# make the map
+
+fft hklin ${refmac_prefix}.mtz mapout /tmp/$$junk.map << EOF-fft
+labin F1=FOFCWT   PHI=PHFOFCWT
+EOF-fft
+ 
+
+#
+# To Extend A Map (See Extend):
+#
+mapmask                                  \
+mapin /tmp/$$junk.map              \
+mapout extended_${refmac_prefix}_fofc.map           \
+xyzin ${refmac_prefix}.pdb << eof
+BORDER 5.0
+MODE mapin
+eof
+
+

@@ -1,0 +1,104 @@
+#autoload
+
+# Completion function and definition for command  "open -a"
+#
+# comment this out if you don't want fast completions
+
+open_completion_behavior='override'
+
+###########################################################################
+
+if [[ $open_completion_behavior == override || -f ~/.zsh/zshapplist ]];then
+
+ if [[ -z $SSH_CONNECTION ]]; then
+    # No point in wasting time with this if we have connected remotely.
+ 
+    # Test to see if the list of applications exists and is at 
+    # least as new as locate.database
+    # If not, generate it with the function _comp_appgetter  
+
+    if [[ ! -f /var/db/locate.database  ]];then
+      print "\e[5m\e[31m************************************************************* \e[0m"
+      print "  \e[33m\e[41m\e[1mWARNING:\e[0m\e[1m The file \e[4m/var/db/locate.database\e[0m \e[1mdoes not exist."
+      print "  Please issue the command \"\e[0msudo /etc/weekly\e[1m\" immediately!\e[0m"
+      print "\e[5m\e[31m************************************************************* \e[0m"
+      # return 1
+    fi
+
+  if [[ ! -e  ~/.zsh/zshapplist ||  ~/.zsh/zshapplist -ot /var/db/locate.database ]]; then
+
+#    print "Loading application name completions for 'open -a' command..."
+    print ""
+    print "\e[33m\e[41m\e[1mLoading application name completions for 'open -a' command...\e[0m"
+ 
+    if [[ -x $ZDOT/zshrc.d/local-functions/darwin/_comp_appgetter ]]; then   
+        $ZDOT/zshrc.d/local-functions/darwin/_comp_appgetter  >|  ~/.zsh/zshapplist
+    
+    elif [[ -x $ZDOT_TEMPLATE/zshrc.d/local-functions/darwin/_comp_appgetter ]]; then
+        $ZDOT_TEMPLATE/zshrc.d/local-functions/darwin/_comp_appgetter  >|  ~/.zsh/zshapplist
+    else
+        print "Unable to generate list of available OS X applications."
+    fi   
+    
+  fi  #  End of ~/.zsh/zshapplist test
+    
+  #  NOW FOR THE ACTUAL open -a COMPLETION:
+  #--------------------------------------------------------------------------#
+  
+#  compctl -f  -x 'c[-1,-a] p[2,2]' -s "$(cat ~/.zsh/zshapplist)" \
+#          -M 'm:{A-Za-z}={a-zA-Z} r: ||[^ ]=**' -- open 
+
+# Now use the _open function.  Leave this in case of problems with that.
+          
+  # completes only if "-a" argument is present after "open"
+  # completes at postion 2 only once p[2,2], further completions are
+  # standard file name and directory name completions, as are completions.
+  # of "open" and "open -e" (and others in my enhanced open function).
+  # -s argument is required for string -- permits escaped spaces in app list.
+  # Completions are case-insensitive and "word" is expanded to "Microsoft\ Word"
+  
+  #--------------------------------------------------------------------------#
+   
+
+
+
+#############################################################################
+
+# End of completion function and definition for command  "open -a"
+
+
+
+#############################################################################
+#  Improve the behavior of the _open function:
+#############################################################################
+
+  function hijack_open {
+    # This over-rides the application cache for the new
+    #  _open completion function
+    # to use my own app_getter function to generate an application list
+    # that includes carbon apps missed by _mac_applications
+    #
+    myapps=$(cat ~/.zsh/zshapplist | grep -v  \' )
+    mkdir -p ~/.zsh/cache/$HOST
+    print _mac_apps\=\(\'"$myapps[@]"\'\) | perl -pi -e "s|\)\n|\)|g" | \
+           perl -pi -e "s|\n|' '|g" >| ~/.zsh/cache/$HOST/Mac_applications
+  } 
+ 
+
+    # Now use this list to over-ride the cache of _mac_applications
+    # comment out the next line to use the default _open applications list but to 
+    # retain the completion style listed below.
+    
+    hijack_open
+    
+    # This allows one to type "open -a wor"  and complete to 
+    #  "open -a Microsoft\ Word"
+    
+    
+    zstyle ':completion:*:*:open:*' matcher 'm:{a-z}={A-Z} r: ||[^ ]=**'
+
+ fi #   end of test:  # if [[ -z $SSH_CONNECTION ]]
+
+fi # end of test [[ $open_completion_behavior == override || -f ~/.zsh/zshapplist ]]
+
+

@@ -1,0 +1,6 @@
+#!/bin/zsh -f 
+
+# mybom: lsbom the listed package with the given arguments
+lsbom -p sfMUG /Library/Receipts/*"$1"*.pkg/Contents/Archive.bom; 
+
+

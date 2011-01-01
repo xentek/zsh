@@ -1,0 +1,53 @@
+.\"
+.TH "remove_user_from_group" 7 "August 4, 2005" "Mac OS X" "Mac OS X Darwin ZSH customization" 
+.SH NAME
+.B remove_user_from_group
+\- Remove an existing user from an existing group (or all groups) in the Directory Service database 
+
+.SH SYNOPSIS
+
+.B remove_user_from_group 
+group_name|all
+.B username 
+
+where 
+
+.B group_name 
+is a one-word name of an existing group
+
+.B all
+means every group to which the user belongs
+
+.B username 
+is the standard (short, account) one-word username of a Mac OS X account that has
+previously been created.
+
+Both arguments are compulsory 
+and must be
+supplied in the order given above.
+
+.SH DESCRIPTION  
+
+The 
+.B remove_user_from_group
+command must be invoked by an admin user.
+
+Remove a user from a group, or all groups.
+
+Removes an existing user from an existing group in NetInfo, or from
+all groups to which that user belongs (but not their primary group).
+
+.SH SEE ALSO
+.BR add_user(7),
+.BR addgroup(7),
+.BR delete_user(7),
+.BR delete_group(7),
+.BR remove_user_from_group(7),
+.BR adduser2group(7)
+
+.SH AUTHOR
+Obtained and modified from a bash shell script available at
+http://www.osxfaq.com/tips/unix-tricks/week91/friday.ws
+
+.SH MAINTAINER
+W. G. Scott <wgscott@users.sourceforge.net>

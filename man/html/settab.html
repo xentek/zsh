@@ -1,0 +1,65 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Mac OS X (vers 1st December 2004), see www.w3.org" />
+<meta http-equiv="Content-Type" content=
+"text/html; charset=us-ascii" />
+<title>Manual Page for set_title_tab</title>
+
+<style type="text/css">
+/*<![CDATA[*/
+<!--.red {color: #CC0000}-->
+/*]]>*/
+</style>
+
+<style type="text/css">
+/*<![CDATA[*/
+<!--.hed {color: #000000; font-weight: bold; font-size: larger;}-->
+/*]]>*/
+</style>
+</head>
+<body>
+<pre>
+ <a href=
+"http://sage.ucsc.edu/Library/init/zsh/man/html/set_title_tab.html">set_title_tab(7)</a>            Mac OS X Darwin ZSH customization           <a href="http://sage.ucsc.edu/Library/init/zsh/man/html/set_title_tab.html">set_title_tab(7)</a>
+
+
+
+<span class="hed">NAME</span>
+       <span class=
+"red">set_title_tab</span>  -  function  to update xterm, Terminal.app, konsole or iTerm.app title
+       bar (and tabs, if present) to current $PWD after you cd into a new directory.
+
+       This is the successor to settab and settitle functions (as well as the chpwd function).
+       It avoids the explicit definition and use of special functions (as of zsh-4.3.4) such as
+       chpwd, precmd, preexec, instead setting appropriate arrays. This is to prevent conflicts
+       with user's prompt functions and so forth. (For older versions, it still uses these functions,
+       but does so in such a way to try to minimize the chance of clobbering prior directives).  
+      
+       This is designed to put by default the computer name and whole directory path 
+       into the title bar (and if availble) the $PWD and penultimate directory 
+       in the tab. Also enables transient display of a running command (eg vim).
+       Currently works with iTerm (OSX) and konsole (KDE) tabs, and should work
+       with any standard X-like term (and Apple's Terminal.app).
+
+
+<span class="hed">SYNOPSIS</span>
+       set_title_tab
+
+
+<span class="hed">AUTHOR</span>
+       William Scott
+
+
+<span class="hed">MAINTAINER</span>
+       W. G. Scott <a href=
+"mailto:wgscott@users.sourceforge.net">wgscott@users.sourceforge.net</a>
+
+
+
+Mac OS X                        August 5, 2005                     <a href="http://sage.ucsc.edu/Library/init/zsh/man/html/set_title_tab.html">set_title_tab(7)</a>
+</pre>
+</body>
+</html>

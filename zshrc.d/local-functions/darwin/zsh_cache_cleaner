@@ -1,0 +1,50 @@
+#!/bin/zsh -f
+
+# Clean caches for zsh users to force updating
+
+if [[ $1 == (-h|-help|--h|--help) || $# > 1 ]]; then
+
+    print ""
+    print "Usage:  zsh_cache_cleaner [-a]"
+    print "Removes old caches for user [default] or everyone [-a] "
+    print ""
+    return 0
+
+fi
+
+
+
+if [[ $1 == (-a|-all|all|--all) ]]; then
+
+    function remove_zcompdump { sudo rm -i /Users/*/~/.zcompdump }
+    
+    function remove_zshapplist { sudo rm -i /Users/*/~/.zsh/zshapplist }
+    
+    function remove_comp_cache { sudo rm -ir /Users/*/.zsh/cache/* }
+
+else
+
+    function remove_zcompdump {   rm -i ~/.zcompdump }
+    
+    function remove_zshapplist {  rm -i ~/.zsh/zshapplist }
+    
+    function remove_comp_cache {  rm -ir ~/.zsh/cache/* }
+
+fi
+
+remove_zcompdump; remove_zshapplist; remove_comp_cache
+
+print ""
+
+if [[ $1 != -a ]]; then
+    print "Old zsh caches have now been purged."
+    print "New completions take effect upon starting a new shell."
+else
+    print "Old zsh caches have now been purged for all users."
+    print "New completions take effect upon starting a new shell."
+fi
+
+#print ""
+#print "To (re)-enable faster application name completion, type"
+#print "enable_faster_open"
+#print ""

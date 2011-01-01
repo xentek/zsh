@@ -1,0 +1,19 @@
+.TH rcommand 7 "October 25, 2005" "Mac OS X" "Mac OS X Darwin customization" 
+.SH NAME
+.B rcommand 
+\-  executes a single command on a remote host and returns stdout.
+.SH SYNOPSIS
+.B rcommand user@somewhere.over.the.rainbow 
+command arg1 arg2 ... argN
+.SH DESCRIPTION
+.B  rcommand 
+is the command 
+.B ssh -f -Y "$@"
+which allows you to log in remotely, run a command on a remote machine, and
+then collect the standard output via redirection or simply display it in your local terminal.
+ 
+.SH AUTHOR
+ William Scott
+.SH "SEE ALSO"
+.BR ssh (1),
+

@@ -1,0 +1,54 @@
+.\" Process this file with
+.\" groff -man -Tascii foo.1
+.\"
+.TH gdirs 1 "January 23 2005" "Mac OS X" "Mac OS X Darwin customization" 
+.SH NAME
+.B gdirs 
+\- display directory stack as gui menu
+.SH SYNOPSIS
+gdirs [-f] [-F] 
+.SH DESCRIPTION
+Type
+.B gdirs
+and you will get a pop-up window that displays up to twenty previously visited directories. Pick whatever directory you want and hit "OK" and the terminal will cd to that directory. Type  
+.B gdirs -f 
+and both the terminal and Finder will change to the newly selected directory. Type  
+.B gdirs -F 
+and only the Finder will change to the newly selected directory.
+
+The non-gui version is (at present) a bit more flexible and fully-featured. Type 
+.B dirstack [n] 
+where n is an integer [defaults to 20] and you will get the n most recent directories visited, listed with numbers next to them.Ê The command 
+.B cd? 
+is the same. You may then type (eg) cd7 and the terminal will change directory to that listed on line 7 of the dirstack output. 
+.B cp7 
+or 
+.B cpath7 
+copies the directory path in line 7 into the clipboard copy/paste buffer.
+.SH OPTIONS
+.IP -f
+both the terminal and Finder will change to the newly selected directory.
+.IP -F
+the Finder (only) will change to the newly selected directory
+.SH SEE ALSO
+http://www.chemistry.ucsc.edu/~wgscott/mystuff/gdirs.html
+.SH FILES
+The following aliases should be defined in one's
+.I aliases.local 
+file:
+
+.B alias dirstack="dirdump; typeset -U dirs_shared ; dirstack"
+
+.B alias cd?="dirdump; typeset -U dirs_shared; dirstack"
+
+.B alias gdirs="dirdump; typeset -U dirs_shared; dirstack > /dev/null ; guidirs"
+ 
+.SH BUGS
+Deleted directories are not purged from the stack.
+.SH AUTHOR
+W. G. Scott
+.SH "SEE ALSO"
+.BR cd? (1),
+.BR cpath[n] (1),
+.BR dirstack\ [n] (1)
+

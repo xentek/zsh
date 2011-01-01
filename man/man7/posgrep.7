@@ -1,0 +1,27 @@
+.TH posgrep 7 "January 1, 2005" "Mac OS X" "Mac OS X Darwin customization" 
+.SH NAME
+.B posgrep
+\-  greps stuff from files in the path matching that of the frontmost finder window
+.SH SYNOPSIS
+.B posgrep 
+.I PATTERN 
+.SH DESCRIPTION
+.B posgrep
+combines the grep utility with the posd utility. 
+.B  posd 
+is an osascript embedded in a shell script that returns the pwd
+corresponding to the frontmost finder window. 
+
+The one-line function is
+
+.B grep -iIrn "$1" "$(posd)"
+
+.SH AUTHOR
+ Gary Kerbaugh 
+.SH "SEE ALSO"
+.BR fdc (7),
+.BR cdf (7),
+.BR posd (7),
+.BR grep (1)
+
+

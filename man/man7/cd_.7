@@ -1,0 +1,35 @@
+.\" Process this file with
+.\" groff -man -Tascii foo.1
+.\"
+.TH cd_ 7 "July 9 2005" "Mac OS X" "Mac OS X Darwin customization" 
+.SH NAME
+.B cd_ 
+.SH SYNOPSIS
+.B cd_ [n]
+.SH DESCRIPTION
+.B cd_
+enables you to cd to the directory (or the directory containing the file) named in the last argument of
+the previous command. With the optional numeric argument, you can choose positions other than the last 
+in the previous command string, i.e., 
+
+Execute cd "$(dirname $_)" if $_ is a file
+
+Execute cd "$_" if $_ is a directory
+
+or, more generally, get the numbered string position in the last line and cd to it (or it's directory)
+
+eg:
+
+ls one two three four five six
+
+cd_ 4  is the same as cd four
+
+cd_ -2 is the same as cd five
+
+
+.SH AUTHOR
+ William Scott 
+.SH "SEE ALSO"
+.BR cd (1)
+
+

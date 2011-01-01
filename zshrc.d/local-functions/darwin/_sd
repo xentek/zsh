@@ -1,0 +1,87 @@
+#compdef sd
+
+#set -x
+
+cvd_process=( $(ps -ax | grep "VirtualDesktop" | grep -v grep | \
+                    head -n 1 | awk '{print $1}' ))
+                    
+vir_process=( $(ps -ax | grep Virtue | grep -v grep | \
+                    head -n 1 | awk '{print $1}' ))
+                        
+
+function GetDesktopNames {
+
+if [[ -n $cvd_process  &&  $cvd_process -gt 0 ]];then
+
+osascript << eof
+    tell application "Finder"
+        tell application "CodeTek VirtualDesktop Pro"
+            set names to (get desktopNames)
+        end tell
+    end tell
+eof
+
+elif [[ -n $vir_process  &&  $vir_process -gt 0 ]];then
+
+    # Stupid kludge.  I will figure out how to poll the application
+    # for the list of desktops some day
+
+#    print "Main, Browsing, Mail, Code"
+
+# if [[ -d "$HOME/Library/Application\ Support/VirtueDesktops" ]];then
+    desktop_array=($(/usr/bin/awk '/<key>name<\/key>/{ getline; gsub(/<[^>]*>/,""); gsub(/^[\t ]*/,""); if ( $0 !~ "^Desktop" ){ OUTPUT = OUTPUT " " $0 } } END{ sub(/^ /,"",OUTPUT); print OUTPUT }' ~/Library/Application\ Support/VirtueDesktops/Desktops.virtuedata  ))
+# elif [[ -d "$HOME/Library/Application\ Support/Virtue" ]];then
+#    desktop_array=($(/usr/bin/awk '/<key>name<\/key>/{ getline; gsub(/<[^>]*>/,""); gsub(/^[\t ]*/,""); if ( $0 !~ "^Desktop" ){ OUTPUT = OUTPUT " " $0 } } END{ sub(/^ /,"",OUTPUT); print OUTPUT }' ~/Library/Application\ Support/Virtue/Desktops.virtuedata  ))
+# else
+#    print "Cannot find ~/Library/Application\ Support/Virtue/Desktops.virtuedata "
+#    return 42
+#fi
+
+#desktop_array=($(/usr/bin/sed -n '/name/{n;p;}' \
+#               ~/Library/Application\ Support/Virtue/Desktops.virtuedata | grep -v "Desktop " \
+#                      | perl -p -e 's|<string>||g' | perl -p -e 's|</string>||g' )) 
+print "${(f)desktop_array[@]}"
+
+fi
+
+}
+  
+
+function _sd {
+
+
+
+  local curcontext="$curcontext" state line expl
+
+  _arguments -C \
+    '-a[specify application]: :->open_mac_applications' \
+    '*: :->desktop_picker'
+
+  case "$state" in
+    (open_mac_applications)
+
+    # The following style enables one to type (eg) "sd -a wor"  and complete to 
+    #  "sd -a Microsoft\ Word"
+    
+    
+    zstyle ':completion:*:*:sd:*' matcher 'm:{a-z}={A-Z} r: ||[^ ]=**'
+    
+            _mac_apps=${(f)"$( mdfind -onlyin /Applications -onlyin /Developer \
+         "kMDItemContentType == 'com.apple.application-*'" | perl -p -e 's|.app||g' )"}
+    
+    
+        _wanted commands expl 'Mac OS X application' compadd Finder "${${(f)_mac_apps}[@]:t}"
+            
+    ;;    
+    (desktop_picker)
+        compadd -X %B'--- Desktop names ---'%b \
+         $(GetDesktopNames | perl -p -e 's|\,||g' )
+    
+    ;;
+  esac
+
+}
+
+
+_sd "$@"
+

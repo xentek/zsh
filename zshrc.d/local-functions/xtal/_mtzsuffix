@@ -1,0 +1,6 @@
+#compdef mos2fobs 
+autoload -U _files_only
+#local expl
+ _description files  expl %B'--- mtz files available ---'%b
+_files_only "$expl[@]" -g '*.mtz'
+

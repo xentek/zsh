@@ -1,0 +1,19 @@
+.\" Process this file with
+.\" groff -man -Tascii foo.1
+.\"
+.TH depfinder 7 "July 9 2005" "Mac OS X" "Mac OS X Darwin customization" 
+.SH NAME
+.B depfinder 
+.SH SYNOPSIS
+.B depfinder [full-path-to-debian-archive.deb]
+.SH DESCRIPTION
+.B depfinder
+Look at the contents of a debian package and find the dependencies. Uses otool and dpkg and produces a comma-delimited
+list of debian packages corresponding to dependencies deduced from linked dynamic libraries. This is useful for packaging fink and debian linux packages.
+.SH AUTHOR
+ William Scott 
+.SH "SEE ALSO"
+.BR dpkg (8),
+.BR otool (1)
+
+

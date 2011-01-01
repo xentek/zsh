@@ -1,0 +1,2 @@
+#!/bin/zsh -f 
+command jobs -s | wc -l | awk '{print $1}'

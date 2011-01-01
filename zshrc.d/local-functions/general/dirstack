@@ -1,0 +1,57 @@
+#!/bin/zsh
+
+# usage:   dirstack [n]
+
+# n = # of lines of directory stack printed
+# if n is not given, default to 20
+
+# command to update and then print out the shared directory stack
+
+# aliases a series of cd-type commands corresponding to the line
+# number in the directory stack printout
+
+# eg:
+#     cd7  will cd to the directory in line #7 of the dirstack printout
+#     cd? is aliased to the dirstack command (in the file aliases.local)
+
+#  The commands cp7 and cpath7 are aliases to the same string of commands
+#  that copies the directory in line #7 into the clipboard cut/paste buffer
+
+#  cd# and cp# / cpath#  are updated dynamically each time this function is invoked,
+#  so always invoke it first with cd? or dirstack
+
+
+# Here you can change the default 20 most recent directories to
+# whatever number suits you.
+
+dirdump
+
+if [[ -n $1 ]]; then
+ GLOBALDIRSIZE=$1
+else
+ GLOBALDIRSIZE=20
+fi
+
+  
+
+ global_dirs=()
+ global_dirs=(  $dirs_shared[1,$GLOBALDIRSIZE]  )
+ export global_dirs
+
+
+for ((i = 1; i <= $GLOBALDIRSIZE; i++ )) do         
+	if [[ -n $global_dirs[i] ]];then 
+		print $i $global_dirs[i] | perl -pi -e 's|_SPACE_|\\\ |g'
+                dir_index=$(print $global_dirs[i] | perl -pi -e 's|_SPACE_|\\\ |g' )
+                alias cd$i="cd $dir_index ; command pwd " 
+                dir_index_chomp=$(print -n $global_dirs[i] | perl -pi -e 's|_SPACE_|\\\ |g' )
+
+		alias cp$i="echo -n $dir_index_chomp |perl -pi -e 's; ;\\\ ;g' | pbcopy "
+		alias cpath$i="echo -n $dir_index_chomp |perl -pi -e 's; ;\\\ ;g' | pbcopy "
+
+	else 
+		return 0
+	fi
+done
+
+

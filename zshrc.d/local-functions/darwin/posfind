@@ -1,0 +1,2 @@
+#!/bin/zsh -f
+find "$(posd)" -name "*$1*";

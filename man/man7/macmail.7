@@ -1,0 +1,40 @@
+.\"
+.TH "macmail" 7 "July 19, 2005" "Mac OS X" "Mac OS X Darwin ZSH customization" 
+.SH NAME
+.B macmail
+\- uses the Apple Mail.app interface as a drop-in replacement for sending mail via the unix 
+.B mail
+command.
+
+.SH SYNOPSIS
+macmail [-v] [-g] [-s subject] [-c cc-addr] [-b bcc-addr] [-F] to-addr ...
+
+macmail [<options>] <recipients>
+     options:
+         -v           be verbose
+         -g           activate Mail.app to approve the message
+         -F <from>    specify the From: address
+         -b <bcc>     specify Bcc: recipients in a comma-separated list
+         -c <cc>      specify Cc: recipients in a comma-separated list
+         -s <subject> specify the message subject
+
+The body of the message is read from standard input.
+
+.SH DESCRIPTION
+
+.B macmail
+is a zsh function wrapper for a public-domain perl script called macmail.pl
+written by Nathaniel Nystrom. The perl script is included in zsh-templates
+and can also be obtained here:  http://xanana.ucsc.edu/Library/init/zsh/local-functions/etc/macmail.pl
+
+You cannot use this for reading your mail.
+
+.SH "SEE ALSO"
+.BR mail (1)
+
+.SH AUTHORS
+Nathaniel Nystrom wrote the perl script (mac)mail.pl.  William Scott wrote the zsh wrapper to import the
+functionality into zsh as a function.
+
+.SH MAINTAINER
+W. G. Scott <wgscott@users.sourceforge.net>

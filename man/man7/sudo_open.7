@@ -1,0 +1,195 @@
+.\" Process this file with
+.\" groff -man -Tascii foo.1
+.\"
+.TH open 1 "January 4, 2005" "Mac OS X" "Mac OS X Darwin customization" 
+.SH NAME
+.B open 
+\- command-line equivalent of double-clicking to open OS X applications, files, urls, x-windows unix programs, preference panes and directories.  This is an enhanced version (a superset) of Apple's 
+.B open 
+command, and (unlike Apple's version) uses a powerful and nuanced 
+.B customizable command completion mechanism 
+for the 
+.B open
+command.
+.SH SYNOPSIS
+.B open [
+-aeFfpswxh
+.B ] [
+.I application-name
+.B ]
+.I file
+.B ...
+.SH DESCRIPTION
+The
+.B open
+function augments Apple's distributed open command with a super-set of functionality.  
+It opens a file (or a directory, Preference Pane, Application, Widget or URL), 
+just as if you had double-clicked the file's icon. The augmented version incorporates 
+a powerful zsh command completion system. If no application name is specified, the 
+default application as determined via LaunchServices is used to open the specified files. 
+This works with a programmed command completion for all OS X Application names. 
+This mechanism in turn relies on mdfind in 10.4 and above, or an up-to-date locatedb in 10.3. 
+
+The distributed function
+.B enable_faster_open
+can be run to aid the user in taking full advantage of the open completion mechanism 
+and ensures that it operates optimally.  In 10.4 this is done with a dedicated launchd 
+item, and in 10.3 it is done using the locatedb.
+
+If the file is in the form of a URL, the file will be opened as a URL.
+
+If the name of a PreferencePane is given with the -p flag, System Preferences will open to that pane.  This works with a command completion for each installed PreferencePane.
+
+You can specify one or more file names (or pathnames), which are interpreted relative to the shell or Terminal window's current working directory. For example, the following command would open all Word files in the current working directory:
+
+open *.doc
+
+.SH OPTIONS
+
+.IP "-a foo [bar]" 
+.B Opens application foo [and file bar]
+
+.IP "-d bar"              
+.B Opens file with default application
+
+.IP "-e bar"              
+.B Force the file bar to open with TextEdit
+
+.IP "-f"                  
+.B Reads piped input and opens with TextEdit.
+
+.IP "-F bar"              
+.B Force the file bar to open with edit function.
+
+.IP "-p bar.prefPane"     
+.B Open named System Preferences preference pane.
+
+.IP "-s bar"              
+.B Force the file bar to open with sudo open.
+
+.IP "-w [foobar]"
+.B Open the Widget named foobar
+
+.IP "-x foo [bar]"        
+.B Force the program foo to open [file bar] with open-X11.
+
+.IP "-h"                  
+.B Obtain program help info.
+
+.SH FILES
+.I ~/.zsh/zshapplist
+.RS
+An updatable listing cache of Application names to be used for completing the
+.B open -a
+command. See
+.BR comp_appgetter (1)
+and
+.BR enable_faster_open (1)
+for further details.
+.RE
+.I _open
+.I _mac_applications
+.I _mac_files_for_application
+.I _retrieve_mac_apps
+.I _comp_appgetter
+.I enable_faster_open
+.RS
+are all zsh functions that must be in the $fpath array for the elaborate 
+.B _open
+completion system to work properly.  
+
+.SH EXAMPLES
+
+open -a Microsoft\\ Word
+.B or 
+open -a "Microsoft Word"
+.B opens the application named 'Microsoft Word'
+
+open -a Wor
+.I <tabkey>
+.B completes the line replacing
+Wor
+.B with
+Microsoft\\ Word
+
+open -a Microsoft\\ Word foo.doc
+.B opens the file 'foo.doc' using the application named 'Microsoft Word'
+  
+open -p Accounts.prefPane
+.B opens the Preference Pane 'Accounts' in 'System Preferences'
+  
+open -p Acco
+.I <tabkey>
+.B completes with '
+open -p Accounts.prefPane
+.B '
+
+open .
+.B opens a finder window in the current directory.
+
+open /Volumes/Macintosh HD/foo.txt
+.B opens the document in the default application for its type (as determined by LaunchServices).
+ 
+open /Volumes/Macintosh HD/Applications/ 
+.B opens that directory in the Finder.
+ 
+open -a TextEdit /Volumes/Macintosh HD/foo.txt' opens the document in the application specified (in this case, TextEdit).
+
+open -e /Volumes/Macintosh HD/foo.txt
+.B opens the document in TextEdit. 
+ 
+open http://www.apple.com/
+.B opens the URL in the default browser.
+
+open file://localhost/Volumes/Macintosh HD/foo.txt 
+.B opens the document in the default application for its type (as determined by LaunchServices).
+ 
+open file://localhost/Volumes/Macintosh HD/Applications/ 
+.B opens that directory in the Finder.
+
+.SH HISTORY
+Apple's 
+.B open
+command first appeared in NextStep, and is distributed in OS X Darwin.  The 
+.B open
+function was written as a shell-script wrapper for Apple's
+.B open
+to include additional functionality, and has been incorporated, along with an elaborate set of command completions, as a 
+.B zsh function
+in the 
+.I zsh-templates package.
+The completions for the
+.B open
+command were written by Motoi Washida (Nov 12, 2004 CVS version) and subsequently modified by W. G. Scott, Wataru Kagawa and others.
+
+ 
+
+
+
+.SH AUTHORS
+The 
+.B open
+command is Copyright (c) 2001 Apple Computer, Inc. All Rights Reserved.  The
+.B open
+shell script is a wrapper for the original 
+.B open
+program, which remains unaltered.  The
+.B open
+shell script (and zsh function) was written by W. G. Scott and is public domain. 
+
+The 
+.B _open 
+command completion function was re-written by W. G. Scott based on that of Motoi Washida.  The other functions that _open depends on were written entirely by Motoi Washida, except for 
+.B comp_appgetter
+which was written by W. G. Scott.
+
+.SH "SEE ALSO"
+.BR open (7)
+.BR open (1)
+.BR sudo (1)
+.BR open-x11 (7),
+.BR comp_appgetter (1),
+.BR enable_faster_open (1)
+.BR sudo_open (1)
+.BR edit (1)
+

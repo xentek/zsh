@@ -1,0 +1,3 @@
+#!/bin/zsh -f
+
+echo -n "$(posd)" |perl -pi -e 's; ;\\\ ;g' | pbcopy

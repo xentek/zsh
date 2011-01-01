@@ -1,0 +1,12 @@
+#!/bin/zsh -f
+
+# Apple's X11 underwent a major change between OS X v. 10.4 and v. 10.5
+# This is a wrapper script that will attempt to call the correct version of the customization function
+
+if [[ $(sw_vers -productVersion) < 10.5 ]]; then
+	autoload -U customize_x11_10.4
+	customize_x11_10.4
+else
+	autoload customize_x11_10.5
+	customize_x11_10.5
+fi

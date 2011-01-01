@@ -1,0 +1,25 @@
+.\" Process this file with
+.\" groff -man -Tascii foo.1
+.\"
+.TH cdd 7 "January 1, 2005" "Mac OS X" "Mac OS X Darwin customization"  
+.SH NAME
+.B cdd
+\-  cd to new directory and then change the frontmost finder window to it. 
+.SH SYNOPSIS
+.B cdd [foo]
+.SH DESCRIPTION
+.B cdd
+This command simply combines the command 
+.B cd 
+and the command 
+.B fdc.
+It changes the finder window to match the new pwd of the terminal in which the cd command is issued.
+
+.SH AUTHOR
+ Gary Kerbaugh and William Scott
+.SH "SEE ALSO"
+.BR cdf (1),
+.BR posd (1),
+.BR fdc (1)
+
+

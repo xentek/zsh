@@ -1,0 +1,211 @@
+#!/bin/zsh 
+
+# sd:  switch desktops (using CodeTek virtual desktops or Virtue).
+
+# set -x
+
+
+##########################################################################
+##########################################################################
+
+function DesktopsRunning {
+
+    cvd_process=( $(ps -ax | grep "VirtualDesktop" | grep -v grep | \
+                        head -n 1 | awk '{print $1}' ))
+                        
+    vir_process=( $(ps -ax | grep Virtue | grep -v grep | \
+                        head -n 1 | awk '{print $1}' ))
+                        
+    if [[ -n $cvd_process  &&  $cvd_process -gt 0 ]];then
+        print "yes_cvd"
+    elif [[ -n $vir_process  &&  $vir_process -gt 0 ]];then
+        print "yes_vir"
+    else
+        print "no"
+    fi
+}
+
+##########################################################################
+
+function Switch2Desktop {   
+
+if [[ $(DesktopsRunning) == yes_cvd ]];then
+        
+osascript << eof-1C                                 
+    tell application "CodeTek VirtualDesktop Pro"          
+       switchToDesktop named "$Desktop"
+    end tell
+eof-1C
+
+elif [[ $(DesktopsRunning) == yes_vir ]];then
+    :
+
+    #osascript << eof-1V
+    #  tell application "Virtue"
+    #    show desktop "$Desktop"
+    #  end tell
+    #eof-1V
+
+elif [[ $(DesktopsRunning) == no ]];then
+    print "No virtual desktop program is running"
+
+else
+    print "Program error in function Switch2Desktop"
+
+fi
+
+}
+
+##########################################################################
+
+function SwitchApp2Desktop {   
+
+if [[ -z $(ps -ax | grep "$App" | grep -v grep | awk '{print $1}' ) ]];then
+    open -a "$App"  ; sleep 5
+else
+    open -a "$App"
+fi     
+
+if [[ $(DesktopsRunning) == yes_cvd ]];then
+ 
+osascript << eof-2C
+    tell app "Finder"
+    activate
+        tell application "CodeTek VirtualDesktop Pro"
+                moveApplication named "$App" toDesktopNamed "$Desktop"
+        end tell
+    end tell
+eof-2C
+
+
+elif [[ $(DesktopsRunning) == yes_vir ]];then
+
+osascript << eof-2V
+ tell application "$App" to set miniaturized of the front window to true
+--  tell application "System Events"
+--      activate application "$App"     
+--      keystroke "m" using {command down}
+--  end tell
+  tell application "VirtueDesktops"
+      show desktop "$Desktop"
+  end tell
+eof-2V
+print "$Desktop"
+sleep 1
+open -a "$App"
+
+elif [[ $(DesktopsRunning) == no ]];then
+    print "No virtual desktop program is running"
+
+else
+    print "Program error in function Switch2Desktop"
+    return 111
+fi
+
+}
+
+##########################################################################
+
+function Switch2NumDesktop {           
+osascript << eof-3                                
+    tell application "CodeTek VirtualDesktop Pro"          
+       switchToDesktop named (item $DesktopNumber of (get desktopNames))
+    end tell
+eof-3
+}
+
+##########################################################################
+
+function SwitchApp2NumDesktop {     
+    if [[ -z $(ps -ax | grep "$App" | grep -v grep | awk '{print $1}' ) ]];then
+        open -a "$App"  ; sleep 5
+    else
+        open -a "$App"
+    fi        
+osascript << eof-4
+    tell app "Finder"
+    activate
+        tell application "CodeTek VirtualDesktop Pro"
+                moveApplication named "$App" toDesktopNamed (item $DesktopNumber of (get desktopNames))
+        end tell
+    end tell
+eof-4
+}
+
+##########################################################################
+##########################################################################
+
+
+if [[ $(DesktopsRunning) == no ]];then
+    print "CodeTek Virtual Desktops or Virtue must be installed and running for the $0 function to work"
+    return 42
+fi
+
+
+if [[ $# == 1 && $1 -gt 0 ]];then
+    
+    DesktopNumber="$1"
+    Switch2NumDesktop  >/dev/null
+    if [[ $TERM_PROGRAM == iTerm.app && -z $WINDOWID ]];then
+        App=iTerm
+    elif [[  $TERM_PROGRAM == Apple_Terminal  && -z $WINDOWID ]];then
+        App=Terminal
+    else    
+        App=X11
+    fi
+    print -n "Switching to Desktop named "
+    SwitchApp2NumDesktop  
+    open -a $App
+    App=""
+    Desktop=""
+    DesktopNumber=""
+
+elif [[ $# == 1 ]];then
+
+    Desktop="$1"
+    Switch2Desktop  >/dev/null
+    if [[ $TERM_PROGRAM == iTerm.app   && -z $WINDOWID ]];then
+        App=iTerm
+    elif [[  $TERM_PROGRAM == Apple_Terminal   && -z $WINDOWID ]];then
+        App=Terminal
+    else
+        App=X11
+        #sleep 5; xwit -pop
+    fi
+    print -n "Switching to Desktop named "
+    SwitchApp2Desktop
+    App=""
+    Desktop=""
+    DesktopNumber="" 
+
+elif [[ $# == 3 && $1 == "-a" ]];then
+
+    App="$2"
+    Desktop="$3"
+    DesktopNumber="$3"
+    print -n "Switching $App to Desktop named "
+    if [[ $3 -gt 0 ]];then
+        SwitchApp2NumDesktop
+
+    else
+        SwitchApp2Desktop
+
+    fi
+    App=""
+    Desktop=""
+    DesktopNumber=""
+
+else
+    print "Usage: $0 <desktop number>"
+    print "Usage: $0 <desktop name>"
+    print "Usage: $0 -a <application> <desktop name>"
+    App=""
+    Desktop=""
+    DesktopNumber=""
+    return 1
+fi
+
+
+
+
+

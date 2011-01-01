@@ -1,0 +1,71 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content=
+"HTML Tidy for Mac OS X (vers 1st December 2004), see www.w3.org"
+name="generator" />
+<title>Man page of man</title>
+</head>
+<body>
+<h1>man</h1>
+Section: Mac OS X Darwin customization (7)<br />
+Updated: March 19, 2005<br />
+<a href="../html/">Index</a> <a href=
+"http://www.chemistry.ucsc.edu/%7Ewgscott/mystuff/zsh_tree.html">Return
+to Main Contents</a>
+<hr />
+<a name="lbAB" id="lbAB">&nbsp;</a>
+<h2>NAME</h2>
+<b>man</b> - Augmented man command that includes run-help and info
+in addtion to command man.. <a name="lbAC" id="lbAC">&nbsp;</a>
+<h2>SYNOPSIS</h2>
+<b>man [-options] [foo]</b> <a name="lbAD" id="lbAD">&nbsp;</a>
+<h2>DESCRIPTION</h2>
+The augmented <b>man</b> zsh function requires the <i>corrected and
+enhanced</i> zsh function <b>run-help</b> and <b>/usr/bin/info</b>
+or <b>/sw/bin/info</b> as well as the <b>command man.</b> I had to
+fix up a few things in run-help so be sure to autoload the
+corrected version that handles multiple <b>$HELPDIR</b> entries and
+also gives usable error codes. These features are required to get
+this function to work right.
+<p><b>man</b> combines the zsh <b>run-help</b> function with the
+traditional <b>command man</b> and the <b>GNU info</b> function. If
+a help-file is found in <b>$HELPDIR,</b> it is read by the
+zsh-function <b>run-help</b> , otherwise run-help defaults to the
+man command and displays the man page. The first aspect of this
+functionality <b>requires that you first generate the help files
+from the ZSH man page.</b> When this is done, each individual
+function and built-in command in the ZSH will have its own
+help-file entry. <b>Run the function build-helpfiles</b> to
+generate these the first time. The file <b>$ZDOT/environment</b>
+will then automatically set the <b>$HELPDIR</b> variable the next
+time a shell is started.</p>
+<p>This function also uses the function <b>settab</b> to show the
+named process running and then resets itself with settab (so iTerm
+users will have man commandname or more commandname or info
+commandname displayed in the tab.</p>
+<p><a name="lbAE" id="lbAE">&nbsp;</a></p>
+<h2>AUTHOR</h2>
+<br />
+&nbsp;William&nbsp;Scott <a name="lbAF" id="lbAF">&nbsp;</a>
+<h2>SEE ALSO</h2>
+<b><a href="man.html">man</a></b>(7), <b><a href=
+"info.html">info</a></b>(7), <b><a href=
+"run-help.html">run-help</a></b>(7)
+<hr />
+<a name="index" id="index">&nbsp;</a>
+<h2>Index</h2>
+<dl>
+<dt><a href="#lbAB">NAME</a></dt>
+<dt><a href="#lbAC">SYNOPSIS</a></dt>
+<dt><a href="#lbAD">DESCRIPTION</a></dt>
+<dt><a href="#lbAE">AUTHOR</a></dt>
+<dt><a href="#lbAF">SEE ALSO</a></dt>
+</dl>
+<hr />
+This document was created by <a href=
+"/cgi-bin/man/man2html">man2html</a>, using the manual pages.<br />
+Time: 05:38:45 GMT, August 06, 2005
+</body>
+</html>

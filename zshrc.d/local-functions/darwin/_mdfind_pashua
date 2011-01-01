@@ -1,0 +1,155 @@
+#autoload        
+
+
+
+#-------------------------------------------------------
+# _mdfind_pashua
+#
+# by Wataru Kagawa (07/13/05)
+# wkagawa@jota.gsc.riken.go.jp
+#
+# based on _mdfind function by William Scott
+# wgscottATchemistryDOTucscDOTedu
+#
+# A completion function for mdfind that utilizes Pashua.
+# Metadata attributes can be selected from a popup
+# window.
+#-------------------------------------------------------
+
+
+
+#----------------------------------
+# Define local variables and arrays
+#----------------------------------
+
+local -a _metadata_attribute guiconf
+local expl state pp tf cn guiconf_attributelist
+
+
+#--------------------------------------------------
+# Make a list of all the metadata search attributes
+#--------------------------------------------------
+
+_metadata_attribute=( none ${${$( /usr/bin/mdimport -A | cut -f1 | grep "kMDItem" )//\'/}#kMDItem} )
+
+
+_arguments -C \
+	'-0[used in conjunction with xargs -0]' \
+	'-live[live updates in search]' \
+	'-onlyin[specify the Directory]: :->mdsearchpath' \
+	'*: :->mdsearchstring'
+
+
+case "$state" in
+
+	(mdsearchpath)
+
+		_description files expl 'possible search paths'
+
+		#----------------------------------------------
+		# Append the full path of the current directory
+		# if "/" is not present
+		#----------------------------------------------
+
+		if [[ "${${words[CURRENT]}[1]}" == '/' ]]; then
+			_path_files "$expl[@]" -/ '*'
+		else
+			_path_files "$expl[@]" -P "$PWD/" -/ '*'
+		fi
+
+	;;
+
+	(mdsearchstring)
+
+		if [[ -z "$words[$CURRENT]" ]]; then
+
+			guiconf=( *.encoding=utf8 *.transparency=0.95 *.windowtitle=mdfind \
+			pp1.type=combobox pp1.label='Select a first metadata attribute:' pp1.width=300 pp1.default=FSName \
+			pp1.tooltip='Choose the first metadata attribute or enter your own, omitting kMDItemFS prefix' \
+			tf1.type=textfield tf1.label='Enter a search string:' tf1.width=300 \
+			tf1.tooltip='your string will be flanked with wildcards automatically' \
+			rb1.type=radiobutton rb1.label='Boolean Operator:' \
+			rb1.default='-none- (use this for a single search criterion)' \
+			rb1.option='-none- (use this for a single search criterion)' \
+			rb1.option='AND' rb1.option='OR' rb1.option='AND NOT'  \
+			rb1.tooltip='OR matches either criteria; AND requires both criteria, AND NOT restricts first criteria by second' \
+			pp2.type=combobox pp2.label='Select an optional second metadata attribute:' pp2.width=300 pp2.default=none \
+			pp2.tooltip='Choose a second metadata attribute or leave as NONE' \
+			tf2.type=textfield tf2.label='Enter second search string:' tf2.width=300 \
+			tf2.tooltip='your string will be flanked with wildcards automatically' \
+			cn.type=cancelbutton )
+
+			guiconf_attributelist=$( printf '%s\n' $guiconf pp1.option=$_metadata_attribute pp2.option=$_metadata_attribute )
+
+			pashua_run $guiconf_attributelist
+
+			#---------------------------------
+			# Exit if cancel button is pressed
+			#---------------------------------
+
+			if [[ $cn == '1' ]]; then
+				return 0
+			fi
+
+			#-----------------------------------------------
+			# Add information in the gui to the command line
+			#-----------------------------------------------
+			
+			
+			     if [[ $rb1 == 'AND' ]];then         # Evaluate the Boolean Operator
+			         BOOLOP='&&'
+			     elif [[ $rb1 == 'OR' ]];then
+			         BOOLOP='||'
+			     elif [[ $rb1 == 'AND NOT' ]];then
+			         BOOLOP='&&'
+			         RESTRICT='NOT'
+			     else
+			         BOOLOP=""
+			         RESTRICT=''
+			     fi
+
+            
+                if [[ $pp2 == 'none' || -z $BOOLOP ]];then           # Single search
+                    if [[ $pp1 == 'none' && -z $tf1 ]]; then
+                        return 0
+                    elif [[ $pp1 == 'none' && -n $tf1 ]]; then
+                        compadd -Q "\"$tf1\""
+                    elif [[ -n $pp1 && -z $tf1 ]]; then
+                        return 0
+                    else
+                        compadd -Q "\"kMDItem$pp1 == '*$tf1*'\""
+                    fi
+                
+                else
+                                                                    # Double search
+                    if [[ $pp1 != 'none' && -n $tf1 ]]; then
+
+                            if [[ $pp2 == 'none' && -z $tf2 ]]; then
+                                return 0
+                            elif [[ $pp2 == 'none' && -n $tf2 ]]; then
+                                compadd -Q "\"$tf2\""
+                            elif [[ -n $pp2 && -z $tf2 ]]; then
+                                return 0
+                            else
+                                if [[ $RESTRICT == 'NOT' ]];then
+                                    compadd -Q "\"kMDItem$pp1 == '*$tf1*' $BOOLOP  kMDItem$pp2 != '*$tf2*'\""                                
+                                else
+                                    compadd -Q "\"kMDItem$pp1 == '*$tf1*' $BOOLOP  kMDItem$pp2 == '*$tf2*'\""
+                                fi
+                            fi
+                    fi
+                fi
+		fi
+
+	;;
+
+esac
+
+# re-initialize
+BOOLOP=""
+RESTRICT=""
+tf1=""
+tf2=""
+
+
+

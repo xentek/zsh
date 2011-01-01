@@ -1,0 +1,111 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Mac OS X (vers 1st December 2004), see www.w3.org" />
+<meta http-equiv="Content-Type" content=
+"text/html; charset=us-ascii" />
+<title>Manual Page for rmm</title>
+
+<style type="text/css">
+/*<![CDATA[*/
+<!--.red {color: #CC0000}-->
+/*]]>*/
+</style>
+
+<style type="text/css">
+/*<![CDATA[*/
+<!--.hed {color: #000000; font-weight: bold; font-size: larger;}-->
+/*]]>*/
+</style>
+</head>
+<body>
+<pre>
+ <a href=
+"http://sage.ucsc.edu/Library/init/zsh/man/html/rmm.html">rmm(7)</a>                   Mac OS X Darwin customization                  <a href="http://sage.ucsc.edu/Library/init/zsh/man/html/rmm.html">rmm(7)</a>
+
+
+
+<span class="hed">NAME</span>
+       <span class=
+"red">rmm</span> - emulates unix rm but uses the OS X Trash
+
+<span class="hed">SYNOPSIS</span>
+       <span class="red">rmm</span> [ <span class=
+"red">-dfiPRrvW</span> ] <span class="red">file</span> <span class=
+"red">...</span>
+
+<span class="hed">DESCRIPTION</span>
+       <span class=
+"red">rmm</span>  This  script  emulates  the  <span class=
+"red">GNU</span> <span class="red">rm</span> <span class=
+"red">function,</span> except that it moves
+       files to the user's Trash directory, instead of unlinking them.  Spaces
+       may  be  used in file names if the arguments are quoted and you can use
+       file name globbing. File name globbing means using wildcards,  "*",  to
+       represent  the  uncommon  characters in a group of file names sharing a
+       unique intersection of characters.  Usage is hopefully identical to the
+       usage  of  the GNU rm function. It will normally only move files to the
+       ~/.Trash directory. The -d, or --directory option  will  allow  you  to
+       move  empty  directories.  To  move nonempty directories, use -r, -R or
+       --recursive option. The script will move files, descending in  a  depth
+       first  into subdirectories. It will move the directories upon returning
+       from the recursive calls. In interactive  mode,  the  directories  will
+       only  be  moved  if you answered in the affirmative for movement of all
+       files contained therein.
+
+       In all cases, it will report every action taken in verbose mode, -v  or
+       --verbose,  and  prompt before taking action in interactive mode, -i or
+       --interactive. Although prompting isn't that  important  for  a  script
+       that  doesn't  destroy anything, (it uses CpMac to copy so doesn't even
+       destroy resource forks) it is a good idea to use the  interactive  mode
+       to get in the habit of using the real thing.
+
+       Although  it's  relatively compact, (organized in functions called from
+       argument list and glob resolution  loops)  it  is  still  an  elaborate
+       script  and not nearly as fast as the compiled executable. Of course it
+       hardly matters in interactive mode, right?
+
+
+<span class="hed">Braggadocia</span>
+       This script will not clobber anything in your Trash. Like  the  Finder,
+       if the file name (or directory) already exists in the Trash, the script
+       will automatically append a " copy" to the end of the file or directory
+       name.  Further, the script unlocks all files that it moves, so emptying
+       the trash should never be a problem.
+
+       The latest version has a  small  functional  change  resulting  from  a
+       redesign.  Recursive  rm asks about directories upon entry. The results
+       are saved in variables that use indirect reference. I've  been  wanting
+       to play with that!
+
+       The  script  could  change  ownership if one wanted to write that in. I
+       didn't however, because that would likely fail. Moving  or  removing  a
+       file requires the ability to write to the containing directory.  Chang-
+       ing ownership requires the same privilege of the file,  which  you  may
+       not  have.  Having the script change file ownership would result in its
+       assigning ownership to root when invoked with "sudo". This would result
+       in  files  owned  by  root  being  created  in the Trash.  Hence, it is
+       preferable to change ownership separately, with the chmod command.
+
+
+<span class="hed">WEBSITE</span>
+       http://www.cs.ecu.edu/~collins/rm/rm.html
+
+<span class="hed">AUTHOR</span>
+        Gary Kerbaugh
+
+<span class="hed">SEE ALSO</span>
+       <a href=
+"http://sage.ucsc.edu/Library/init/zsh/man/html/rm.html">rm(1)</a>, <a href=
+"http://sage.ucsc.edu/Library/init/zsh/man/html/unlink.html">unlink(1)</a>
+
+
+
+
+
+Mac OS X                        January 1 2005                          <a href="http://sage.ucsc.edu/Library/init/zsh/man/html/rmm.html">rmm(7)</a>
+</pre>
+</body>
+</html>

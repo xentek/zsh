@@ -1,0 +1,11 @@
+#!/bin/zsh -f
+
+if [[ -z $(which rwcontents) ]];then
+    print "rwcontents, which is part of CCP4, is not in your $PATH"
+fi
+
+
+command rwcontents XYZIN $1 << eof | grep -v Matched >| /tmp/rwcontents_tmp.html
+eof
+command open /tmp/rwcontents_tmp.html
+command rm -i /tmp/rwcontents_tmp.html

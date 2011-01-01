@@ -1,0 +1,44 @@
+#!/bin/zsh -f
+
+# Describe named function located in $ZDOT_TEMPLATE/local-functions/*
+
+function usage { print "Usage: help_template_functions [function name]" }
+
+if [[ $# == 0 ]];then
+	command open http://xanana.ucsc.edu/~wgscott/xtal/wiki/index.php/ZSH_Template_Function_Suites
+	if  [[ $? == 0 ]];then
+			print ""; usage;
+			return 0
+	else
+			print ""; usage;
+			return 1
+	fi
+	foreach file in $ZDOT/man/man7/*.7
+	    whatis $(basename $file:r)
+	end
+#     if [[ -f $ZDOT/zshrc.d/local-functions/etc/README.functions ]];then
+#         more $ZDOT/zshrc.d/local-functions/etc/README.functions
+#     elif [[ -f $ZDOT_TEMPLATE/zshrc.d/local-functions/etc/README.functions ]];then
+#         more $ZDOT_TEMPLATE/zshrc.d/local-functions/etc/README.functions
+#     fi
+#    print ""; usage; return 0
+elif [[ $# == 1 ]];then
+	command open http://xanana.ucsc.edu/Library/init/zsh/man/html/$1.html
+	if  [[ $? == 0 ]];then
+			whatis $1
+			return 0
+	else
+			whatis $1
+			print ""; usage;
+			return 1
+	fi
+#    if [[ -f $ZDOT/zshrc.d/local-functions/etc/README.functions ]];then
+#        grep "$@" $ZDOT/zshrc.d/local-functions/etc/README.functions
+#    elif [[ -f $ZDOT_TEMPLATE/zshrc.d/local-functions/etc/README.functions ]];then
+#        grep "$@" $ZDOT_TEMPLATE/zshrc.d/local-functions/etc/README.functions    
+#    fi
+ 
+else
+    usage
+    return 1
+fi

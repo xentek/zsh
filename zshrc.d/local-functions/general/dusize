@@ -1,0 +1,6 @@
+#!/bin/zsh -f
+# dusize: use du to get filesizes and sum them in awk
+# functin dusize {
+ command du "$@" | command awk '{ fsize += $1 } END { print fsize/1024 " Megabytes" }'
+#}
+

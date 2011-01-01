@@ -1,0 +1,22 @@
+Put one or more of these lines in your ~/.coot file:
+
+(load (append-dir-file (getenv "ZDOT") "zshrc.d/local-functions/etc/dotfiles/coot_custom_menu.scm"))
+
+;; ## Note that cootrc_powermate_and_keybindings.scm is read into the coot_custom_menu.scm
+
+(load (append-dir-file (getenv "ZDOT") "zshrc.d/local-functions/etc/dotfiles/coot_zalman.scm"))
+
+
+Put one or more of these lines in your ~/.pymolrc file:
+
+
+@ $ZDOT/zshrc.d/local-functions/etc/dotfiles/pymolrc_aliases.pml   
+@ $ZDOT/zshrc.d/local-functions/etc/dotfiles/pymolrc_powermate.pml
+
+The $ZDOT will cause problems for double-clicked pymol files.  Either replace this with
+the actual value of $ZDOT (eg: /Library/init/zsh) or else edit the file 
+.MacOSX/environment.plist and add the lines
+
+
+    <key>ZDOT</key>
+    <string>/Library/init/zsh</string>

@@ -1,0 +1,33 @@
+#!/bin/zsh -f
+
+# if [[ -d $ZDOT && -d $ZDOT_TEMPLATE ]];then
+# 
+#     opendiff $ZDOT $ZDOT_TEMPLATE 
+#     print ""
+#     print "Using /usr/bin/opendiff to compare files."
+#     print ""
+#     print "Click on the \e[1m'Exclude: identical'\e[0m checkbox to see which files have changed"
+#     print ""
+#     print "issue \e[1m sudo cp \$ZDOT_TEMPLATE/foo \$ZDOT/foo\e[0m to update a changed file foo."
+#     print ""
+#     
+# else
+# 
+#     print "The directories \$ZDOT_TEMPLATE/ and \$ZDOT must both exist/ for this to work."
+#     print "Type \e[1m fink describe zsh-templates\e[0m  for a description of how to do this."
+# 
+# fi
+
+autoload -U help_zsh_templates help_template_functions
+
+print "\e[1m ***************************************************************************\e[0m " 
+print ""
+print "    Type \e[1m fink describe zsh-templates \e[0m or \e[1m man zsh-templates \e[0m "
+print "    for a brief description."
+print ""
+print "    Type \e[1m help_template_functions\e[0m  for a 1-line description of each function."
+print ""
+print "    Type \e[1m help_zsh_templates\e[0m  for access to a website-based detailed description."
+print ""
+print "\e[1m ***************************************************************************\e[0m " 
+

@@ -1,0 +1,8 @@
+#!/bin/zsh -f 
+
+
+# whichre: search for commands using regular expressions
+
+
+command echo $PATH | awk 'BEGIN{ RS = ":" } { print }' | xargs ls | grep "$1";
+

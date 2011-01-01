@@ -1,0 +1,5 @@
+#compdef tunnel_tester
+
+    compadd -X %B'Choose a host, or choose separate imap and smtp hosts.'%b \
+            $hosts
+

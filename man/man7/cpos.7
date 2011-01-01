@@ -1,0 +1,25 @@
+.\" Process this file with
+.\" groff -man -Tascii foo.1
+.\"
+.TH cpos 7 "January 1, 2005" "Mac OS X" "Mac OS X Darwin customization" 
+.SH NAME
+.B cpos
+\-  copies the path matching that of the frontmost finder window
+.SH SYNOPSIS
+.B cpos
+.SH DESCRIPTION
+.B cpos
+copies the path produced by running the command 
+.B posd
+into the copy/paste buffer.
+.B  posd 
+is an osascript embedded in a shell script that returns the pwd
+corresponding to the frontmost finder window. 
+.SH AUTHOR
+ Gary Kerbaugh 
+.SH "SEE ALSO"
+.BR fdc (7),
+.BR cdf (7),
+.BR posd(7)
+
+

@@ -1,0 +1,102 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Mac OS X (vers 1st December 2004), see www.w3.org" />
+<meta http-equiv="Content-Type" content=
+"text/html; charset=us-ascii" />
+<title>Manual Page for add_user</title>
+
+<style type="text/css">
+/*<![CDATA[*/
+<!--.red {color: #CC0000}-->
+/*]]>*/
+</style>
+
+<style type="text/css">
+/*<![CDATA[*/
+<!--.hed {color: #000000; font-weight: bold; font-size: larger;}-->
+/*]]>*/
+</style>
+</head>
+<body>
+<pre>
+ <a href=
+"http://sage.ucsc.edu/Library/init/zsh/man/html/add_user.html">add_user(7)</a>            Mac OS X Darwin ZSH customization           <a href="http://sage.ucsc.edu/Library/init/zsh/man/html/add_user.html">add_user(7)</a>
+
+
+
+<span class="hed">NAME</span>
+       <span class=
+"red">add_user</span>  -  Add  a  user to the Directory Service database and create the user's
+       account
+
+
+<span class="hed">SYNOPSIS</span>
+       <span class="red">add_user</span> <span class=
+"red">username</span> <span class=
+"red">fullname</span> <span class="red">uid</span> <span class=
+"red">account_type</span>
+
+       where
+
+       <span class=
+"red">username</span> is a one-word short username that becomes the username of  the
+       account
+
+       <span class=
+"red">fullname</span>  can  be a multi-word full name such as "Joseph P. Docus" pro-
+       vided the double-quotes are present.
+
+       <span class=
+"red">uid</span> is an (unused) numerical user id integer (Mac OS X starts numbering
+       users consecutively from 501 but any larger integers may be used)
+
+       <span class=
+"red">account_type</span> must be either "staff" or "admin".
+
+       All  four  arguments  are  compulsory and must be supplied in the order
+       given above.
+
+
+<span class="hed">DESCRIPTION</span>
+       <span class=
+"red">add_user</span> Consider using the System Preferences  &gt;  Accounts  preference
+       pane to do this instead.
+
+       The <span class=
+"red">add_user</span> command must be invoked by an admin user.
+
+       Takes  the  user's username (i.e., account name, short name), fullname,
+       uid, and staff|admin and creates:
+
+       a new user in NetInfo passwd
+
+       a new /Users/username home directory
+
+
+
+<span class="hed">SEE ALSO</span>
+       <a href=
+"http://sage.ucsc.edu/Library/init/zsh/man/html/add_user.html">add_user(7)</a>,     <a href="http://sage.ucsc.edu/Library/init/zsh/man/html/addgroup.html">addgroup(7)</a>,     <a href="http://sage.ucsc.edu/Library/init/zsh/man/html/delete_user.html">delete_user(7)</a>,      <a href="http://sage.ucsc.edu/Library/init/zsh/man/html/delete_group.html">delete_group(7)</a>,
+       <a href=
+"http://sage.ucsc.edu/Library/init/zsh/man/html/remove_user_from_group.html">remove_user_from_group(7)</a>, <a href="http://sage.ucsc.edu/Library/init/zsh/man/html/adduser2group.html">adduser2group(7)</a>
+
+
+
+<span class="hed">AUTHOR</span>
+       Obtained   and   modified   from  a  bash  shell  script  available  at
+       http://www.osxfaq.com/tips/unix-tricks/week91/friday.ws
+
+
+<span class="hed">MAINTAINER</span>
+       W. G. Scott <a href=
+"mailto:wgscott@users.sourceforge.net">wgscott@users.sourceforge.net</a>
+
+
+
+Mac OS X                        August 4, 2005                     <a href="http://sage.ucsc.edu/Library/init/zsh/man/html/add_user.html">add_user(7)</a>
+</pre>
+</body>
+</html>

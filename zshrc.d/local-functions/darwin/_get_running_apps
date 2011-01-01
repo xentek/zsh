@@ -1,0 +1,102 @@
+#autoload
+#set -x
+
+
+#----------------------------------------------------------------------
+# _get_running_apps
+#
+# by Wataru Kagawa (06/10/05)
+# wkagawa@jota.gsc.riken.go.jp
+#
+# a completion function called by _quit
+# This function generates a list of all currently running applications.
+#----------------------------------------------------------------------
+
+
+
+function _get_running_apps () {
+
+#-------------------------
+# Defining local variables
+#-------------------------
+
+local process_list num_process line process pid tsess app_result
+
+
+#---------------------------------------------------------------------
+# A list of currently running applications is stored in $process_list
+# A series of grep commands filter processes from the list that cannot
+# (or should not) be quitted by an osascript or a kill command.  Edit
+# them to make it work properly on your computer.
+#---------------------------------------------------------------------
+
+process_list=$( /bin/ps -U $USER -wwwxo pid,tsess,command \
+	 | grep -v "Calculator.app/Contents/MacOS/CalcEngine" \
+	 | grep -v "CodeTek VirtualDesktop Pro.app/Contents/Frameworks" \
+	 | grep -v "CodeTek VirtualDesktop Pro.app/Contents/Resources" \
+	 | grep -v "DashboardClient.app/Contents/MacOS" \
+	 | grep -v "iTunes.app/Contents/Resources/iTunesHelper.app" \
+	 | grep -v "Microsoft Office 2004/Office/Microsoft Database Daemon" \
+	 | grep -v "X11.app/Contents/MacOS/X11 -auth" \
+	 | grep -v "Library/PreferencePanes" \
+	 | grep -v "quartz-wm" \
+	 | grep -v "sbin/mount_" \
+	 | grep -v "sbin/launchd" \
+	 | grep -v "System/Library/CoreServices/loginwindow.app" \
+	 | grep -v "System/Library/CoreServices/pbs" \
+	 | grep -v "System/Library/CoreServices/SecurityAgent.app" \
+	 | grep -v "System/Library/CoreServices/SystemUIServer.app" \
+	 | grep -v "System/Library/CoreServices/System Events.app" \
+	 | grep -v "System/Library/CoreServices/UserNotificationCenter.app" \
+	 | grep -v "System/Library/Frameworks" \
+	 | grep -v "Library/Services" \
+	 | grep -v "PowerMateDriver" \
+	 | grep -v "System/Library/PrivateFrameworks/Installation.framework/Resources/runner" \
+	 | grep -v "System/Library/Services/AppleSpell.service" \
+	 | grep -v "\-tcsh" \
+	 | grep -v "update" \
+	 | grep -v "\-zsh" \
+	 | grep -v "zsh \-f" \
+	 | grep -v "(xterm)" \
+	 | grep -v "sh -c (cd" )
+
+
+#----------------------------------------------------------------
+# Names of currently running applications are modified and stored
+# in $_running_apps and $list.  The $list variable is used by the
+# quit program.
+#----------------------------------------------------------------
+
+_running_apps=()
+list=()
+
+num_process=( $( print $process_list | command wc -l ) )
+
+for line in {2..$num_process}; do
+
+	process=${${(f)process_list}[$line]}
+	pid=${${(s: :)process}[1]}
+	tsess=${${(s: :)process}[2]}
+
+	if [[ -n ${(M)process:#*.app/Contents/MacOS/*} ]]; then
+
+		app_result=${${${(s:.app/Contents/MacOS/:)process}[1]}[@]:t}
+
+	else
+
+		app_result=${$( /bin/ps "$pid" -c -o command )[2,-1]}
+
+	fi
+
+	_running_apps+=( $app_result )
+	list+=( $pid $tsess $app_result )
+	
+
+
+done
+
+}
+
+
+
+_get_running_apps "$@"

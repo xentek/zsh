@@ -1,0 +1,56 @@
+#!/usr/bin/zsh -f
+
+#set -x
+
+# Things that can be changed:
+
+VERSION="6.0.1"
+PATCHDIR="/Users/${USER}/src/ccp4/${VERSION}-patches"
+
+# You shouldn't need to change these, but might want to:
+URL="ftp://ftp.ccp4.ac.uk/ccp4/${VERSION}/patches/"
+DOTDIR="/Users/${USER}/.ccp4patches"
+
+
+if [[ ! -d ${PATCHDIR}  ]]; then
+	print "Cannot locate ${PATCHDIR}, using ${DOTDIR} "
+	PATCHDIR="$DOTDIR"
+fi
+
+function checkdiff {
+	perl -pi -e 's|\r||g' ${DOTDIR}/patchlist*.txt
+	newpatches=( $(diff -b -B  ${DOTDIR}/patchlist_$$.txt ${DOTDIR}/patchlist.txt | awk '{print $2}' ))
+}
+
+function getpatches {
+	if [[ -n "$newpatches" ]]; then
+		print "The following new patches are available: $newpatches"
+		cd ${PATCHDIR}
+		foreach newpatchfile in "${newpatches[@]}"
+			print "Downloading $newpatchfile to directory ${PATCHDIR}"
+			curl -O ${URL}${newpatchfile}
+		end
+	else
+		print "There are no new CCP4 patches since you last checked."
+	fi
+}
+
+
+if [[ ! -d ${DOTDIR} ]]; then
+	mkdir -p ${DOTDIR}
+fi
+
+if [[ ! -f ${DOTDIR}/patchlist.txt ]]; then
+	curl -l ${URL}  > ${DOTDIR}/patchlist.txt
+	perl -pi -e 's|\r||g' ${DOTDIR}/patchlist*.txt
+	touch ${DOTDIR}/patchlist_$$.txt
+else
+	mv ~/.ccp4patches/patchlist.txt ${DOTDIR}/patchlist_$$.txt
+	curl -l $URL  > ${DOTDIR}/patchlist.txt
+fi
+	
+	checkdiff
+	getpatches
+
+
+ 

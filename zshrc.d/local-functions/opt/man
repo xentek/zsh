@@ -1,0 +1,53 @@
+#!/bin/zsh -f
+
+# Function man
+
+# Requires the zsh function run-help and /usr/bin/info or /sw/bin/info
+# as well as the command man. I had to fix up a few things in run-help
+# so be sure to autoload my corrected version that handles multiple
+# $HELPDIR entries and also gives usable error codes.  These features
+# are required to get this function to work right.
+
+# Combines the zsh run-help function with the traditional command man and 
+# the GNU info function.  If a help-file is found in $HELPDIR, it is read
+# by the zsh-function run-help, otherwise run-help defaults to the man
+# command and displays the man page.  The first aspect of this functionality
+# requires that you first generate the help files from the ZSH man page.
+# When this is done, each individual function and built-in command in the
+# ZSH will have its own help-file entry.  Run the function build-helpfiles
+# to generate these the first time.  The file $ZDOT/environment will then
+# automatically set the $HELPDIR variable the next time a shell is started.
+
+# This function also uses the function settab to show the named process 
+# running and then resets itself with settab (so iTerm users will have 
+# man commandname or more commandname or info commandname displayed in the tab.
+
+# set -x
+
+# If a parameter is issued, pass it to the command man then exit after man 
+# does its normal thing.  Otherwise continue.
+
+if [[ $1 == -* ]];then
+    echo -ne "\e]1; man $1 \a"; command man -P "less -eis" "$@";  settab
+    return 0
+fi 
+
+
+
+
+    echo -ne "\e]1; man $1 \a"; run-help "$@"; runstatus=$? ; settab
+
+    if [[ $runstatus == 0 ]];then
+
+       print "Normal Termination"
+       runstatus=""
+       return 0
+
+    else
+
+       print "Running info"
+       echo -ne "\e]1; info $1 \a";  command info "$@"; run2status=$? ; settab
+       return $run2status
+
+    fi
+

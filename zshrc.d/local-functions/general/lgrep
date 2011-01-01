@@ -1,0 +1,5 @@
+#!/bin/zsh -f 
+
+# lgrep: grep the output of locate to match only the file part of the path
+command locate "$1" | grep -i ".*/[^/]*$1[^/]*$";
+

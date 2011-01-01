@@ -1,0 +1,113 @@
+.\" Process this file with
+.\" groff -man -Tascii foo.1
+.\"
+.TH edit 7 "March 19, 2005" "Mac OS X" "Mac OS X Darwin customization" 
+.SH NAME
+.B edit 
+\- attempts to open editable files in an appropriate application.
+
+.SH SYNOPSIS
+.B edit [
+-RfSsqrh
+.B ] [
+.I file
+.B ]
+
+.SH DESCRIPTION
+.B edit 
+\- attempts to open editable files in an appropriate application.
+Default values for an 
+.B ASCII text editor 
+(eg: SubEthaEdit), an 
+.B image editor
+(eg: Adobe Photoshop), a 
+.B postscript display 
+(eg: Preview in 10.3.x works),
+a 
+.B PDF display 
+(eg: Preview), and a 
+.B WYSIWYG HTML editor 
+(eg: Mozilla composer, a free alternative to DreamCrusher), 
+are set using the function
+.B my_prefs_edit 
+which is called if the file 
+.B .zsh/my_edit_rc does not exist in
+the user's home directory.  This file can also be edited by hand and is
+read (and is required) by the functions 
+.B hydra and 
+.B nonasciiedit 
+as well.
+
+The functions 
+.B hydra 
+and 
+.B nonasciiedit, 
+as well as 
+.B my_prefs_edit, are stand-alone functions and are imported by this 
+function (edit) that serves as a wrapper and augments a few features.
+
+.SH OPTIONS
+
+.IP "-R" 
+.B deletes the preferences file 
+.zsh/my_edit_rc
+.B The user is then prompted to set new preferences next time edit is invoked.
+
+.IP "-f foo"              
+.B Forces the file foo to be opened with the default ascii text editor application
+
+.IP "-S"              
+.B Turns on a most delightful speakable dialogue.
+
+.IP "-s"                  
+.B Use sudo edit to open a file (presumably owned by the system).
+
+.IP "-q bar"              
+.B Turn off spoken and most written dialogue.
+
+.IP "-r foo"     
+.B Attempts to refocus to terminal window after opening file in gui editor.
+
+.IP "-h"                  
+.B Obtain program help info.
+
+.SH FILES
+.I ~/.zsh/my_edit_rc
+.RS
+A preferences file most easily created by invoking edit and following the prompts.
+The user is asked to choose a default ascii editor (like SubEthaEdit or BBedit),
+an image editor (like Adobe Photoshop), a PDF viewer (like Preview) and so on.
+You can also invoke the function my_prefs_edit to create this file, or you can
+create it manually. See
+.BR my_prefs_edit (7)
+and
+.BR hydra (7)
+and
+.BR nonasciiedit (7)
+for further details.
+.RE
+.I hydra
+.I my_prefs_edit
+.I nonasciiedit
+.I edit
+.RS
+are all zsh functions that must be in the $fpath array for the  
+.B edit
+command to work properly.  
+
+.SH AUTHORS
+The 
+.B edit
+command is authored by by William Scott and is
+free software; you can redistribute it and/or modify 
+it under the terms of the GNU General Public License as published by 
+the Free Software Foundation; either version 2 of the License, or 
+(at your option) any later version.
+
+.SH "SEE ALSO"
+.BR hydra (7),
+.BR nonasciiedit (7),
+.BR my_prefs_edit (7)
+.BR zsh-templates (7)
+.BR open (7)
+

@@ -1,0 +1,20 @@
+#!/bin/zsh -ef
+
+if [[ -d $HOME/.a2ps ]];then
+    command mkdir -p $HOME/.a2ps
+fi
+
+if [[ -f $HOME/.a2ps/a2psrc ]]; then
+    mv $HOME/.a2ps/a2psrc $HOME/.a2ps/a2psrc_$$
+fi
+
+ln -s $ZDOT/zshrc.d/local-functions/etc/a2psrc $HOME/.a2ps/a2psrc
+
+command a2ps -r --columns=2  "$@"
+
+if [[ -f $HOME/.a2ps/a2psrc_$$ ]];then
+    rm $HOME/.a2ps/a2psrc    
+    mv $HOME/.a2ps/a2psrc_$$ $HOME/.a2ps/a2psrc   
+else
+    rm $HOME/.a2ps/a2psrc
+fi

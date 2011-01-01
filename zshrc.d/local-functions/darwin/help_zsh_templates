@@ -1,0 +1,4 @@
+#!/bin/zsh -f
+command open http://xanana.ucsc.edu/xtal/wiki/index.php/ZSH_on_OS_X  
+return $?
+

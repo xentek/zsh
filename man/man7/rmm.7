@@ -1,0 +1,62 @@
+.TH rmm 7 "January 1 2005" "Mac OS X" "Mac OS X Darwin customization" 
+.SH NAME
+.B rmm 
+\- emulates unix rm but uses the OS X Trash
+.SH SYNOPSIS
+.B rmm 
+[
+.B -dfiPRrvW
+]
+.B file ... 
+.SH DESCRIPTION
+.B rmm
+This script emulates the 
+.B GNU rm function, 
+except that it moves files to the user's Trash directory, 
+instead of unlinking them. Spaces may be used in file names if the arguments are quoted and you can 
+use file name globbing. File name globbing means using wildcards, "*", to represent the uncommon 
+characters in a group of file names sharing a unique intersection of characters.
+Usage is hopefully identical to the usage of the GNU rm function. It will normally only move 
+files to the ~/.Trash directory. The -d, or --directory option will allow you to move 
+empty directories. To move nonempty directories, use -r, -R or --recursive option. The 
+script will move files, descending in a depth first into subdirectories. It will move the 
+directories upon returning from the recursive calls. In interactive mode, the directories will 
+only be moved if you answered in the affirmative for movement of all files contained therein.
+
+In all cases, it will report every action taken in verbose mode, -v or --verbose, and 
+prompt before taking action in interactive mode, -i or --interactive. Although prompting 
+isn't that important for a script that doesn't destroy anything, (it uses CpMac to copy so 
+doesn't even destroy resource forks) it is a good idea to use the interactive mode to get 
+in the habit of using the real thing.
+
+Although it's relatively compact, (organized in functions called from argument list and glob 
+resolution loops) it is still an elaborate script and not nearly as fast as the compiled 
+executable. Of course it hardly matters in interactive mode, right?
+
+.SH Braggadocia
+
+This script will not clobber anything in your Trash. Like the Finder, if the file name 
+(or directory) already exists in the Trash, the script will automatically append 
+a " copy" to the end of the file or directory name. Further, the script unlocks all 
+files that it moves, so emptying the trash should never be a problem.
+
+The latest version has a small functional change resulting from a redesign. Recursive 
+rm asks about directories upon entry. The results are saved in variables that use 
+indirect reference. I've been wanting to play with that!
+
+The script could change ownership if one wanted to write that in. I didn't however, because that would 
+likely fail. Moving or removing a file requires the ability to write to the containing directory. 
+Changing ownership requires the same privilege of the file, which you may not have. 
+Having the script change file ownership would result in its assigning ownership to root when 
+invoked with "sudo". This would result in files owned by root being created in the Trash. 
+Hence, it is preferable to change ownership separately, with the chmod command.
+
+.SH WEBSITE
+http://www.cs.ecu.edu/~collins/rm/rm.html
+.SH AUTHOR
+ Gary Kerbaugh 
+.SH "SEE ALSO"
+.BR rm (1),
+.BR unlink (1)
+
+

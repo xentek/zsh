@@ -1,0 +1,25 @@
+.\" Process this file with
+.\" groff -man -Tascii foo.1
+.\"
+.TH cdf 7 "January 1 2005" "Mac OS X" "Mac OS X Darwin customization" 
+.SH NAME
+.B cdf 
+\-  change the terminal pwd to match that of the frontmost finder window
+.SH SYNOPSIS
+.B cdf
+.SH DESCRIPTION
+.B cdf
+changes the terminal pwd to match that of the frontmost finder window.
+The command cdf is really an alias to the command (or function) 
+.B posd
+i.e., cdf='cd "$(posd)"'.
+.B posd
+is an osascript embedded in a shell script that returns the pwd
+corresponding to the frontmost finder window. 
+.SH AUTHOR
+ Gary Kerbaugh 
+.SH "SEE ALSO"
+.BR fdc (1),
+.BR posd (1)
+
+

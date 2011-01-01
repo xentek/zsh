@@ -1,0 +1,64 @@
+.\" Process this file with
+.\" groff -man -Tascii foo.1
+.\"
+.TH airport 7 "July 9 2005" "Mac OS X" "Mac OS X Darwin customization" 
+.SH NAME
+.B airport 
+.SH SYNOPSIS
+.B airport [arguments]
+.SH DESCRIPTION
+.B airport
+invokes /System/Library/PrivateFrameworks/Apple80211.framework/Versions/A/Resources/airport "$@"
+
+Supported arguments:
+
+ -a        --autojoin           Join first available, trusted network from list
+
+ -p        --applyprefs         Apply settings as currently configured via System Preferences
+
+ -u        --updateprefs        Examine network preferences and repair if necessary
+
+ -z        --disassociate       Disassociate from any network
+
+ -i[<arg>] --ibss=[<arg>]       Create IBSS
+ 
+ -f<arg>   --file=<arg>         Use <arg> as airport preference file instead of
+                                   /Library/Preferences/SystemConfiguration/com.apple.airport.preferences.plist
+
+ -m<arg>   --mac=<arg>          Use <arg> instead of current AirPort MAC Address
+
+ -x        --xml                Print info as XML
+
+ -o<arg>   --oldencrypt=<arg>   Encrypt string <arg> with Panther-style encryption
+
+ -s[<arg>] --scan=[<arg>]       Perform a wireless broadcast scan.
+                                   Will perform a directed scan if the optional <arg> is provided
+
+ -r<arg>   --repeats=<arg>      Repeat the command the specified number of times
+
+ -A[<arg>] --associate=[<arg>]  Associate to network.
+                                   Will prompt for network name if arg is not specified
+                                   and if necessary, for a password if the network is using WEP or WPA.
+                                   The following additional arguments may be specified with this command:
+                                  --bssid=<arg>     Specify BSSID to associate with
+                                  --password=<arg>  Specify a WEP key or WPA password
+
+ -I        --getinfo            Print current wireless status, e.g. signal info, BSSID, port type etc.
+
+ -P<arg>   --psk=<arg>          Create PSK from specified pass phrase and SSID.
+                                   The following additional arguments must be specified with this command:
+                                  --ssid=<arg>      Specify SSID when creating a PSK
+
+ -S        --showstack          Print the current list of known networks
+
+ -c[<arg>] --channel=[<arg>]    Set arbitrary channel on the card
+
+ -h        --help               Show this help
+
+
+.SH AUTHOR
+ William Scott 
+.SH "SEE ALSO"
+.BR airport (1)
+
+

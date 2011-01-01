@@ -1,0 +1,89 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta content=
+"HTML Tidy for Mac OS X (vers 1st December 2004), see www.w3.org"
+name="generator" />
+<title>Man page of gdirs</title>
+</head>
+<body>
+<h1>gdirs</h1>
+Section: Mac OS X Darwin customization (7)<br />
+Updated: January 23 2005<br />
+<a href="../html/">Index</a> <a href=
+"http://www.chemistry.ucsc.edu/%7Ewgscott/mystuff/zsh_tree.html">Return
+to Main Contents</a>
+<hr />
+<a name="lbAB" id="lbAB">&nbsp;</a>
+<h2>NAME</h2>
+<b>gdirs</b> - display directory stack as gui menu <a name="lbAC"
+id="lbAC">&nbsp;</a>
+<h2>SYNOPSIS</h2>
+gdirs [-f] [-F] <a name="lbAD" id="lbAD">&nbsp;</a>
+<h2>DESCRIPTION</h2>
+Type <b>gdirs</b> and you will get a pop-up window that displays up
+to twenty previously visited directories. Pick whatever directory
+you want and hit "OK" and the terminal will cd to that directory.
+Type <b>gdirs -f</b> and both the terminal and Finder will change
+to the newly selected directory. Type <b>gdirs -F</b> and only the
+Finder will change to the newly selected directory.
+<p>The non-gui version is (at present) a bit more flexible and
+fully-featured. Type <b>dirstack [n]</b> where n is an integer
+[defaults to 20] and you will get the n most recent directories
+visited, listed with numbers next to them.&Ecirc; The command
+<b>cd?</b> is the same. You may then type (eg) cd7 and the terminal
+will change directory to that listed on line 7 of the dirstack
+output. <b>cp7</b> or <b>cpath7</b> copies the directory path in
+line 7 into the clipboard copy/paste buffer. <a name="lbAE" id=
+"lbAE">&nbsp;</a></p>
+<h2>OPTIONS</h2>
+<dl compact="compact">
+<dt>-f</dt>
+<dd>both the terminal and Finder will change to the newly selected
+directory.</dd>
+<dt>-F</dt>
+<dd>the Finder (only) will change to the newly selected
+directory</dd>
+</dl>
+<a name="lbAF" id="lbAF">&nbsp;</a>
+<h2>SEE ALSO</h2>
+<a href=
+"http://www.chemistry.ucsc.edu/~wgscott/mystuff/gdirs.html">http://www.chemistry.ucsc.edu/~wgscott/mystuff/gdirs.html</a>
+<a name="lbAG" id="lbAG">&nbsp;</a>
+<h2>FILES</h2>
+The following aliases should be defined in one's
+<i>aliases.local</i> file:
+<p><b>alias dirstack=dirdump; typeset -U dirs_shared ;
+dirstack</b></p>
+<p><b>alias cd?=dirdump; typeset -U dirs_shared; dirstack</b></p>
+<p><b>alias gdirs=dirdump; typeset -U dirs_shared; dirstack &gt;
+/dev/null ; guidirs</b><br />
+&nbsp; <a name="lbAH" id="lbAH">&nbsp;</a></p>
+<h2>BUGS</h2>
+Deleted directories are not purged from the stack. <a name="lbAI"
+id="lbAI">&nbsp;</a>
+<h2>AUTHOR</h2>
+W. G. Scott <a name="lbAJ" id="lbAJ">&nbsp;</a>
+<h2>SEE ALSO</h2>
+<b>cd?</b>(7), <b>cpath[n]</b>(7), <b>dirstack&nbsp;[n]</b>(7)
+<hr />
+<a name="index" id="index">&nbsp;</a>
+<h2>Index</h2>
+<dl>
+<dt><a href="#lbAB">NAME</a></dt>
+<dt><a href="#lbAC">SYNOPSIS</a></dt>
+<dt><a href="#lbAD">DESCRIPTION</a></dt>
+<dt><a href="#lbAE">OPTIONS</a></dt>
+<dt><a href="#lbAF">SEE ALSO</a></dt>
+<dt><a href="#lbAG">FILES</a></dt>
+<dt><a href="#lbAH">BUGS</a></dt>
+<dt><a href="#lbAI">AUTHOR</a></dt>
+<dt><a href="#lbAJ">SEE ALSO</a></dt>
+</dl>
+<hr />
+This document was created by <a href=
+"/cgi-bin/man/man2html">man2html</a>, using the manual pages.<br />
+Time: 05:39:00 GMT, August 06, 2005
+</body>
+</html>

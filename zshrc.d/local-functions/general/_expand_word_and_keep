@@ -1,0 +1,20 @@
+#autoload
+
+# Author: Bart Schaefer
+
+# The "_expand_word_and_keep" function stores the expansions computed by
+# the "_expand" completer in the global $kept for later retrieval by
+# "_insert_kept".
+
+    function compadd() {
+        local -A args
+        zparseopts -E -A args J:
+        if [[ $args[-J] == all-expansions ]]
+        then
+            builtin compadd -A kept "$@"
+            kept=( ${(Q)${(z)kept}} )
+        fi
+        builtin compadd "$@"
+    }
+    { _main_complete _expand } always { unfunction compadd }
+

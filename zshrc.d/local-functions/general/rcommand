@@ -1,0 +1,21 @@
+#!/bin/zsh -f
+
+ssh -f -Y "$@"  
+
+
+remoteargs=( "$@" )
+print
+print " Running \e[1m $remoteargs[2,-1] \e[0m on $1 \e[1m "
+print ""
+
+sleep 4
+print "\e[0m "
+print " Returning to $HOST:r:r:r "
+print ""
+
+  
+
+
+
+
+ 

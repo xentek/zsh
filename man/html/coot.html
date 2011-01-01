@@ -1,0 +1,74 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Mac OS X (vers 1st December 2004), see www.w3.org" />
+<meta http-equiv="Content-Type" content=
+"text/html; charset=us-ascii" />
+<title>Manual Page for coot</title>
+
+<style type="text/css">
+/*<![CDATA[*/
+<!--.red {color: #CC0000}-->
+/*]]>*/
+</style>
+
+<style type="text/css">
+/*<![CDATA[*/
+<!--.hed {color: #000000; font-weight: bold; font-size: larger;}-->
+/*]]>*/
+</style>
+</head>
+<body>
+<pre>
+ <a href=
+"http://sage.ucsc.edu/Library/init/zsh/man/html/coot.html">coot(7)</a>                Mac OS X Darwin ZSH customization               <a href="http://sage.ucsc.edu/Library/init/zsh/man/html/coot.html">coot(7)</a>
+
+
+
+<span class="hed">NAME</span>
+       <span class=
+"red">coot</span>  -  function  to run coot, allowing files to be added as arguments
+       without flags (crystallography)
+
+
+<span class="hed">SYNOPSIS</span>
+       coot <span class=
+"red">[</span> <u>pdbfile.pdb</u> <span class=
+"red">]</span> <span class=
+"red">[</span> <u>mtzfile.mtz</u> <span class=
+"red">]</span> <span class=
+"red">[</span> <u>ccp4mapfile.map</u> <span class=
+"red">]</span> <span class="red">[</span> <u>...</u>  <span class=
+"red">]</span>
+
+
+<span class="hed">DESCRIPTION</span>
+       This is a zsh shell script or function that augments the  coot  command
+       line  experience.  Just  type  "coot" followed by the names of your pdb
+       files, map files, mtz files and so on. If you  have  the  unix  program
+       screen,  it  starts coot in a screen session, which you can then detach
+       with "control-A d" and resume with "screen -r coot".  If you  are  run-
+       ning  OS  X  and  have my "scrollspeed function, it will invoke that to
+       slow the scroll wheel response until you quit coot, at which  point  it
+       resets.  Issuing -s anywhere after coot in the string of arguments will
+       suppress that behavior.  Using --pdb, --map, --data, --script and so on
+       will  have  no  detrimental effect.  These flags are just ignored.  The
+       file type is determined from the file suffix.
+
+
+<span class="hed">AUTHOR</span>
+       William Scott
+
+
+<span class="hed">MAINTAINER</span>
+       W. G. Scott <a href=
+"mailto:wgscott@users.sourceforge.net">wgscott@users.sourceforge.net</a>
+
+
+
+Mac OS X                        August 5, 2005                         <a href="http://sage.ucsc.edu/Library/init/zsh/man/html/coot.html">coot(7)</a>
+</pre>
+</body>
+</html>

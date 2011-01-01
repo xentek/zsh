@@ -1,0 +1,27 @@
+#!/bin/zsh -f
+
+if [[ -z $prompt_text ]];then
+    prompt_text=( Choose an item: )
+fi
+
+    # Thanks to Gary Kerbaugh for the next five lines
+    
+    list_items="" 
+    
+#    for argument in "$@"; do 
+#       list_items=${list_items}\"${argument}'", ' 
+#    done 
+#    list_items=${list_items%, } 
+
+
+    # Thanks to Daniel Macks for this alternative:
+        
+    list_items=$(printf '"%s", ' "$@") 
+    list_items=${list_items%, } 
+
+osascript << eof
+    tell app "Finder"
+    activate
+    choose from list { $list_items } with prompt "$prompt_text"
+    end tell
+eof

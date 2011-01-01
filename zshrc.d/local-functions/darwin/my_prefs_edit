@@ -1,0 +1,168 @@
+#!/bin/zsh -f
+
+# function my_prefs_edit
+
+# This function should be run to create a .zsh/my_edit_rc file in the user's home
+# directory.  This allows the user of my edit and hydra functions to pick their
+# own default applications.
+
+# This function is called from edit or nonasciiedit or hydra; there is no
+# requirement to run it on its own, but you can.  To reset the defaults, just
+# delete the file .zsh/my_edit_rc and then run any of the edit functions
+
+##################################################################################
+#       my_prefs_edit v 1.1.0 for use INTERACTIVELY with Darwin-OSX ......
+#        
+#       by William Scott
+#       Send comments, bugs or suggestions to wgscottATchemistryDOTucscDOTedu
+#
+#       Default values for an ASCII test editor (eg: SubEthaEdit), an image editor
+#       (eg: Adobe Photoshop), a postscript display (eg: Preview in 10.3.x works),
+#       a PDF display (eg: Preview), and a WYSIWYG HTML editor (eg: Netscape, a
+#       free alternative to DreamCrusher), are set using the function
+#       my_prefs_edit which is called if the file .zsh/my_edit_rc  does not exist in
+#       the user's home directory.  This file can also be edited by hand and is
+#       read (and is required) by the functions hydra and nonasciiedit as well.
+#
+#       The functions hydra and nonasciiedit, as well as my_prefs_edit, are  
+#       stand-alone functions and are imported by  edit, which 
+#       serves as a wrapper and augments a few features.
+#
+#       This program is free software; you can redistribute it and/or modify 
+#       it under the terms of the GNU General Public License as published by 
+#       the Free Software Foundation; either version 2 of the License, or 
+#       (at your option) any later version.
+#
+#       This program is distributed in the hope that it will be useful, 
+#       but WITHOUT ANY WARRANTY; without even the implied warranty of 
+#       MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
+#       GNU General Public License for more details.
+#
+#       This function has syntax specific to zsh and will break if you try to
+#       use it as an imported function with ksh, sh, bash, etc. so if you use 
+#       one of those shells, make edit a zsh shell script and put it into $path.
+# 
+#
+################################################################################
+
+
+#######################################################################
+#######################################################################
+#                                                                     #
+#           Functions                                                 #
+#                                                                     #
+#######################################################################
+#######################################################################
+
+
+#######################################################################
+# Generic Application Choosing Function
+
+function AppChooser {
+    $speak "Please select an $AppType Application" &
+    osascript <<-eof
+            tell app "Finder"
+            activate
+        set f to POSIX path of ((choose file with prompt \
+        "Select an $AppType Application:\
+        $Example") as string) 
+        end
+eof
+}
+
+#######################################################################
+                                                                     
+#######################################################################
+# Editor-choosing implementation
+
+function ChooseEditorApp {
+    result=""
+    AppType=Editor
+    Example=(\[eg: TextEdit or SubEthaEdit\])
+    speak=(say -v Trinoids)
+    my_editor_result=`AppChooser`
+    MyEditor=(open -a $my_editor_result:t:r)
+    
+    print "The Application you have picked is $my_editor_result:t:r "
+    $speak "You picked $my_editor_result:t:r "
+    print "MyEditor=(open -a \"$my_editor_result:t:r\")" >>| ~/.zsh/my_edit_rc
+}
+
+#######################################################################
+
+
+#######################################################################
+# WYSIWYG HTML Editor-choosing implementation
+
+function ChooseHTMLApp {
+    HTML_Editor_result=""
+    AppType=HTML_Editor
+    Example=(\[eg: Netscape or DreamWeaver\])
+    speak=(say -v Trinoids)
+    HTML_Editor_result=`AppChooser`
+    HTML_Editor=(open -a $HTML_Editor_result:t:r)
+    
+    print "The Application you have picked is $HTML_Editor_result:t:r "
+    $speak "You picked $HTML_Editor_result:t:r "
+    print "HTML_Editor=(open -a \"$HTML_Editor_result:t:r\")" >>| ~/.zsh/my_edit_rc
+}
+
+#######################################################################
+
+#######################################################################
+# ImageEditor-choosing implementation
+
+function ChooseImageEditor {
+    ChooseImageEditor_result=""
+    AppType=Image_Editor
+    Example=(\[eg: Adobe Photoshop\])
+    speak=(say -v Trinoids)
+    ChooseImageEditor_result=`AppChooser`
+    ImageEditor=(open -a $ChooseImageEditor_result:t:r)
+    
+    print "The Application you have picked is $ChooseImageEditor_result:t:r "
+    $speak "You picked $ChooseImageEditor_result:t:r "
+    print "ImageEditor=(open -a \"$ChooseImageEditor_result:t:r\")" >>| ~/.zsh/my_edit_rc
+}
+
+#######################################################################
+
+#######################################################################
+# PDFdisplay-choosing implementation
+
+function ChoosePDFdisplay {
+    PDFdisplay_result=""
+    AppType=PDFdisplay
+    Example=(\[eg: Preview\])
+    speak=(say -v Trinoids)
+    PDFdisplay_result=`AppChooser`
+    PDFdisplay=(open -a $PDFdisplay_result:t:r)
+    
+    print "The Application you have picked is $PDFdisplay_result:t:r "
+    $speak "You picked $PDFdisplay_result:t:r "
+    print "PDFdisplay=(open -a \"$PDFdisplay_result:t:r\")" >>| ~/.zsh/my_edit_rc
+}
+
+#######################################################################
+# Now run it:
+
+rm -f ~/.zsh/my_edit_rc
+
+ChooseEditorApp
+ChooseHTMLApp
+ChooseImageEditor
+ChoosePDFdisplay
+
+print ""
+print "Here are the contents of your edit configuration file."
+print "You can change this manually or re-run the my_refs_edit function"
+print "to change your preferences."
+print ""
+cat ~/.zsh/my_edit_rc
+
+print ""
+
+perl -pi -e 's|Adobe Photoshop 7|Adobe Photoshop 7.0|g' ~/.zsh/my_edit_rc
+perl -pi -e 's|Adobe Reader 6.0|Adobe Reader 6.0.app|g' ~/.zsh/my_edit_rc
+
+ 

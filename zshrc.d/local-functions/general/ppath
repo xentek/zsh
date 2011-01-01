@@ -1,0 +1,5 @@
+#!/bin/zsh -f 
+
+# ppath: list the Perl #INC path
+perl -e 'print map "$_\n", @INC' 
+

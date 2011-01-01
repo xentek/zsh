@@ -1,0 +1,15 @@
+#!/bin/zsh -f
+
+# Make an image file transparent, saving a backup.
+
+if [[ $(which convert)  == *not\ found* ]];then
+    print "Cannot find ImageMagick convert command"
+    return 1
+fi 
+
+foreach imagefile in "$@"
+    cp $imagefile $imagefile.bak
+    convert -transparent white $imagefile /tmp/$imagefile
+    cp /tmp/$imagefile $PWD/$imagefile   
+end
+return $?

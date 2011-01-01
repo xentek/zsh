@@ -1,0 +1,1044 @@
+#compdef abs acorn act almn amore anisoanl areaimol arp_waters astex_viewer baverage beast bones2pdb bplot bulking cad cavenv ccp4mapwish cif2mtz cif2xml combat contact coordconv coord_format crossec cross_validate detwin distang dm dmmulti dtrek2mtz dtrek2scala dyndom ecalc f2mtz fffear ffjoin fft fhscal findncs freerflag fsearch gensym geomcalc getax hgen hklplot hklview icoefl ipdisp libcheck loggraph lsqkab makedict mama2ccp4 map2fs mapdump mapmask maprot mapsig mapslicer maptona4 matthews_coef mlphare molrep mosflm mtz2various mtzdmp mtzdump mtzMADmod mtzmnf mtztona4 mtzutils na4tomtz ncont ncsmask npo oasis omit overlapmap pdbcur pdbset peakmax phistats pltdev polarrfn polypose prep_bulk procheck professs rantan rasmol rdent rebatch reindex restrain revise rfcorr rotamer rsearch rsps rstats rwcontents sapi scala scaleit scalepack2mtz sc sfall sfcheck sftools sigmaa solomon sortmtz sortwater stereo stgrid stnet surface tffc tlsanl tlsextract topdraw topp top3d topsearch tracer truncate unique vecref vectors volume watertidy watncs watpeak wilson xdldataman xdlmapman xloggraph xplot84driver xplot84
+
+
+
+#--------------------------------------
+# _ccp4_programs
+#
+# by Wataru Kagawa (06/07/05)
+# wkagawa@jota.gsc.riken.go.jp
+#
+# completion function for CCP4 programs
+#--------------------------------------
+
+
+
+#----------------------------------------------
+# defining logical names for each CCP4 programs
+#----------------------------------------------
+
+local -a _logical_names
+
+case "$service" in
+
+	(abs|beast|mtzdump|wilson|phistats)
+		_logical_names=(
+			'hklin:input MTZ file'
+		)
+	;;
+
+	(acorn)
+		_logical_names=(
+			'hklin:input MTZ file'
+			'hklout:output MTZ file'
+			'xyzin:input fragment coordinate file'
+		)
+	;;
+
+	(act|contact|distang|ncont|rotamer|rwcontents)
+		_logical_names=(
+			'xyzin:input coordinate file'
+		)
+	;;
+
+	(almn)
+		_logical_names=(
+			'hklin:input amplitudes for crystal 1'
+			'hklin2:input amplitudes for crystal 2'
+			'mapin:input map for READ option'
+			'mapout:output map for MAP option'
+			'symop:symmetry library'
+		)
+	;;
+
+	(amore)
+		_logical_names=(
+			'clmn0:'
+			'clmn1:'
+			'hklin:input MTZ file'
+			'hklpck0:packed file of H K L or NMULT in hemisphere'
+			'hklpck1:packed file of H K L or NMULT in hemisphere'
+			'hklout1:output ASCII file of finely sampled inverse Fourier coefficients'
+			'mapout:output map file of rotation or translation function'
+			'solutionf:'
+			'solutionrc:output cross rotation function'
+			'solutionrs:output self rotation function'
+			'solutiontf:output translation function'
+			'table1:table of the finely sampled inverse Fourier coefficients'
+			'xyzin:input coordinate file for the model'
+			'xyzout1:output coordinates after repositioning'
+		)
+	;;
+
+	(anisoanl)
+		_logical_names=(
+			'psout:output postscript plot of delta values'
+			'tlsin:input TLS file'
+			'tlsout:output TLS file'
+			'xyzin:input coordinate file'
+			'xyzout:output coordinate file'
+		)
+	;;
+
+	(areaimol|surface)
+		_logical_names=(
+			'xyzin:first input coordinate file'
+			'xyzin2:second input coordinate file'
+			'xyzout:output coordinate file'
+		)
+	;;
+
+	(arp_waters)
+		_logical_names=(
+			'mapin1:first input map file'
+			'mapin2:second input map file'
+			'xyzin:input coordinate file'
+			'xyzout:output coordinate file'
+		)
+	;;
+
+	(bulking|ccp4mapwish|cif2xml|crossec|cross_validate|dyndom|findncs|libcheck|matthews_coef|mosflm|prep_bulking|rsps|sftools|topdraw|tracer|watncs|xdldataman|xdlmapman)
+		_logical_names=()
+	;;
+
+	(baverage)
+		_logical_names=(
+			'rmstab:output table of average B factors and rms deviations'
+			'xyzin:input coordinate file'
+			'xyzout:output coordinate file'
+		)
+	;;
+
+	(bones2pdb)
+		_logical_names=(
+			'bonesin:input BONES file'
+			'xyzout:output coordinate file'
+		)
+	;;
+
+	(bplot)
+		_logical_names=(
+			'plot:output plot meta-file'
+			'xyzin1:first input coordinate file'
+			'xyzin2:second input coordinate file'
+		)
+	;;
+
+	(cad)
+		_logical_names=(
+			'hklin1:first input reflection data file in MTZ format'
+			'hklin2:second input reflection data file in MTZ format'
+			'hklin3:third input reflection data file in MTZ format'
+			'hklin4:fourth input reflection data file in MTZ format'
+			'hklin5:fifth input reflection data file in MTZ format'
+			'hklin6:sixth input reflection data file in MTZ format'
+			'hklin7:seventh input reflection data file in MTZ format'
+			'hklin8:eighth input reflection data file in MTZ format'
+			'hklin9:ninth input reflection data file in MTZ format'
+			'hklout:output reflection data file in MTZ format'
+		)
+	;;
+
+	(cavenv)
+		_logical_names=(
+			'mapout:output map file containing cavity map, or mask'
+			'xyzin:input coordinate file'
+		)
+	;;
+
+	(cif2mtz)
+		_logical_names=(
+			'hklin:input mmCIF reflection file'
+			'hklout:output MTZ file'
+		)
+	;;
+
+	(combat)
+		_logical_names=(
+			'hklin:input MTZ file or outputs from assorted data processing programs'
+			'hklout:output MTZ file'
+		)
+	;;
+
+	(detwin|ecalc|fhscal|freerflag|icoefl|mtzMADmod|mtzmnf|oasis|rantan|rebatch|reindex|revise|scala|scaleit|sigmaa|sortmtz|tffc)
+		_logical_names=(
+			'hklin:input MTZ file'
+			'hklout:output MTZ file'
+		)
+	;;
+
+	(coordconv|coord_format|hgen)
+		_logical_names=(
+			'xyzin:input coordinate file'
+			'xyzout:output coordinate file'
+		)
+	;;
+
+	(dm)
+		_logical_names=(
+			'hklin:input MTZ file'
+			'hklout:output MTZ file'
+			'ncsin:input NCS averaging mask'
+			'ncsout:output NCS averaging mask'
+			'solin:input solvent mask'
+			'solout:output solvent mask'
+			'vuout:output file containing NCS elements'
+		)
+	;;
+
+	(dmmulti)
+		_logical_names=(
+			'hklin1:input MTZ file for the 1st crystal form'
+			'hklin2:input MTZ file for the 2nd crystal form'
+			'hklin3:input MTZ file for the 3rd crystal form'
+			'hklin4:input MTZ file for the 4th crystal form'
+			'hklin5:input MTZ file for the 5th crystal form'
+			'hklin6:input MTZ file for the 6th crystal form'
+			'hklin7:input MTZ file for the 7th crystal form'
+			'hklin8:input MTZ file for the 8th crystal form'
+			'hklin9:input MTZ file for the 9th crystal form'
+			'hklout1:output MTZ file for the 1st crystal form'
+			'hklout2:output MTZ file for the 2nd crystal form'
+			'hklout3:output MTZ file for the 3rd crystal form'
+			'hklout4:output MTZ file for the 4th crystal form'
+			'hklout5:output MTZ file for the 5th crystal form'
+			'hklout6:output MTZ file for the 6th crystal form'
+			'hklout7:output MTZ file for the 7th crystal form'
+			'hklout8:output MTZ file for the 8th crystal form'
+			'hklout9:output MTZ file for the 9th crystal form'
+			'maskin1:input averaging masks for the 1st domain'
+			'maskin2:input averaging masks for the 2nd domain'
+			'maskin3:input averaging masks for the 3rd domain'
+			'maskin4:input averaging masks for the 4th domain'
+			'maskin5:input averaging masks for the 5th domain'
+			'maskin6:input averaging masks for the 6th domain'
+			'maskin7:input averaging masks for the 7th domain'
+			'maskin8:input averaging masks for the 8th domain'
+			'maskin9:input averaging masks for the 9th domain'
+			'solin1:input solvent mask for the 1st crystal form'
+			'solin2:input solvent mask for the 2nd crystal form'
+			'solin3:input solvent mask for the 3rd crystal form'
+			'solin4:input solvent mask for the 4th crystal form'
+			'solin5:input solvent mask for the 5th crystal form'
+			'solin6:input solvent mask for the 6th crystal form'
+			'solin7:input solvent mask for the 7th crystal form'
+			'solin8:input solvent mask for the 8th crystal form'
+			'solin9:input solvent mask for the 9th crystal form'
+			'solout1:output solvent mask for the 1st crystal form'
+			'solout2:output solvent mask for the 2nd crystal form'
+			'solout3:output solvent mask for the 3rd crystal form'
+			'solout4:output solvent mask for the 4th crystal form'
+			'solout5:output solvent mask for the 5th crystal form'
+			'solout6:output solvent mask for the 6th crystal form'
+			'solout7:output solvent mask for the 7th crystal form'
+			'solout8:output solvent mask for the 8th crystal form'
+			'solout9:output solvent mask for the 9th crystal form'
+		)
+	;;
+
+	(dtrek2mtz)
+		_logical_names=(
+			'hklin:input d*TREK scalemerge file'
+			'hklout:output MTZ file'
+		)
+	;;
+
+	(dtrek2scala|unique)
+		_logical_names=(
+			'hklout:output MTZ file'
+		)
+	;;
+
+	(f2mtz)
+		_logical_names=(
+			'hklin:input HKL file'
+			'hklout:output MTZ file'
+		)
+	;;
+
+	(fffear)
+		_logical_names=(
+			'hklin:input MTZ file'
+			'mapin:input map file'
+			'mapout:output map file'
+			'maxin:input maximum likelihood search target'
+			'solin:input solvent mask'
+			'xyzin:input coordinate file'
+			'xyzout:output coordinate file'
+		)
+	;;
+
+	(ffjoin)
+		_logical_names=(
+			'xyzin:input coordinate file'
+			'xyzin1:additional input coordinate file (1)'
+			'xyzin2:additional input coordinate file (2)'
+			'xyzout:output coordinate file'
+		)
+	;;
+
+	(fft)
+		_logical_names=(
+			'abcoeffs:output Fourier coefficients file'
+			'hklin:input MTZ file'
+			'mapout:output map file'
+		)
+	;;
+
+	(fsearch)
+		_logical_names=(
+			'flmin:input spherical harmonics file'
+			'hklin:input MTZ file'
+			'mapin:input map file'
+			'xyzin:input coordinate file'
+		)
+	;;
+
+	(gensym|geomcalc|pdbset|pdbcur|professs|sortwater|stereo)
+		_logical_names=(
+			'xyzin:input coordinate file'
+			'xyzout:output coordinate file'
+		)
+	;;
+
+	(getax)
+		_logical_names=(
+			'mapin:input map file'
+			'mapout:output map file'
+			'xyzin:input coordinate file'
+			'xyzout:output coordinate file'
+		)
+	;;
+
+	(hklplot)
+		_logical_names=(
+			'hklin:input MTZ file'
+			'plot:output simulated precession photograph file'
+		)
+	;;
+
+	(hklview)
+		_logical_names=()
+		local context state line expl
+		local -A opt_args
+
+		_arguments -C \
+			'-d[resolution limit in angstroms]' \
+			'-r[do not add .mtz to filename]' \
+			'-s[column label]' \
+			'*:: :->complete_mtz_files'
+
+		case "$state" in
+			(complete_mtz_files)
+				_description files expl 'mtz files'
+				_path_files "$expl[@]" -g '*.mtz' || _path_files "$expl[@]" -/ -g '*.mtz'
+		esac
+	;;
+
+	(ipdisp)
+		_logical_names=()
+		local context state line expl
+		local -A opt_args
+
+		_arguments -C \
+			'-a[swing angle theta (degrees)]' \
+			'-d[detector distance (mm)]' \
+			'-f[image filename: if this is given,it will be displayed immediately]' \
+			'-h[gives a list of the image type options]' \
+			'-i[image increment (nearly always = 1,the default)]' \
+			'-s[defines spdfil; not needed if one of the above options is given]' \
+			'-t[template name]' \
+			'-w[wavelength (A)]' \
+			'*:: :->complete_image_files'
+
+		case "$state" in
+			(complete_image_files)
+				_description files expl 'image files'
+				_path_files "$expl[@]" -g '*' || _path_files "$expl[@]" -/ -g '*'
+		esac
+	;;
+
+	(loggraph)
+		_logical_names=()
+		local context state line expl
+		local -A opt_args
+
+		_arguments -C \
+			'-f[format]: :->format' \
+			'-i[filename]: :->complete_log_files' \
+			'*:: :->complete_log_files'
+
+		case "$state" in
+			(complete_log_files)
+				_description files expl 'log files'
+				_path_files "$expl[@]" -g '*' || _path_files "$expl[@]" -/ -g '*'
+			;;
+			(format)
+				local -a _format
+				_format=( GRAPH DAT )
+				_describe -t commands "formats for log files" _format
+				return
+			;;
+		esac
+	;;
+
+	(lsqkab)
+		_logical_names=(
+			'xyzinf:input coordinate file (reference)'
+			'xyzinm:input coordinate file (to match or to transform)'
+			'xyzout:output coordinate file (matched or transformed)'
+		)
+	;;
+
+	(makedict)
+		_logical_names=(
+			'dict:output dictionary file'
+			'xyzin:input coordinate file'
+			'xyzout:output coordinate file'
+		)
+	;;
+
+	(mama2ccp4)
+		_logical_names=(
+			'maskin:input MASK file'
+			'maskout:output MASK file'
+			'spgrp:space group'
+		)
+	;;
+
+	(map2fs)
+		_logical_names=(
+			'mapin:input map or MASK file'
+			'mapout:output map or MASK file'
+		)
+	;;
+
+	(mapdump)
+		_logical_names=(
+			'mapin:input map file'
+		)
+	;;
+
+	(mapmask)
+		_logical_names=(
+			'mapin:input map file'
+			'mapin1:additional input map file (1)'
+			'mapin2:additional input map file (2)'
+			'mapout:output map file'
+			'maskin:input MASK file'
+			'maskin1:additional input MASK file (1)'
+			'maskin2:additional input MASK file (2)'
+			'maskout:output MASK file'
+			'xyzin:input coordinate file'
+		)
+	;;
+
+	(maprot)
+		_logical_names=(
+			'cutout:output map file from density cutting, containing the rotated masked data'
+			'mapin:input map file'
+			'mapout:output map file'
+			'wrkin:input work map file'
+			'wrkout:output work map file'
+		)
+	;;
+
+	(mapsig)
+		_logical_names=(
+			'mapin:first input map file'
+			'mapin2:second input map file'
+			'mapout:output map file'
+			'peak_list:output file containing a list of peaks found'
+		)
+	;;
+
+	(mapslicer)
+		_logical_names=()
+		local expl
+		_description files expl 'map files'
+		_path_files "$expl[@]" -g '*' || _path_files "$expl[@]" -/ -g '*'
+	;;
+
+	(maptona4)
+		_logical_names=(
+			'mapin:input map file'
+			'mapout:output map file'
+		)
+	;;
+
+	(mlphare)
+		_logical_names=(
+			'hklin:input MTZ file'
+			'hklout:output MTZ file'
+			'newparm:output script file'
+			'xyzout:output coordinate file'
+		)
+	;;
+
+	(molrep)
+		_logical_names=(
+			'hklin:input MTZ file'
+			'mapin:input file with CCP4 map'
+			'model:input coordinate file with the coordinates or CCP4 map'
+			'model2:input coordinate file with second fixed model'
+			'path_scr:path to redirect all scratch files'
+			'path_out:path to redirect output files'
+		)
+	;;
+
+	(mtzdmp)
+		_logical_names=()
+
+		if (( CURRENT == 2 )); then
+			local expl
+			_description files expl 'mtz files'
+			_path_files "$expl[@]" -g '*.mtz' || _path_files "$expl[@]" -/ -g '*.mtz'
+		elif (( CURRENT == 3 )); then
+			local -a _mtzdump_options
+			_mtzdump_options=(
+				'-b:dump BATCH headers'
+				'-bs:dump both SYMM and BATCH'
+				'-e:print header information only'
+				'-i:Interactive'
+				'-n:number of hkl to dump (default 10)'
+				'-r:resolution limits'
+				'-s:dump SYMMETRY info'
+				'-sb:dump both SYMM and BATCH'
+			)
+			_describe -t commands "option" _mtzdump_options
+			return
+		fi
+	;;
+
+	(mtz2various)
+		_logical_names=(
+			'hklin:input MTZ file'
+			'hklout:output ASCII reflection file for X-PLOR/CNS, mmCIF, etc.'
+		)
+	;;
+
+	(mtztona4)
+		_logical_names=(
+			'hklin:input MTZ format reflection file'
+			'hklout:output ASCII format reflection file'
+		)
+	;;
+	
+	(mtzutils)
+		_logical_names=(
+			'hklin1:first input MTZ file'
+			'hklin2:second optional input MTZ file'
+			'hklout:output MTZ file'
+		)
+	;;
+
+	(na4tomtz)
+		_logical_names=(
+			'hklin:input ASCII format reflection file'
+			'hklout:output MTZ format reflection file'
+		)
+	;;
+
+	(ncsmask)
+		_logical_names=(
+			'mskin:input MASK file'
+			'mskout:output MASK file'
+			'xyzin:input coordinate file'
+		)
+	;;
+
+	(npo)
+		_logical_names=(
+			'mapin:first input map file'
+			'mapin2:second input map file'
+			'plot:output plot file'
+			'xyzin1:first input coordinate file'
+			'xyzin2:second input coordinate file'
+			'xyzin3:third input coordinate file'
+			'xyzin4:fourth input coordinate file'
+			'xyzin5:fifth input coordinate file'
+			'xyzin6:sixth input coordinate file'
+			'xyzin7:seventh input coordinate file'
+			'xyzin8:eighth input coordinate file'
+			'xyzin9:ninth input coordinate file'
+		)
+	;;
+
+	(omit)
+		_logical_names=(
+			'hklin:input MTZ file'
+			'mapout:output map file'
+		)
+	;;
+
+	(overlapmap)
+		_logical_names=(
+			'mapin1:first input map file'
+			'mapin2:second input map file'
+			'mapin3:third input map file'
+			'mapout:output map file'
+		)
+	;;
+
+	(peakmax)
+		_logical_names=(
+			'mapin:input map file'
+			'peaks:output peaks file'
+			'xyzout:output coordinate file'
+			'xyzfrc:output peaks file'
+		)
+	;;
+
+	(polarrfn)
+		_logical_names=(
+			'coeffs1:ALMN coefficients for crystal 1'
+			'coeffs2:ALMN coefficients for crystal 2'
+			'hklin:input amplitudes for crystal 1'
+			'hklin2:input amplitudes for crystal 2'
+			'mapin:input map for READ option'
+			'mapout:output map for map option'
+			'plot:output containing stereographic projection of each kappa section'
+		)
+	;;
+
+	(polypose)
+		_logical_names=(
+			'outdir:path to which output coordinates are sent'
+			'xyzin1:first input coordinate file'
+			'xyzin2:second input coordinate file'
+			'xyzin3:third input coordinate file'
+			'xyzin4:fourth input coordinate file'
+			'xyzin5:fifth input coordinate file'
+			'xyzin6:sixth input coordinate file'
+			'xyzin7:seventh input coordinate file'
+			'xyzin8:eighth input coordinate file'
+			'xyzin9:ninth input coordinate file'
+			'xyzout1:first output coordinate file'
+			'xyzout2:second output coordinate file'
+			'xyzout3:third output coordinate file'
+			'xyzout4:fourth output coordinate file'
+			'xyzout5:fifth output coordinate file'
+			'xyzout6:sixth output coordinate file'
+			'xyzout7:seventh output coordinate file'
+			'xyzout8:eighth output coordinate file'
+			'xyzout9:ninth output coordinate file'
+		)
+	;;
+
+	(astex_viewer|procheck|rasmol|top3d|topsearch)
+		_logical_names=()
+		local expl
+		_description files expl 'pdb, brk, or ent files'
+		_path_files "$expl[@]" -g '*.(pdb|brk|ent)' || _path_files "$expl[@]" -/ -g '*.(pdb|brk|ent)'
+	;;
+
+	(rdent)
+		_logical_names=(
+			'dict:output dictionary file'
+			'xyzin:input coordinate file'
+		)
+	;;
+
+	(restrain)
+		_logical_names=(
+			'desout:The filename of the output restraint design matrix'
+			'diction:The filename of the dictionary used'
+			'hklin:The filename of the input unformatted (MTZ) reflection file'
+			'hklout:The filename of the output unformatted (MTZ) reflection file'
+			'matout:The filename of the output full normal matrix'
+			'refin:The filename of the input formatted reflection file'
+			'refout:The filename of the output formatted reflection file'
+			'tslin:The filename of the input group thermal parameters (optional)'
+			'tlsout:The filename of the output group thermal parameters'
+			'xyzin:The filename of the input coordinates in PDB format'
+			'xyzout:The filename of the output coordinates'
+		)
+	;;
+
+	(rfcorr)
+		_logical_names=(
+			'mapin:input map file'
+			'peaks:output peaks file'
+		)
+	;;
+
+	(rsearch)
+		_logical_names=(
+			'hklin:input MTZ file'
+			'mapout:output map file'
+			'searchsave:input file containing intermediate sums'
+		)
+	;;
+
+	(rstats)
+		_logical_names=(
+			'hklin:input MTZ file'
+			'hklout:output MTZ file'
+			'rstatsbkr:output file containing final B, K, and R factors'
+		)
+	;;
+
+	(sapi)
+		_logical_names=(
+			'hklin:Input MTZ file'
+			'sapipks:Output file containing peak list'
+		)
+	;;
+
+	(sc)
+		_logical_names=(
+			'scradii:input reference file containing the radii'
+			'surfin1:first input GRASP surface file'
+			'surfin2:second input GRASP surface file'
+			'surfout1:first output GRASP surface file'
+			'surfout2:second output GRASP surface file'
+			'xyzin:input coordinate file'
+		)
+	;;
+
+	(scalepack2mtz)
+		_logical_names=(
+			'hklin:input scalepack file'
+			'hklout:output MTZ file'
+		)
+	;;
+
+	(sfall)
+		_logical_names=(
+			'gradmat:output matrix file'
+			'hklin:input MTZ file'
+			'hklout:output MTZ file'
+			'mapin:input map file'
+			'mapout:output map file'
+			'xyzin:input coordinate file'
+			'xyzout:output coordinate file'
+		)
+	;;
+
+	(sfcheck)
+		_logical_names=(
+			'hklin:input MTZ file'
+			'hklout:output MTZ file'
+			'mapout:output map file'
+			'path_scr:path for output scratch files'
+			'path_out:path for output PostScript files'
+			'xyzin:input coordinate file'
+		)
+	;;
+
+	(solomon)
+		_logical_names=(
+			'mapin:input map file'
+			'mapout:output map file'
+			'rmsmap:output map file'
+		)
+	;;
+
+	(stgrid|stnet)
+		_logical_names=(
+			'plot:input PLOT file'
+		)
+	;;
+
+	(tlsanl)
+		_logical_names=(
+			'axes:output axes file'
+			'tlsin:input TLS file'
+			'xyzin:input coordinate file'
+			'xyzout:output coordinate file'
+		)
+	;;
+
+	(tlsextract)
+		_logical_names=(
+			'xyzin:input coordinate file'
+			'tlsout:output TLS file'
+		)
+	;;
+
+	(truncate)
+		_logical_names=(
+			'hklin:input MTZ file'
+			'hklout:output MTZ file'
+			'plot:output plot file'
+		)
+	;;
+
+	(vecref)
+		_logical_names=(
+			'atout:output coordinate file for subsequent runs'
+			'mapin:input map file'
+		)
+	;;
+
+	(vectors)
+		_logical_names=(
+			'mapin:input map file'
+			'xyzin:input coordinate file'
+			'xyzout:output coordinate file'
+		)
+	;;
+
+	(volume)
+		_logical_names=(
+			'errout:'
+			'shellfile:'
+			'xyzin:input coordinate file'
+			'xyzout:output coordinate file'
+		)
+	;;
+
+	(watertidy)
+		_logical_names=(
+			'distout:output log file from the program, DISTANG'
+			'xyzin:input coordinate file'
+			'xyzout:output coordinate file'
+		)
+	;;
+
+	(watpeak)
+		_logical_names=(
+			'peaks:input peak list in PDB format'
+			'xyzin:input coordinate file'
+			'xyzout:output coordinate file'
+		)
+	;;
+
+	(xloggraph)
+		_logical_names=()
+		local expl
+		_description files expl 'log files'
+		_path_files "$expl[@]" -g '*.(log|html)' || _path_files "$expl[@]" -/ -g '*'
+	;;
+
+	(xplot84driver)
+		_logical_names=()
+		local expl
+		_description files expl 'plot84 meta files'
+		_path_files "$expl[@]" -g '*.plt' || _path_files "$expl[@]" -/ -g '*'
+	;;
+
+esac
+
+
+
+_arguments \
+	'*:: :->subcmds' && return 0
+
+
+
+#---------------------------------------------------------------------
+# remove logical names present in the command line from _logical_names
+#---------------------------------------------------------------------
+
+
+
+if [[ $CURRENT == '1' && -n $_logical_names ]]; then
+
+	_describe -t commands "logical names for $service" _logical_names
+	return
+
+elif (( CURRENT > 1 && CURRENT%2 == 1 )); then
+
+	local int
+	(( int = CURRENT - 2 ))
+
+	while (( int >= 1 )); do
+		_logical_names=( ${_logical_names:#"$words[$int]"*} )
+		(( int = int - 2 ))
+	done
+
+	if [[ -n $_logical_names ]]; then
+		_describe -t commands "logical names for $service" _logical_names
+		return
+	fi
+
+fi
+
+
+
+#------------------------------
+# completions for logical names
+#------------------------------
+
+case "$words[$CURRENT-1]" in
+
+	(abcoeffs|atout|desout|dict|diction|distout|flmin|gradmat|matout|newparm|refin|refout|rstatsbkr|scradii|searchsave|surfin*|xyzfrc)
+		local expl
+		_description files expl "files for $words[$CURRENT-1]"
+		_path_files "$expl[@]" -g '*' || _path_files "$expl[@]" -/ -g '*'
+	;;
+
+	(axes)
+		local expl
+		_description files expl 'in files'
+		_path_files "$expl[@]" -g '*.in' || _path_files "$expl[@]" -/ -g '*.in'
+	;;
+
+	(bonesin)
+		local expl
+		_description files expl 'bones files'
+		_path_files "$expl[@]" -g '*.bones' || _path_files "$expl[@]" -/ -g '*.bones'
+	;;
+
+	(cutout|mapout|rmsmap|wrkout)
+		local expl
+		if [[ "$service" == 'map2fs' ]]; then
+			_description files expl 'fs files'
+			_path_files "$expl[@]" -g '*.fs' || _path_files "$expl[@]" -/ -g '*.fs'
+		elif [[ "$service" == 'maptona4' ]]; then
+			_description files expl 'map or na4 files'
+			_path_files "$expl[@]" -g '*.(map|na4)' || _path_files "$expl[@]" -/ -g '*.(map|na4)'
+		else
+			_description files expl 'map files'
+			_path_files "$expl[@]" -g '*.map' || _path_files "$expl[@]" -/ -g '*.map'
+		fi
+	;;
+
+	(hklin*)
+		local expl
+		if [[ "$service" == 'scalepack2mtz' ]]; then
+			_description files expl 'sca files'
+			_path_files "$expl[@]" -g '*.sca' || _path_files "$expl[@]" -/ -g '*.sca'
+		elif [[ "$service" == 'cif2mtz' ]]; then
+			_description files expl 'cif or ent files'
+			_path_files "$expl[@]" -g '*.(cif|ent)' || _path_files "$expl[@]" -/ -g '*.(cif|ent)'
+		elif [[ "$service" == 'combat' ]]; then
+			_description files expl 'mtz, dump, or sca files'
+			_path_files "$expl[@]" -g '*.(mtz|dump|sca)' || _path_files "$expl[@]" -/ -g '*.(mtz|dump|sca)'
+		elif [[ "$service" == 'dtrek2mtz' ]]; then
+			_description files expl 'd*trek files'
+			_path_files "$expl[@]" -g '*' || _path_files "$expl[@]" -/ -g '*'
+		elif [[ "$service" == 'f2mtz' ]]; then
+			_description files expl 'hkl files'
+			_path_files "$expl[@]" -g '*.hkl' || _path_files "$expl[@]" -/ -g '*.hkl'
+		elif [[ "$service" == 'na4tomtz' ]]; then
+			_description files expl 'na4 files'
+			_path_files "$expl[@]" -g '*.na4' || _path_files "$expl[@]" -/ -g '*.na4'
+		else
+			_description files expl 'mtz files'
+			_path_files "$expl[@]" -g '*.mtz' || _path_files "$expl[@]" -/ -g '*.mtz'
+		fi
+	;;
+
+	(hklout)
+		local expl
+		if [[ "$service" == 'mtz2various' ]]; then
+			_description files expl 'hkl, cif, phs, or shelx files'
+			_path_files "$expl[@]" -g '*.(hkl|cif|phs|shelx)' || _path_files "$expl[@]" -/ -g '*.(hkl|cif|phs|shelx)'
+		elif [[ "$service" == 'mtztona4' ]]; then
+			_description files expl 'na4 files'
+			_path_files "$expl[@]" -g '*.na4' || _path_files "$expl[@]" -/ -g '*.na4'
+		else
+			_description files expl 'mtz files'
+			_path_files "$expl[@]" -g '*.mtz' || _path_files "$expl[@]" -/ -g '*.mtz'
+		fi
+	;;
+
+	(mapin*|wrkin)
+		local expl
+		if [[ "$service" == 'maptona4' ]]; then
+			_description files expl 'map or na4 files'
+			_path_files "$expl[@]" -g '*.(map|na4)' || _path_files "$expl[@]" -/ -g '*.(map|na4)'
+		elif [[ "$service" == 'molrep' ]]; then
+			_description files expl 'ccp4 files'
+			_path_files "$expl[@]" -g '*.ccp4' || _path_files "$expl[@]" -/ -g '*.ccp4'
+		else
+			_description files expl 'map files'
+			_path_files "$expl[@]" -g '*.map' || _path_files "$expl[@]" -/ -g '*.map'
+		fi
+	;;
+
+	(maxin)
+		local expl
+		_description files expl 'max files'
+		_path_files "$expl[@]" -g '*.max' || _path_files "$expl[@]" -/ -g '*.max'
+	;;
+
+	(model)
+		local expl
+		if [[ "$service" == 'molrep' ]]; then
+			_description files expl 'pdb, brk, ent, or ccp4 files'
+			_path_files "$expl[@]" -g '*.(pdb|brk|ent|ccp4)' || _path_files "$expl[@]" -/ -g '*.(pdb|brk|ent|ccp4)'
+		else
+			_description files expl 'pdb, brk, or ent files'
+			_path_files "$expl[@]" -g '*.(pdb|brk|ent)' || _path_files "$expl[@]" -/ -g '*.(pdb|brk|ent)'
+		fi
+	;;
+
+	(model*|xyzinf|xyzinm)
+		local expl
+		_description files expl 'pdb, brk, or ent files'
+		_path_files "$expl[@]" -g '*.(pdb|brk|ent)' || _path_files "$expl[@]" -/ -g '*.(pdb|brk|ent)'
+	;;
+
+	(mskin*|mskout|solin)
+		local expl
+		_description files expl 'mask files'
+		_path_files "$expl[@]" -g '*.msk' || _path_files "$expl[@]" -/ -g '*.msk'
+	;;
+
+	(path_out|path_scr)
+		local expl
+		_description files expl 'path'
+		_path_files "$expl[@]" -/ -g '*'
+	;;
+
+	(peak*)
+		local expl
+		if [[ "$service" == 'watpeak' ]]; then
+			_description files expl 'pdb files containing peak list'
+			_path_files "$expl[@]" -g '*.pdb' || _path_files "$expl[@]" -/ -g '*.pdb'
+		else
+			_description files expl "files for $words[$CURRENT-1]"
+			_path_files "$expl[@]" -g '*' || _path_files "$expl[@]" -/ -g '*'
+		fi
+	;;
+
+	(plot)
+		local expl
+		_description files expl 'plt or plo files'
+		_path_files "$expl[@]" -g '*.(plt|plo)' || _path_files "$expl[@]" -/ -g '*.(plt|plo)'
+	;;
+
+	(rmstab)
+		local expl
+		_description files expl 'table files'
+		_path_files "$expl[@]" -g '*.tab' || _path_files "$expl[@]" -/ -g '*.tab'
+	;;
+
+	(sapipks)
+		local expl
+		_description files expl 'pks files'
+		_path_files "$expl[@]" -g '*.pks' || _path_files "$expl[@]" -/ -g '*.pks'
+	;;
+
+	(tlsin|tlsout)
+		local expl
+		_description files expl 'tls files'
+		_path_files "$expl[@]" -g '*.tls' || _path_files "$expl[@]" -/ -g '*.tls'
+	;;
+
+	(xyzin*)
+		local expl
+		if [[ "$service" == 'makedict' ]]; then
+			_description files expl 'pdb or dict files'
+			_path_files "$expl[@]" -g '*.(pdb|dict)' || _path_files "$expl[@]" -/ -g '*.(pdb|dict)'
+		else
+			_description files expl 'pdb, brk, or ent files'
+			_path_files "$expl[@]" -g '*.(pdb|brk|ent)' || _path_files "$expl[@]" -/ -g '*.(pdb|brk|ent)'
+		fi
+	;;
+
+	(xyzout*)
+		local expl
+		if [[ "$service" == 'surface' ]]; then
+			_description files expl 'rad files'
+			_path_files "$expl[@]" -g '*.rad' || _path_files "$expl[@]" -/ -g '*.rad'
+		else
+			_description files expl 'pdb, brk, or ent files'
+			_path_files "$expl[@]" -g '*.(pdb|brk|ent)' || _path_files "$expl[@]" -/ -g '*.(pdb|brk|ent)'
+		fi
+	;;
+
+esac

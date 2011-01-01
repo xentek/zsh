@@ -1,0 +1,13 @@
+#!/bin/zsh -f
+# fink_web opens up the fink package database website.  If $1 is provided,
+# then the package database opens to the page for the named package
+
+if [[ -z $1 ]];then
+    open http://pdb.finkproject.org/pdb/
+elif [[ $1 == (-s|--search|-search) ]];then
+    open http://pdb.finkproject.org/pdb/"search.php?summary=$2"
+else
+    open http://pdb.finkproject.org/pdb/package.php/$1
+fi
+
+alias finkweb='fink_web'

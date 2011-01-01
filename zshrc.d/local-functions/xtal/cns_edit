@@ -1,0 +1,324 @@
+#!/bin/zsh -f
+
+# Feb 3rd, 2006
+
+
+# Use an x-11-based browser when logged in remotely via ssh
+# Use an OS X-based browser (or not) when using the OS X GUI interface locally.
+
+# set -x  # Uncomment to debug
+
+if [[ -n $SSH_TTY ]];then
+
+    use_xbrowser='true'
+    
+    if [[ -n $CNS_REMOTE_BROWSER ]];then
+        CNS_BROWSER=( $CNS_REMOTE_BROWSER )
+        print invoking cns_edit using the $CNS_BROWSER browser.
+    elif [[ -x $(which firefox | head -n 1) ]]; then
+        CNS_BROWSER=(firefox)
+    elif [[ -x $(which konqueror | head -n 1) ]]; then
+        CNS_BROWSER=(konqueror)
+        print invoking cns_edit using the $CNS_BROWSER browser.
+    else
+        print "Suitable X-windows-based browser not found"  
+        print 'Please set the variable $CNS_REMOTE_BROWSER to your desired browser, eg: '
+        print ''
+        print '     export CNS_BROWSER=(konqueror)'
+        print ''
+        print 'to use the konqueror Browser'
+        return 10        
+    fi
+    
+else
+
+    function FindaBrowser {
+      if [[ -x /usr/bin/mdfind ]];then
+        fullpath=$(mdfind -onlyin /Applications "kMDItemContentType == 'com.apple.application-*'" | grep "$OSXBROWSER" | head -n 1 )
+         if [[ -d $fullpath ]];then
+            basename "$fullpath"
+         else
+            print ""
+         fi
+
+      else
+        print "Suitable browser not found"  
+        print 'Please set the variable $CNS_BROWSER to your desired browser, eg: '
+        print ''
+        print '     export CNS_BROWSER=(open -a Camino)'
+        print ''
+        print 'to use the Camino.app Browser'
+        return 11 
+      fi
+    }
+
+
+  
+    #  IF the OS X browser is not defined with $CNS_BROWSER, try to find a suitable one
+    #  This goes in order of my personal preference based on functional utility
+    
+   
+    foreach OSXBROWSER  (  Camino.app Mozilla.app Netscape.app Safari.app Firefox.app )
+    
+        if [[ -n $(FindaBrowser) ]];then
+            CNS_BROWSER=(open -a $OSXBROWSER )
+            export CNS_BROWSER
+            break
+        else
+            :
+        fi
+    end
+    
+    
+    
+    if [[ -z $CNS_BROWSER ]];then
+        print "Suitable browser not found"  
+        print 'Please set the variable $CNS_BROWSER to your desired browser, eg: '
+        print ''
+        print '     export CNS_BROWSER=(open -a Camino)'
+        print ''
+        print 'to use the Camino.app Browser'
+        return 1
+    fi
+    
+fi
+
+
+
+#
+# start the CNSsolve HTML interface from the command line
+# with the specified file
+#
+# usage: cns_edit [-def defaults-file] [-help] file-name
+#
+# assumes the PERL is installed and in the users path
+#
+# Written by: Paul Adams
+# converted to zsh by W. G. Scott
+#
+# copyright Yale University
+#
+
+if [[ $# == 0 || $# -gt 4 ]]; then
+  echo "usage: cns_edit [-help] [-def 'defaults-file'] 'file-name'"
+  return 1
+fi
+
+#
+help=0
+input=''
+default=''
+LIMIT=$#
+#
+counter=1
+
+for ((i = 1; i <= $LIMIT; i++ )) do
+    
+    eval input="\$$i"   
+    
+    if [[ $input == '-def' ]];then
+        i=i+1
+        eval input="\$$i"
+        default=$input
+    elif [[ $input == '-help' ]];then
+        help=1
+    elif [[ $input == '-usage' ]];then
+        echo "usage: cns_edit [-help] [-def 'defaults-file'] 'file-name'"
+        return 0
+    elif [[ $input == '-*' ]];then
+        echo "cns_edit: unknown option $i"
+        echo "usage: cns_edit [-help] [-def 'defaults-file'] 'file-name'"
+        return 42
+    else
+        if [[ $input == '' ]];then
+            input="\$$i"     
+        fi
+    fi
+done
+
+#
+if [[ $input == '' ]]; then
+  echo "cns_edit: no input file given"
+  return 1
+else
+  if [[ ! -f $input ]]; then
+    echo "cns_edit: file $input does not exist"
+    return 1
+  fi
+fi
+#
+if [[ $default != '' ]]; then
+  if [[ ! -f $default ]]; then
+    echo "cns_edit: default file $default does not exist"
+    return 1
+  fi
+fi
+#
+user=$USER
+tmpfile=/tmp/cns_edit.$user.$$
+#
+
+if [[ $use_xbrowser == true ]]; then
+        
+        
+        echo '<HTML>  
+        <BODY OnLoad="document.cns_edit.submit()" BGCOLOR=#8ebf8e>  
+         
+        <CENTER><P><FONT SIZE=+3>Input file is being formatted for editing.  Please wait ...</FONT></P></CENTER> 
+         
+        <P>  
+        <FORM NAME="cns_edit"  
+              METHOD="POST" 
+        ' >| $tmpfile
+        
+    if [[ $(basename $CNS_SOLVE) ==  cns_solve_1.21 ]];then         
+        if [[ $help == 1 ]]; then
+          echo 'ACTION="http://cns.csb.yale.edu/cgi-bin/cns_solve_1.21/cns_form.cgi?cns_help=on"' >>| $tmpfile
+        else
+          echo 'ACTION="http://cns.csb.yale.edu/cgi-bin/cns_solve_1.21/cns_form.cgi"' >>| $tmpfile
+        fi
+    else
+		if [[ $help == 1 ]]; then
+		  echo 'ACTION="http://cns.csb.yale.edu/cgi-bin/cns_solve_1.2/cns_form.cgi?cns_help=on"' >>| $tmpfile
+		else
+		  echo 'ACTION="http://cns.csb.yale.edu/cgi-bin/cns_solve_1.2/cns_form.cgi"' >>| $tmpfile
+		fi
+    fi
+        
+        
+        echo '>  
+        </P>  
+         
+        <P><INPUT TYPE="SUBMIT" VALUE="Edit File"></P>  
+         
+        ' >>| $tmpfile
+        #
+        # pass input file as URLencoded text in hidden input field
+        #
+        echo -n '<INPUT NAME="cns_edit_file" TYPE="HIDDEN" VALUE=' >> $tmpfile
+        #
+        perl -pe 's/([^a-zA-Z0-9_])/if ( ord($1) > 15 ){ sprintf("%%%x",ord($1)) } else {sprintf("%%0%x",ord($1)) }/eg' $input >> $tmpfile
+        #
+        echo '>' >> $tmpfile
+        
+        
+        #
+        # if exists pass default file as URLencoded text in hidden input field
+        #
+        
+        # Huh?
+        
+        
+        if [[ $default != '' ]]; then
+          echo -n '<INPUT NAME="cns_edit_def" TYPE="HIDDEN" VALUE=' >> $tmpfile
+          #
+          perl -pe 's/([^a-zA-Z0-9_])/if ( ord($1) > 15 ){ sprintf("%%%x",ord($1)) } else {sprintf("%%0%x",ord($1)) }/eg' $default >> $tmpfile
+          #
+          echo '>' >> $tmpfile
+        fi
+        
+        
+        #
+        echo '<INPUT NAME="cns_edit_fname" TYPE="HIDDEN" VALUE="'$input'">' >> $tmpfile
+        echo '</FORM>  
+        </BODY>  
+        </HTML>' >> $tmpfile
+         
+         $CNS_BROWSER -geometry 1000x700 \
+                 -noraise \
+                 -remote "openURL(file:$tmpfile,new_window)"  > /dev/null 2>&1   
+        
+        
+        
+        if [[ $status != 0 ]]; then
+          echo "cns_edit: starting $CNS_BROWSER[-1]"
+          ( $CNS_BROWSER -geometry 1000x700 $tmpfile; sleep 10; rm -f $tmpfile &)  > /dev/null 2>&1   
+        else
+          sleep 10; rm -f $tmpfile
+        fi
+
+
+else    # Altered to accomidate OS X native browser eg:  Camino
+        
+        #
+        echo '<HTML> 
+        <BODY OnLoad="document.cns_edit.submit()" BGCOLOR=#8ebf8e>
+        <blockquote><br><br>
+        <span style="font-family: chalkboard, comic sans ms, helvetica; style="font-weight: bold;">
+        <big><big><big>
+        Please wait patiently while we transfer all of your data to spies at Yale ... 
+        </big></big></big>
+        </span></blockquote>
+        
+        <P> 
+        <FORM NAME="cns_edit" 
+              METHOD="POST" 
+        ' > $tmpfile
+        
+        
+    if [[ $(basename $CNS_SOLVE) ==  cns_solve_1.21 ]];then           
+        if [[ $help == 1 ]]; then
+          echo 'ACTION="http://cns.csb.yale.edu/cgi-bin/cns_solve_1.21/cns_form.cgi?cns_help=on"' >>| $tmpfile
+        else
+          echo 'ACTION="http://cns.csb.yale.edu/cgi-bin/cns_solve_1.21/cns_form.cgi"' >>| $tmpfile
+        fi
+    else
+	    if [[ $help == 1 ]]; then
+	      echo 'ACTION="http://cns.csb.yale.edu/cgi-bin/cns_solve_1.2/cns_form.cgi?cns_help=on"' >>| $tmpfile
+	    else
+	      echo 'ACTION="http://cns.csb.yale.edu/cgi-bin/cns_solve_1.2/cns_form.cgi"' >>| $tmpfile
+	    fi
+    fi        
+        
+        echo '> 
+        </P> 
+        
+        
+        ' >>| $tmpfile
+        #
+        # pass input file as URLencoded text in hidden input field
+        #
+        echo -n '<INPUT NAME="cns_edit_file" TYPE="HIDDEN" VALUE=' >> $tmpfile
+        #
+        perl -pe 's/([^a-zA-Z0-9_])/if ( ord($1) > 15 ){ sprintf("%%%x",ord($1)) } else {sprintf("%%0%x",ord($1)) }/eg' $input >> $tmpfile
+        #
+        echo '>' >> $tmpfile
+        
+        
+        #
+        # if exists pass default file as URLencoded text in hidden input field
+        #
+        
+        # Huh?
+        
+        
+        if [[ $default != '' ]]; then
+          echo -n '<INPUT NAME="cns_edit_def" TYPE="HIDDEN" VALUE=' >> $tmpfile
+          #
+          perl -pe 's/([^a-zA-Z0-9_])/if ( ord($1) > 15 ){ sprintf("%%%x",ord($1)) } else {sprintf("%%0%x",ord($1)) }/eg' $default >> $tmpfile
+          #
+          echo '>' >> $tmpfile
+        fi
+        
+        
+        #
+        echo '<INPUT NAME="cns_edit_fname" TYPE="HIDDEN" VALUE="'$input'">' >> $tmpfile
+        echo '</FORM> 
+        </BODY> 
+        </HTML>' >> $tmpfile
+        #
+        $CNS_BROWSER $tmpfile  > /dev/null 2>&1
+        sleep 10
+        
+        #
+        
+        
+        if [[ $status != 0 ]]; then
+          echo "cns_edit: starting $CNS_BROWSER[-1]"
+          ($CNS_BROWSER $tmpfile; sleep 10 ; rm -f $tmpfile &)  > /dev/null 2>&1
+        else
+          rm -f $tmpfile  > /dev/null 2>&1
+        fi
+        #
+
+fi

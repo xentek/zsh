@@ -1,0 +1,24 @@
+#!/bin/zsh -f
+# 
+# Function to invoke sudo vi if it is needed to edit a protected file
+#
+
+	LIMIT=$# 
+	for ((i = 1; i <= $LIMIT; i++ )) do
+		eval file="\$$i"
+		if [[ -e $file && ! -O $file ]]; then
+                	otherfile=1 
+		else
+			
+		fi
+	done
+
+	if [[ $otherfile = 1 ]]; then
+            echo -ne "\e]1; vi $@\a";  sudo vi "$@";  settab
+	else
+            echo -ne "\e]1; vi $@\a";  command vi "$@"; settab
+	fi
+
+    unset i
+    unset otherfile
+

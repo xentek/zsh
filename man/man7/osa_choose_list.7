@@ -1,0 +1,21 @@
+.TH osa_choose_list 7 "October 25, 2005" "Mac OS X" "Mac OS X Darwin customization" 
+.SH NAME
+.B osa_choose_list 
+\-  returns the path matching the file chosen with the GUI
+.SH SYNOPSIS
+.B osa_choose_list 
+item1 item2 item3  ... itemN
+
+.SH DESCRIPTION
+.B  osa_choose_list 
+is an osascript embedded in a shell script that displays a GUI representing
+a list of choices to be presented to the user.  The user selects one item,
+hits the OK button, and that item is returned.  Use quotes if the item name
+contains spaces.
+ 
+.SH AUTHOR
+ William Scott
+.SH "SEE ALSO"
+.BR osa_direc_browser (7),
+.BR osa_display_dialog (7),
+.BR osa_file_browser (7)

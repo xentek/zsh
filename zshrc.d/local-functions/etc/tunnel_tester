@@ -1,0 +1,259 @@
+#!/bin/zsh -f
+
+# A template file is included in Library/LaunchAgents/zsh.email.sshtunnels.plist
+# You can edit it (it is Disabled by default, and you need to put in your own
+# email server name(s) as arguments), and then place it in /Users/$USER/LaunchAgents                
+# to run the tunnel-checker automatically.  This is useful on laptops and computers
+# that are allowed to go to sleep a lot or otherwise get stale connections.
+
+# Debug
+# set -x
+
+# global delay of two seconds to allow network settings to take hold upon 
+# waking the computer and so on
+
+sleep 2
+
+################  U S E R   S E T T I N G S  ########### 
+# make it configurable:
+
+ # Get remote host name or IP address as command line arguments
+ 
+if [[ $# == 1 ]];then
+
+    imap_remotehost=$1
+    smtp_remotehost=$1   
+    
+elif [[ $# == 2 ]];then
+
+    imap_remotehost=$1
+    smtp_remotehost=$2
+    
+else
+    print ""
+    print "\e[1m     Usage:  $0 imap_remotehost [smtp_remotehost] \e[0m"
+    print ""
+    sleep 1
+    print "Please specify the hostname of the imap server and (optionally)"
+    print "the hostname of the smtp server, if different."
+    print ""
+    return 42
+fi
+ 
+
+
+ # imap ssh tunnel variables
+ imap_localport='43143'     # can be any unused non-root access port
+ imap_remoteport='143'      # standard port is 143
+ imap_sshport='22'          # standard port is 22
+ imap_LANhost='localhost'   
+ 
+ # smtp (Postfix) tunnel variables
+ smtp_localport='25025'      # can be any unused non-root access port
+ smtp_remoteport='25'       # standard port is 25
+ smtp_sshport='22'          # standard port is 22
+ smtp_LANhost='127.0.0.1'   # appears to work better with numerical IP
+ 
+ 
+ # If this works correctly, there should never be more than one
+ # of these lines. This prevents duplications from compounding:
+ 
+ lines=$(ps -ax | grep ssh | grep $smtp_localport | wc -l )
+
+ if [[ $lines -gt 1 ]];then 
+   killall ssh
+ fi
+
+
+###############   F U N C T I O N S ###############
+
+# function to establish imap tunnel:
+
+function imap_tunnel {
+    ssh -N -p ${imap_sshport} -C ${USER}@${imap_remotehost} \
+        -L ${imap_localport}/${imap_LANhost}/${imap_remoteport} &
+    }
+    
+# function to kill imap tunnel:
+
+function imap_killer {
+    kill -9 $( ps -ax | grep ssh | grep $imap_localport | head -n 1 | awk '{print $1}' )  
+    }
+
+# function to establish smtp tunnel:
+
+function smtp_tunnel {
+    ssh -N -p ${smtp_sshport} -C ${USER}@${smtp_remotehost} \
+        -L ${smtp_localport}/${smtp_LANhost}/${smtp_remoteport} &
+    }
+
+# function to kill smtp tunnel:
+
+function smtp_killer {
+    kill -9 $( ps -ax | grep ssh | grep $smtp_localport | head -n 1 | awk '{print $1}' )  
+    }
+
+# functions to give you the bad news:
+
+function test_variables {
+    # Are the tunneled connections really active? 
+
+    test_smtp=( $( nc -w 1 localhost $smtp_localport <<< quit | \
+                         awk '{print $4}' )) 
+                         
+    test_imap=( $(  nc -w 1 localhost $imap_localport <<< quit | \
+                      head -n 1 | awk '{print $2}'  ))   
+
+}
+
+
+
+function testreporter {
+
+                        
+
+    if [[ $test_smtp == *Postfix* ]]; then
+        print ""
+        print " Tunnel to Postfix is active."
+        smtp_active='true'
+    else
+        print ""
+        print "\e[1m You need to reset the tunnel for smtp (Postfix) to send mail. \e[0m"
+        smtp_active=''
+    fi
+    
+    
+    if [[ $test_imap == *OK* ]]; then
+        print ""
+        print " Tunnel to imap is active."
+        imap_active='true'
+    else
+        print ""
+        print "\e[1m You need to reset the tunnel for imap to receive mail. \e[0m"
+        imap_active=''
+    fi
+    
+    print ""; test_imap='' ; test_smtp=''
+}
+
+
+
+
+################   T E S T    V A R I A B L E S   ###############
+
+# Do we have a network connection via ssh?
+
+if [[ $(nc -w 3 ${smtp_remotehost} ${smtp_sshport} <<< quit | head -n 1) \
+                                                         == *SSH* ]];then
+    connected='yes'
+else
+    connected='no'
+fi
+
+
+##############################################################################
+###############  T H E   P R O G R A M  ###############
+
+# If there is no network connection, warn the user and exit error 10
+
+if [[ $connected != yes ]]; then
+
+    print "\e[1m \n ALERT: \e[0m "
+    print "\e[1m      Network connection to ${smtp_remotehost} \e[0m "
+    print "\e[1m      on port ${smtp_sshport} is not available  \e[0m \n"
+    return 10
+fi
+
+######################################################
+
+# If there is no ssh tunnel, start it and then exit
+
+ sleep 5  # try to avoid duplicates.  When run from launchd,
+          # this annoying delay seems to be required to avoid
+          # duplication.
+
+ smtp_lines=$(ps -ax | grep ssh | grep $smtp_localport | wc -l )
+ imap_lines=$(ps -ax | grep ssh | grep $imap_localport | wc -l )
+
+ if [[ $smtp_lines -lt 1 ]];then 
+    smtp_tunnel
+        print ""
+        print "\e[1m    smtp SSH tunnel has now been activated. \e[0m "
+        print ""
+     if [[ $imap_lines -lt 1 ]];then 
+        imap_tunnel
+            print ""
+            print "\e[1m    imap SSH tunnel has now been activated. \e[0m "
+            print ""
+     fi
+     sleep 5  # Need delay to allow the tunnels to be established
+     test_variables
+     testreporter
+     if [[ $imap_active == true && $smtp_active == true ]];then
+        return 0
+     else
+        return 100
+     fi
+ fi
+ 
+ if [[ $imap_lines -lt 1 ]];then 
+    imap_tunnel
+        print ""
+        print "\e[1m    imap SSH tunnel has now been activated. \e[0m "
+        print ""
+     sleep 5  # Need delay to allow the tunnels to be established
+     test_variables
+     testreporter
+     if [[ $imap_active == true && $smtp_active == true ]];then
+        return 0
+     else
+        return 100
+     fi
+ fi
+
+###########################################################
+
+#  Silently test the established connection:
+    test_variables
+    testreporter 1>/dev/null  2>/dev/null
+
+# If the smtp tunnel is stale, quit and restart:
+
+    if [[ $smtp_active == true ]]; then
+        :
+    else
+        smtp_killer
+        sleep 1
+        smtp_tunnel
+        sleep 1
+    fi
+  
+
+# If the imap tunnel is stale, quit and restart:
+
+     if [[ $imap_active == true ]]; then
+        :
+    else
+        imap_killer
+        sleep 1
+        imap_tunnel
+        sleep 1
+    fi
+ 
+ 
+
+# Exit status:
+
+test_variables
+
+if [[ $imap_active == true && $smtp_active == true ]];then
+    print ""; print "\e[1m    SSH tunnels appear to be active. \e[0m " ; print ""
+    return 0
+else
+    sleep 5 # Need delay to allow the tunnels to be established
+    testreporter
+    return 100
+fi
+
+
+

@@ -1,0 +1,559 @@
+#!/bin/zsh -f
+
+# customize_x11_10.4
+
+#  Created by  on Dec 30 2007
+#  (Originally this was the customize_x11 function)
+#  Copyright (c) . All rights reserved.
+
+#    This program is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation; either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program; if not, write to the Free Software
+#    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
+#    http://www.fsf.org/licensing/licenses/gpl.txt
+
+version="0.2.0"
+
+# Function to customize the behavior of Apple's X11
+
+
+#  Check to see if we are running 10.5
+
+if [[ $(sw_vers -productVersion) < 10.5 ]]; then
+	:
+	# Good to go
+else
+	print "\e[1m $0 is incompatable with the X11 on >10.5"
+	print " Try invoking \"customize_x11_10.5\" \e[0m "
+	return 420
+fi
+
+
+########################################################
+#########     Check for Apple's X11.app      ###########
+########################################################
+
+# Make sure we are not running 10.5 or greater
+
+# Find out if we have Apple's X11.  If we don't, quit now.
+
+if [[ -d /Applications/Utilities/X11.app ]];then
+    PATH_TO_X11='/Applications/Utilities/X11.app'
+elif [[ -d /Applications/X11.app ]];then
+    PATH_TO_X11='/Applications/X11.app'
+elif [[ -x /usr/bin/mdfind && -d $(mdfind X11  | grep X11.app | head -n 1) ]];then
+    PATH_TO_X11=$(mdfind X11  | grep X11.app | head -n 1)
+elif [[ -d $(locate X11.app | head -n 1) ]];then
+    PATH_TO_X11=$(locate X11.app | head -n 1)
+else
+    print "Can't locate Apple's X11.app"
+    print "If you have it, put it in /Applications/Utilities or in"
+    print "/Applications, or else run /usr/libexec/locate.updatedb "
+    return 1
+fi
+
+# Check to see if X11 is intact.
+
+if [[ ( ! -d /usr/X11R6/bin || ! -d /etc/X11 ) && ( ! -d /usr/X11/bin ) ]]; then
+    print "It appears X11.app is not properly installed."
+    print "You can download it by issuing the following command:"
+    print "open http://www.apple.com/macosx/features/x11/download/ "
+    return 2
+fi
+
+if [[ ! -d /usr/X11R6/include/X11  || ! -d /usr/X11R6/include/DPS  || ! -d /usr/X11R6/include/GL ]];then
+    print "It appears X11.SDK is not properly installed."
+    print "You can download it by issuing the following command:"
+    print "cd ~/Desktop; curl -O http://www.chemistry.ucsc.edu/%7Ewgscott/temp/x11sdk_10.3.dmg.gz "
+    return 3
+fi 
+
+########################################################
+### Define a querry function for general use ###########
+########################################################
+
+function querry_user {
+        answer=""
+        read -t 30 -A answer
+
+        if [[ $answer[1] == (y|Y) ]]; then
+            $user_task_yes
+            answer=""
+        else
+            $user_task_no
+            answer=""
+        fi
+ }    
+ 
+ 
+
+
+########################################################
+#######  Is X11.app in Login Startup Items?   ##########
+########################################################
+
+# Check to see if X11.app is among the User's login items.  If not, ask if it should be
+# added.
+
+AlreadyThere=$(command grep X11 ~/Library/Preferences/loginwindow.plist | command awk '{print $1}')
+
+if [[ -z $AlreadyThere ]]; then
+    
+    # Ask user if Apple X11 should be added to the startup items in the 
+    # Accounts preference pane so that it will be started upon login.
+    
+    print "##########################################################################"
+    print "Do you want to add Apple's X11.app to the collection of Applications"
+    print "that get started automatically upon login?  Only issue yes (y) if you"
+    print -n "have not already done this. [y/N]: "
+    
+    function AddX11StartupItems {
+        defaults write loginwindow AutoLaunchedApplicationDictionary -array-add "<dict><key>Path</key><string>$PATH_TO_X11</string></dict>"
+        print "X11.app has been added to the startup list."
+    }
+    
+    function NoThanks { print "This will not be added to the startup items list." }
+    
+    
+    user_task_yes='AddX11StartupItems'
+    user_task_no='NoThanks'
+    
+    querry_user
+    
+    user_task_yes=''  user_task_no=''
+    sleep 2
+    print ""
+
+fi  # [[ -z $AlreadyThere ]]
+
+########################################################
+#######  Is X11.app NOW in Login Startup Items?      ###
+#######  If not, start it upon shell initialization? ###
+########################################################
+
+AlreadyThere=$(command grep X11 ~/Library/Preferences/loginwindow.plist | command awk '{print $1}')
+
+if [[ -z $AlreadyThere ]]; then
+    
+    # Ask user if the shell initialization scripts should start Apple X11
+    # if it has not already been started.
+    
+    print "##########################################################################"
+    print "The shell initialization scripts associated with this function will check "
+    print "to see if Apple's X11.app is already running, and if it is not, will start "
+    print "it for you.  If you do not want that to happen automatically, you can change"
+    print "that preference here." 
+    print " "
+    
+    print "Shall I prevent X11.app from opening automatically (if not already started) "
+    print -n "when a new shell is initialized? [y/N]: "
+    
+    user_task_yes=''  user_task_no=''
+    function skip_openx { echo "export open_apple_x11='skip' " >| ~/.zsh/skipxrc }
+    function noskip { print ""; print "Leaving default behavior intact."  }
+    
+    user_task_yes='skip_openx'
+    user_task_no='noskip'
+    
+    querry_user
+    
+    user_task_yes=''  user_task_no=''
+    sleep 2
+
+fi  # [[ -z $AlreadyThere ]]
+
+
+########################################################
+### Nix the start up of an xterm on login?   ###########
+########################################################
+ 
+# Get rid of the command that opens xterm upon login?
+
+if [[ -d ~/.xinitrc ]];then
+print "##########################################################################"
+    print "You have a DIRECTORY called ~/.xinitrc.  This will prevent"
+    print "Apple's X11.app from working. " 
+    print " "
+    
+    print -n "Shall I move it to ~/.xinitrc_dir ?"
+
+    function movexinitdir { command mv ~/.xinitrc  ~/.xinitrc_dir }
+    function nope1 { print ""; print "Leaving directory ~/.xinitrc alone."  }
+    
+    user_task_yes='movexinitdir'
+    user_task_no='nope1'
+    
+    querry_user
+    
+    user_task_yes=''  user_task_no=''
+    sleep 2
+fi
+
+
+print ""
+print " "
+print "##########################################################################"
+print " "
+print "Apple's X11.app starts an xterm every time X11.app starts up."
+print "If you find this behavior annoying, just copy the file "
+print "/etc/X11/xinit/xinitrc to ~/.xinitrc and comment out the call to xterm."
+print "If you already have ~/.xinitrc, just comment out the call to xterm."
+print " "
+
+print -n "Shall I do this for you now? [y/N]: "
+
+function Change_xinitrc {
+if [[ ! -f ~/.xinitrc ]];then
+    sed -e 's/xterm/# xterm/g' /etc/X11/xinit/xinitrc >| ~/.xinitrc
+else
+    print " "
+    print " "
+    print "You already have a ~/.xinitrc file in your home directory, so I will"
+    print "just comment out the call to xterm without clobbering this file."
+    perl -pi -e 's/xterm/# xterm/g' ~/.xinitrc
+fi
+}
+
+function nope2 { print ""; print "Leaving file xinitrc alone."  }
+
+    user_task_yes='Change_xinitrc'
+    user_task_no='nope2'
+    
+    querry_user
+    
+    user_task_yes=''  user_task_no=''
+
+
+# Change some annoying behaviors
+
+########################################################
+###  Nix the Quit Alert warning on logout?   ###########
+########################################################
+
+sleep 2
+print " "
+print " "
+print "##########################################################################"
+print " "
+print "Apple's X11.app has a 'quit alert' warning that pops up, preventing"
+print "a clean logout.  This can be turned off by issuing the command"
+print "\t defaults write com.apple.x11 no_quit_alert true"
+print " "
+
+print -n "Shall I do this for you now? [y/N]: "
+
+function changequitalert { defaults write com.apple.x11 no_quit_alert true }
+function nope2 { print ""; print "Leaving file com.apple.x11 alone."  }
+
+    user_task_yes='changequitalert'
+    user_task_no='nope2'
+    
+    querry_user
+    
+    user_task_yes=''  user_task_no=''
+
+
+sleep 2
+
+
+########################################################
+###  Restore canonical window focus behavior?   ########
+########################################################
+
+print " "
+print " "
+print "##########################################################################"
+print " "
+print "Apple's X11.app can be set to focus-follows-mouse and click-through"
+print "behavior that is typical of standard X11 behavior.  This can be obtained"
+print "by issuing the following commands" 
+print "\t defaults write com.apple.x11 wm_ffm true "
+print "\t defaults write com.apple.x11 wm_click_through -bool true "
+print " "
+
+print -n "Shall I do this for you now? [y/N]: "
+
+function change_ffm {
+    defaults write com.apple.x11 wm_ffm true 
+    defaults write com.apple.x11 wm_click_through -bool true
+}
+
+function nope2 { print ""; print "Leaving file com.apple.x11 alone."  }
+
+    user_task_yes='change_ffm'
+    user_task_no='nope2'
+    
+    querry_user
+    
+    user_task_yes=''  user_task_no=''
+    
+
+print " "
+print " "
+print "Issue 'man Xquartz' and 'man quartz-wm' for more information."
+
+print "##########################################################################"
+print " "
+ 
+########################################################
+###  Get rix of X11.app's Dock Icon and menu bar?  #####
+########################################################
+
+sleep 2
+print " "
+print " "
+print "##########################################################################"
+print " "
+print "Apple's X11.app can be launched silently and without any trace in"
+print "the dock or menu bar.  If you do this you will lose the ability to use"
+print "the X11 menu and will have to launch X11 apps from the command line only."
+print " "
+print "Please save any work in running X11 applications prior to answering yes, as"
+print "we need to kill the X-server before starting. No need to do this if you anser No."
+print ""
+print -n "Shall I get rid of the X11 dock icon? [y/N]: "
+
+function RemoveDockIcon { 
+    
+    killall X11
+    # Find the lenght of the file Info.plist
+    lines=$( wc -l $PATH_TO_X11/Contents/Info.plist | awk '{ print $1 }' )
+    # Subtract two from this result
+    twofewerlines=$((lines - 2))
+    # Get all but the last two lines of the file
+    command head -n $twofewerlines $PATH_TO_X11/Contents/Info.plist >| /tmp/X11_Info.plist
+    # Back up the original file
+    command gzip -f $PATH_TO_X11/Contents/Info.plist
+    # Append new lines to the end of the trunctated file
+    command echo "        <key>LSUIElement</key>"  >> /tmp/X11_Info.plist
+    command echo "        <string>1</string>  "  >> /tmp/X11_Info.plist
+    command echo "</dict>  "  >> /tmp/X11_Info.plist
+    command echo "</plist>  "  >> /tmp/X11_Info.plist
+    # copy it back
+    command cp /tmp/X11_Info.plist $PATH_TO_X11/Contents/Info.plist
+    #
+    # Now issue the following command so that the change is made to take effect:
+    
+    /System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/LaunchServices.framework/Versions/A/Support/lsregister -f $PATH_TO_X11
+    
+    open -a X11
+}
+
+function nope3 { print ""; print "Leaving X11 alone."  }
+
+    user_task_yes='RemoveDockIcon'
+    user_task_no='nope3'
+    
+    querry_user
+    
+    user_task_yes=''  user_task_no=''
+
+
+sleep 2
+
+
+########################################################
+###  Restore X11.app's Dock Icon and menu bar?  #####
+########################################################
+
+sleep 2
+print " "
+print " "
+print "##########################################################################"
+print " "
+print "If you removed the X11 dock icon, you can restore it now or by running"
+print "this function again in the future.  This will restore the X11 application"
+print "to the Dock, i.e., the original state."
+print " "
+print "Please save any work in running X11 applications prior to answering yes, as"
+print "we need to kill the X-server before starting. No need to do this if you anser No."
+print ""
+print -n "Shall I restore the X11 dock icon? [y/N]: "
+
+function RestoreDockIcon { 
+    
+    killall X11
+    # Find the lenght of the file Info.plist
+    lines=$( wc -l $PATH_TO_X11/Contents/Info.plist | awk '{ print $1 }' )
+    # Subtract two from this result
+    twofewerlines=$((lines - 2))
+    # Get all but the last two lines of the file
+    command head -n $twofewerlines $PATH_TO_X11/Contents/Info.plist >| /tmp/X11_Info.plist
+    # Back up the original file
+    command gzip -f $PATH_TO_X11/Contents/Info.plist
+    # Append new lines to the end of the trunctated file
+    command echo "        <key>LSUIElement</key>"  >> /tmp/X11_Info.plist
+    command echo "        <string>0</string>  "  >> /tmp/X11_Info.plist
+    command echo "</dict>  "  >> /tmp/X11_Info.plist
+    command echo "</plist>  "  >> /tmp/X11_Info.plist
+    # copy it back
+    command cp /tmp/X11_Info.plist $PATH_TO_X11/Contents/Info.plist
+    #
+    # Now issue the following command so that the change is made to take effect:
+    
+    /System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/LaunchServices.framework/Versions/A/Support/lsregister -f $PATH_TO_X11
+    
+    open -a X11
+}
+
+function nope4 { print ""; print "Leaving X11 alone."  }
+
+    user_task_yes='RestoreDockIcon'
+    user_task_no='nope4'
+    
+    querry_user
+    
+    user_task_yes=''  user_task_no=''
+
+
+sleep 2
+
+
+
+
+
+###############################################################################
+#
+#    DISPLAY variable in startup scripts for bash, zsh and tcsh
+#
+###############################################################################
+
+
+
+
+
+ 
+
+
+
+# Ask user if startup scripts should be configured to set DISPLAY
+
+	print ""
+	print "##########################################################################"
+	print ""
+	print "Do you want to check and set DISPLAY from your shell startup scripts"
+	print "that get run automatically upon shell login?  Answering yes will put"
+	print "entries into the bottoms of the following files: ~/.cshrc ~/.zshrc ~/.bashrc"
+	print "~/.bash_profile, and also ~/.tshrc but only if it already exists."
+	print "You don't need to do this if you are using my set of ZSH template files and"
+	print "only plan to use zsh.  To undo this, you must manually edit each of the above-"
+	print "listed files. Therefore, you should only issue yes (y) if you have read and"
+	print "understand the above."
+	print ""
+	print -n "Shall I make these modifications? [y/N]: "
+
+	function AddX11shrc {
+			print ""
+			print "Appending commands to ~/.cshrc ~/.zshrc ~/.bashrc ~/.bash_profile, and also ~/.tshrc if it already exists."
+			print "To undo this operation, you must edit each of these files manually."
+			print "Hit control-C within the next 10 seconds to prevent this modification."
+			print ""
+			sleep 12
+			# bash:
+			touch ~/.bashrc
+			cat >>| ~/.bashrc   << eof-1
+
+			if [[ -z \$DISPLAY && -z \$SSH_CONNECTION ]]; then
+				disp_no=(\$( ps -wwx | grep -F X11.app | awk '{print $NF}' | grep -e ":[0-9]"  ))
+			    if [[ -n \$disp_no ]];then
+			        export DISPLAY=\${disp_no}.0
+			    else
+			        export DISPLAY=:0.0
+			    fi
+			    echo "DISPLAY has been set to \$DISPLAY"
+			fi
+eof-1
+
+			touch ~/.bash_profile
+			cat >>| ~/.bash_profile   << eof-11
+
+			if [[ -z \$DISPLAY && -z \$SSH_CONNECTION ]]; then
+				disp_no=(\$( ps -wwx | grep -F X11.app | awk '{print $NF}' | grep -e ":[0-9]"  ))
+			    if [[ -n \$disp_no ]];then
+			        export DISPLAY=\${disp_no}.0
+			    else
+			        export DISPLAY=:0.0
+			    fi
+			    echo "DISPLAY has been set to \$DISPLAY"
+			fi
+eof-11
+
+
+			# zsh:
+			touch ~/.zshrc
+			cat >>| ~/.zshrc   << eof-2
+
+			if [[ -z \$DISPLAY && -z \$SSH_CONNECTION ]]; then
+				disp_no=(\$( ps -wwx | grep -F X11.app | awk '{print $NF}' | grep -e ":[0-9]"  ))
+			    if [[ -n \$disp_no ]];then
+			        export DISPLAY=\${disp_no}.0
+			    else
+			        export DISPLAY=:0.0
+			    fi
+			    echo "DISPLAY has been set to \$DISPLAY"
+			fi
+eof-2
+
+			# Do this only if the .tcshrc file already exists, or else it will mess people up
+			   if [[ -f ~/.tcshrc ]];then
+
+			touch  ~/.tcshrc
+			cat >>| ~/.tcshrc   << eof-3
+			if (! \$?DISPLAY && ! \$?SSH_CONNECTION ) then
+			  setenv DISPLAY \`ps -wwx | grep -F X11.app | awk '{print $NF}' | grep -e ":[0-9]"  \`.0 
+			    if ( \$DISPLAY == '.0' )then
+			       setenv DISPLAY :0.0
+			    endif
+			  echo "DISPLAY has been set to \$DISPLAY"
+			endif   
+eof-3
+
+			   else
+
+			touch  ~/.cshrc
+			cat >>| ~/.cshrc   << eof-4
+			if (! \$?DISPLAY && ! \$?SSH_CONNECTION ) then
+			  setenv DISPLAY \`ps -wwx | grep -F X11.app | awk '{print $NF}' | grep -e ":[0-9]"  \`.0 
+			    if ( \$DISPLAY == '.0' )then
+			       setenv DISPLAY :0.0
+			    endif
+			  echo "DISPLAY has been set to \$DISPLAY"
+			endif   
+eof-4
+
+
+			    fi
+}
+
+	function NoThanks2 { 
+	print ""
+	print "Leaving ~/.cshrc ~/.zshrc ~/.bashrc ~/.bash_profile, and ~/.tshrc alone."
+	print "Remember to set the DISPLAY environment variable if you have not already done so." 
+	}
+
+
+	user_task_yes='AddX11shrc'
+	user_task_no='NoThanks2'
+
+	querry_user
+
+	user_task_yes=''  user_task_no=''
+	sleep 2
+	print ""
+
+
+   
+############ END #############################
+
+
+
+

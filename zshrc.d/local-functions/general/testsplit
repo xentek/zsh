@@ -1,0 +1,15 @@
+#!/bin/zsh -f
+
+#  alias showargs="printf '>>> %s <<<\n'"
+
+
+ testvar='one two'
+
+print "element one $testvar[1] element two $testvar[2]"
+
+setopt sh_word_split 
+
+print "element one $testvar[1] element two $testvar[2]"
+
+
+

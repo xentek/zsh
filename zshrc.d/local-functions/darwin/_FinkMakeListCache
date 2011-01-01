@@ -1,0 +1,34 @@
+#!/bin/zsh -f   
+
+# function to accompany completion function _fink
+# generates completion cache
+# The fink function will run this in the background after fink commands 
+# such as selfupdate|selfupdate-cvs|selfupdate-rsync|install|remove|purge|reinstall|index|update|update-all
+# are issued, to ensure that the completions for installed, outdated, and unistalled packages remain
+# current.
+
+# Author:  W G Scott
+# Revised Sept 12, 2008, to remove absolute /sw/bin/fink path as this causes trouble
+# Revised October 14, 2006
+# June 8, 2005  
+
+ # Define a function that caches the listings of fink programs that are either
+ # installed, not installed, or installed but need to be updated
+ # for use in _fink completion function
+
+function MakeListCache {
+	# Store package list caches here:
+        command mkdir -p ~/.zsh/cache
+	# list installed but out of date programs:
+		command fink list -o | command awk '{print $2}'  >| ~/.zsh/cache/outdated_finkpkgs
+    # list of uninstalled programs:
+		command fink list -n | command awk '{print $1}' >| ~/.zsh/cache/uninst_finkpkgs
+	# list of installed programs:
+		command fink list -i | command awk '{print $2}'  >| ~/.zsh/cache/inst_finkpkgs
+	}
+
+# Now run the function to (re)make the cache lists
+  
+MakeListCache
+
+

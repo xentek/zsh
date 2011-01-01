@@ -1,0 +1,37 @@
+.\"
+.TH "nfs_niloader" 7 "July 19, 2005" "Mac OS X" "Mac OS X Darwin ZSH customization" 
+.SH NAME
+.B nfs_niloader
+\- load NFS filesystems listed in /etc/fstab into the NetInfo database.
+
+.SH SYNOPSIS
+
+nfs_niloader
+
+.SH DESCRIPTION
+
+.B nfs_niloader
+is a function that runs the following command         
+
+.B sudo niload -m -v fstab . < /etc/fstab 
+
+that loads the information contained in the file /etc/fstab into the NetInfo database.  This
+step is required before the filesystems listed in /etc/fstab can be mounted for the first time.
+The script then runs the command
+.B df -h
+to show the user what is already mounted, and prints the relevant column of the contents of
+the file /etc/fstab, and finally suggest to the user that the command
+.B sudo mount /filesystem
+be used to mount then new filesystem(s) contained in /etc/fstab. The main point of this function
+is to help with the hard-to-remember niload syntax.
+.SH SEE ALSO
+.BR niload(8),
+.BR fstab(5),
+.BR nfsd(8),
+.BR df(1),
+.BR mount(8)
+.SH AUTHORS
+William Scott
+
+.SH MAINTAINER
+W. G. Scott <wgscott@users.sourceforge.net>

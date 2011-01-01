@@ -1,0 +1,31 @@
+.TH osa_display_dialog 7 "October 25, 2005" "Mac OS X" "Mac OS X Darwin customization" 
+.SH NAME
+.B osa_display_dialog 
+\-  displays a dialog box with between one and three buttons
+.SH SYNOPSIS
+.B osa_display_dialog 
+button_name1 [button_name2] [button_name3]
+
+.SH DESCRIPTION
+.B  osa_display_dialog 
+displays a GUI dialog box with between one and three button choices
+presented to the user.  
+The user selects one button, and that item is returned.  Use quotes if the 
+button name contains spaces. The right-most button is highlighted as the default choice.
+
+.SH ENVIRONMENT VARIABLE
+The variable
+.B dialogue_text
+permits customizing the dialog in the GUI.  For example,
+
+.B dialogue_text="Pick one of the buttons:"
+
+will display that dialog. Otherwise the dialog defaults to
+"Choose a button:".
+ 
+.SH AUTHOR
+ William Scott
+.SH "SEE ALSO"
+.BR osa_direc_browser (7),
+.BR osa_choose_list (7),
+.BR osa_file_browser (7)

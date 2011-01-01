@@ -1,0 +1,22 @@
+.\" Process this file with
+.\" groff -man -Tascii foo.1
+.\"
+.TH tunnel_tester 7 "July 9 2005" "Mac OS X" "Mac OS X Darwin customization" 
+.SH NAME
+.B tunnel_tester 
+.SH SYNOPSIS
+.B tunnel_tester [imap-servername] [smtp-servername]
+.SH DESCRIPTION
+.B tunnel_tester
+A template file is included in Library/LaunchAgents/zsh.email.sshtunnels.plist
+You can edit it (it is Disabled by default, and you need to put in your own
+email server name(s) as arguments), and then place it in /Users/$USER/LaunchAgents                
+to run the tunnel-checker automatically.  This is useful on laptops and computers
+that are allowed to go to sleep a lot or otherwise get stale connections.
+
+.SH AUTHOR
+ William Scott 
+.SH "SEE ALSO"
+.BR tunnel_tester (1)
+
+

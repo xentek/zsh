@@ -1,0 +1,4 @@
+#!/bin/zsh -f
+
+# locwd: locate files that match exactly
+function locwd { locate "*/${@}"; }

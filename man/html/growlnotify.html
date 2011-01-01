@@ -1,0 +1,147 @@
+<html><head><meta http-equiv="Content-Type" content="text/html;charset=iso-8859-1"><title>Manual Page for growlnotify</title><style type="text/css">.red {color: #CC0000} .hed {color: #000000; font-weight: bold; font-size: larger;}.blueBox{ background-color: #F1F5F9;padding: 6px 10px 6px 10px; border: 1px #ccc double; color: #000000; font-size: 14px}.indexLink {float:right; margin-top:4px;}</style></head><body><form name="form1" method="get" action="man:"><div class="blueBox"><a class="indexLink" href="man:">Index</a>man: <input name="a" type="text"><input type="submit" value="Search"></div></form><pre> <a href="man:GROWLNOTIFY.1">GROWLNOTIFY(1)</a>            BSD General Commands Manual           <a href="man:GROWLNOTIFY.1">GROWLNOTIFY(1)</a>
+
+<span class="hed">NAME</span>
+     <span class="red">growlnotify</span> -- send a notification to Growl
+
+<span class="hed">SYNOPSIS</span>
+     <span class="red">growlnotify</span> [<span class="red">-hsv</span>] [<span class="red">-i</span> <u>ext</u>] [<span class="red">-I</span> <u>filepath</u>] [<span class="red">--image</span> <u>filepath</u>] [<span class="red">-a</span> <u>appname</u>]
+                 [<span class="red">-p</span> <u>priority</u>] [<span class="red">-H</span> <u>host</u>] [<span class="red">-u</span>] [<span class="red">-P</span> <u>password</u>] [<span class="red">--port</span> <u>port</u>]
+                 [<span class="red">-n</span> <u>name</u>] [<span class="red">-m</span> <u>message</u>] [<span class="red">-t</span>] [<u>title</u>]
+
+<span class="hed">DESCRIPTION</span>
+     <span class="red">growlnotify</span> posts a distributed notification to Growl.
+
+     The options are as follows:
+
+     <span class="red">-h</span>, <span class="red">--help</span>  Displays this help and exit.
+
+     <span class="red">-n</span>, <span class="red">--name</span> <u>name</u>
+                 Sets the application name to register the notification under.
+                 By default 'growlnotify' is used.
+
+     <u>title</u>       The title of the notification.
+
+     <span class="red">-t</span>, <span class="red">--title</span>
+                 Does nothing.  This is included to make the syntax compatible
+                 with gnotify, another Growl example written in a different
+                 programming language.
+
+     <span class="red">-m</span>, <span class="red">--message</span> <u>message</u>
+                 Uses <u>message</u> instead of stdin as the notification message
+                 (also called description).  If <u>message</u> is '-', stdin is still
+                 used.
+
+     <span class="red">-a</span>, <span class="red">--appIcon</span> <u>name</u>
+                 Sets the notification's application icon to the icon for the
+                 given application name. If you don't specify a notification
+                 icon, this will be used instead of it; if you specify both,
+                 the application icon may be used as a badge (that is, dis-
+                 played in a corner of the notification icon, superimposed on
+                 top of it), or the display may show both separately.
+
+                 Icons are not supported by all displays, so this may be
+                 ignored.
+
+     <span class="red">-i</span>, <span class="red">--icon</span> <u>ext</u>
+                 Sets the notification icon to the default icon for the given
+                 extension or HFS-encoded file type. For example, <span class="red">-i</span> mp3 and
+                 <span class="red">-i</span> 'MP3 ' (note the space in the second example) will both
+                 use the icon for MP3 files.
+
+                 Icons are not supported by all displays, so this may be
+                 ignored.
+
+     <span class="red">-I</span>, <span class="red">--iconpath</span> <u>path</u>
+                 Sets the notification icon to the given file's icon (the icon
+                 you would see in the Finder if you were looking at the file).
+
+                 Icons are not supported by all displays, so this may be
+                 ignored.
+
+     <span class="red">--image</span> <u>path</u>
+                 Sets the notification icon to contents of the given image
+                 file. As of Mac OS X 10.3, this file must be in PNG, JPEG,
+                 TIFF, PICT, PDF, JPEG 2000, Adobe Photoshop, BMP, .ico, or
+                 .icns format. If the image data is in a format Growl doesn't
+                 recognize, the notification will still go through, and the
+                 icon will be ignored.
+
+                 Icons are not supported by all displays, so this may be
+                 ignored anyway.
+
+     <span class="red">-p</span>, <span class="red">--priority</span> <u>priority</u>
+                 Sets the priority for the notification to an int or named key
+                 (default is 0).
+
+                 Priority is not supported by all displays, so this may be
+                 ignored.
+
+     <span class="red">-s</span>, <span class="red">--sticky</span>
+                 Causes the notification to stick around until clicked.
+
+                 Sticky notifications are not supported by all displays, so
+                 this may be ignored.
+
+     <span class="red">-d</span>, <span class="red">--identifier</span>
+                 Sets the identifier for the notification. The identifier is
+                 used for coalescing, which means multiple notifications with
+                 the same identifer will use a single bubble, the latest noti-
+                 fication taking precedence.
+
+                 Coalescing is not supported by all displays, so this may be
+                 ignored.
+
+     <span class="red">-w</span>, <span class="red">--wait</span>  Causes <span class="red">growlnotify</span> to wait until the notification is dis-
+                 missed (either by clicking or timing out) before it returns.
+
+     <span class="red">-H</span>, <span class="red">--host</span>  Sends the notification to a remote host instead of the local
+                 computer.  This option requires the remote host being set up
+                 to accept remote notifications.  The argument is the host to
+                 send the notification to.
+
+     <span class="red">-P</span>, <span class="red">--password</span>
+                 Sets the password to be used for the remote notification.
+                 This is necessary if the remote host requires a password for
+                 remote notifications.
+
+     <span class="red">-u</span>, <span class="red">--udp</span>   Sends the remote notification with UDP instead of Distributed
+                 Objects.
+
+     <span class="red">--port</span>      Sets the port number to use for UDP notifications.
+
+     <span class="red">growlnotify</span> displays a notification using Growl. If <span class="red">-m</span> isn't specified or
+     is set to '-', the message is read from stdin.  If you don't redirect
+     stdin (e.g. with the shell's | or &lt; operators), <span class="red">growlnotify</span> will be read-
+     ing from the terminal, and you will need to send EOF (normally, ctrl-D)
+     on an empty line to end the message.
+
+     If <span class="red">-p</span> is used then <u>priority</u> can be an int between -2 and 2 or can be a
+     named key in the following list: Very Low, Moderate, Normal, High, Emer-
+     gency.
+
+<span class="hed">EXAMPLES</span>
+           % growlnotify --help
+
+     Displays this help file.
+
+           % growlnotify --appIcon Xcode Build complete
+           growlnotify has finished building
+           ^D
+
+     Displays a notification telling you that <span class="red">growlnotify</span> has finished build-
+     ing.
+
+           growlnotify --appIcon Xcode Build complete -m 'growlnotify has
+           finished building'
+
+     The same as the previous one but suitable for embedding in a script (such
+     as a Shell Script phase).
+
+<span class="hed">SEE ALSO</span>
+     <a href="man:stdin.4">stdin(4)</a>
+
+<span class="hed">HISTORY</span>
+     First appeared as an example for Growl 0.5.
+
+Darwin                           July 9, 2007                           Darwin
+</pre><div align="center" class="blueBox">Bwana Created by <a href="http://www.bruji.com/">Bruji</a></div></body></html> 

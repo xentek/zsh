@@ -1,0 +1,94 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name="generator" content=
+"HTML Tidy for Mac OS X (vers 1st December 2004), see www.w3.org" />
+<meta http-equiv="Content-Type" content=
+"text/html; charset=us-ascii" />
+<title>Manual Page for spath</title>
+
+<style type="text/css">
+/*<![CDATA[*/
+<!--.red {color: #CC0000}-->
+/*]]>*/
+</style>
+
+<style type="text/css">
+/*<![CDATA[*/
+<!--.hed {color: #000000; font-weight: bold; font-size: larger;}-->
+/*]]>*/
+</style>
+</head>
+<body>
+<pre>
+ <a href=
+"http://sage.ucsc.edu/Library/init/zsh/man/html/spath.html">spath(7)</a>                 Mac OS X Darwin customization                <a href="http://sage.ucsc.edu/Library/init/zsh/man/html/spath.html">spath(7)</a>
+
+
+
+<span class="hed">NAME</span>
+       <span class=
+"red">spath</span>  -   find the server-based path that corresponds to the page dis-
+       played in the frontmost Safari window
+
+<span class="hed">SYNOPSIS</span>
+       <span class="red">spath</span>
+
+<span class="hed">DESCRIPTION</span>
+       <span class=
+"red">spath,</span> when issued from the  command  prompt  in  Terminal,  iTerm,  or
+       xterm,  will copy the directory corresponding to the web page displayed
+       in Safari into the clip-board paste buffer and will assign the variable
+       SPATH to that directory.  The purpose of this is so that if you own the
+       web     page     displayed     in     Safari     having     the     url
+       <span class=
+"red">http://www.myplace.org/foo/index.html</span>  and  the file <span class="red">index.html</span> resides
+       in (for example) <span class=
+"red">~/Sites/foo,</span>  typing  the  command  <span class=
+"red">spath</span>  copies  the
+       directory path <span class=
+"red">~/Sites/foo</span> into the clipboard paste buffer and into the
+       environment variable <span class=
+"red">SPATH</span> for purposes of additional  shell  scripting
+       tasks  you  may  need  to  perform.   For  this  to work, you must have
+       exported the environment variables <span class=
+"red">PUBLIC_HTML</span> and <span class=
+"red">MY_DOMAIN</span> from  your
+       .zshrc  file  or equivalent.  For the above example, you would want the
+       lines    <span class="red">export</span>     <span class=
+"red">PUBLIC_HTML="/Users/$USER/Sites"</span>     and     <span class="red">export</span>
+       <span class=
+"red">MY_DOMAIN="myplace.org"</span>   in   your   .zshrc  file.   (If  you  put  in
+       www.myplace.org, that will work too, but if you use simply myplace.org,
+       BOTH  www.myplace.org  and  myplace.org  will  be  recognized  in  your
+       browser.  If these are not matched by what is displayed in the browser,
+       a  message  is returned that states that the name does not appear to be
+       part of the file system.  The function  is  a  zsh  shell  script  that
+       invokes  an  osascript  that  invokes  a javascript to communicate with
+       Safari.
+
+<span class="hed">ENVIRONMENT</span>
+       The environment variables <span class=
+"red">PUBLIC_HTML</span> and <span class=
+"red">MY_DOMAIN</span> must be exported as
+       described  above.  The environment variable <span class=
+"red">SPATH</span> is assigned each time
+       the function is invoked.
+
+<span class="hed">AUTHOR</span>
+        William Scott
+
+<span class="hed">SEE ALSO</span>
+       <a href=
+"http://sage.ucsc.edu/Library/init/zsh/man/html/cds.html">cds(7)</a>, <a href=
+"http://sage.ucsc.edu/Library/init/zsh/man/html/eds.html">eds(7)</a>
+
+
+
+
+
+Mac OS X                         April 7, 2005                        <a href="http://sage.ucsc.edu/Library/init/zsh/man/html/spath.html">spath(7)</a>
+</pre>
+</body>
+</html>

@@ -1,0 +1,74 @@
+.TH open-x11 7 "August 5, 2005" "Mac OS X" "Mac OS X Darwin ZSH customization" 
+.SH NAME
+.B open-x11
+\- function that replaces Apple's open-x11 with one that works better
+
+.SH SYNOPSIS
+open-x11
+.I program
+.B [
+args
+.B ]
+
+. SH DESCRIPTION
+
+The 
+.B open-x11
+command runs a program within the environment of the X-server
+running in the current user's session. In this augmented version,
+the function first opens the X11.app application if it finds it is not 
+already running.  It then correctly assigns the 
+.B DISPLAY 
+variable, permitting
+.B Fast User Switching compatibility
+when hosting several simultaneous X11 users.  If fink is present,
+it detects that and sources the /sw/bin/init.sh file, setting all of the
+required environment variables.
+
+.SH USAGE
+
+The 
+.I program
+can be any X11-dependent executable in the 
+.B PATH, 
+or you can provide the entire path.
+Unlike the Apple version, this version of 
+.B open-x11 
+permits you to give arguments to the
+.I program
+in the usual manner.  Only one executable can be launched per invokation of 
+.B open-x11.
+
+.SH EXAMPLES
+.B open-x11 xeyes
+runs the 'xeyes' program so that it is able to connect
+to the current X server.
+
+.B open-x11 rxvt -bg black -fg white -cr grey -ls -geometry 80X25 -colorBD yellow -troughColor grey -font 9x15 -sr -scrollColor RoyalBlue3 -internalBorder 5 &
+is an example of a standard unix command that the Apple version seems incapable of coping with.
+
+.SH UNSOLICITED ADVICE
+If you set up your environment correctly, as is done with zsh-templates, you can launch any
+X11-based executable in the standard way without having to use 
+.B open-X11.
+The function
+.B customize_x11
+will aid you in doing this, but all you really need to do is put X11.app in your Accounts login items.
+
+.SH HISTORY
+The
+.B open-x11
+shell script first appeared in Mac OS X 10.3.  I discovered it didn't work right, and that it did a bad job
+of setting the
+.B DISPLAY
+variable and accepting arguments, so I rewrote it.
+
+.SH AUTHOR
+William Scott 
+
+.SH MAINTAINER
+W. G. Scott <wgscott@users.sourceforge.net> 
+
+.SH "SEE ALSO"
+.BR open (1)
+.BR open-x11 (1)

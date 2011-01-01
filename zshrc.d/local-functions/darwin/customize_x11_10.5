@@ -1,0 +1,365 @@
+#!/bin/zsh -f
+
+# customize_x11_10.5
+
+#  Created by  on Dec 30 2007
+#  (Originally this was the customize_x11 function)
+#  Copyright (c) . All rights reserved.
+
+#    This program is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation; either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program; if not, write to the Free Software
+#    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
+#    http://www.fsf.org/licensing/licenses/gpl.txt
+
+version="0.2.0"
+
+# Function to customize the behavior of Apple's X11
+
+
+#  Check to see if we are running 10.5
+
+if [[ $(sw_vers -productVersion) < 10.5 ]]; then
+	print "\e[1m $0 is incompatable with the X11 on < 10.5"
+	print " Try invoking \"customize_x11_10.4\" \e[0m "
+	return 420
+else
+	:
+	# Good to go
+fi
+
+
+
+
+# Function to customize the behavior of Apple's X11
+
+
+########################################################
+#########     Check for Apple's X11.app      ###########
+########################################################
+
+# Find out if we have Apple's X11.  If we don't, quit now.
+
+if [[ -d /usr/X11/X11.app ]];then
+    PATH_TO_X11='/usr/X11/X11.app'
+elif [[ -d /usr/X11 && -d /Applications/Utilities/X11.app ]];then
+    PATH_TO_X11='/Applications/Utilities/X11.app'
+else
+    print "Can't locate Apple's X11.app"
+	print "This should be a default install on 10.5"
+    return 1
+fi
+
+# Check to see if X11 is intact.
+
+if [[ ( ! -d /usr/X11/bin ) ]]; then
+    print "It appears X11.app is not properly installed."
+    print "You can (re)install it from your OS X install disk"
+    return 2
+fi
+
+if [[ ! -d /usr/X11/include/X11  || ! -d /usr/X11/include/GL ]];then
+    print "It appears X11.SDK is not properly installed."
+    print "You can (re)install it with Xcode "
+    return 3
+fi 
+
+########################################################
+### Define a querry function for general use ###########
+########################################################
+
+function querry_user {
+        answer=""
+        read -t 30 -A answer
+
+        if [[ $answer[1] == (y|Y) ]]; then
+            $user_task_yes
+            answer=""
+        else
+            $user_task_no
+            answer=""
+        fi
+ }    
+ 
+ 
+# X11.app should NOT be started automatically on login in 10.5+
+
+########################################################
+### Nix the start up of an xterm on login?   ###########
+########################################################
+ 
+# Get rid of the command that opens xterm upon login?
+
+if [[ -d ~/.xinitrc ]];then
+    print "##########################################################################"
+    print "You have a DIRECTORY called ~/.xinitrc.  This will prevent"
+    print "Apple's X11.app from working. " 
+    print " "
+    
+    print -n "Shall I move it to ~/.xinitrc_dir ?"
+
+    function movexinitdir { command mv ~/.xinitrc  ~/.xinitrc_dir }
+    function nope1 { print ""; print "Leaving directory ~/.xinitrc alone."  }
+    
+    user_task_yes='movexinitdir'
+    user_task_no='nope1'
+    
+    querry_user
+    
+    user_task_yes=''  user_task_no=''
+    sleep 2
+fi
+
+
+print ""
+print " "
+print "##########################################################################"
+print " "
+print "Apple's X11.app starts an \e[1m xterm \e[0m every time X11.app starts up."
+print "If you find this behavior annoying, you can issue the command"
+print "\e[1m  defaults write org.x.X11_launcher app_to_run /usr/X11/bin/xlsclients \e[0m "
+print " or "
+print "\e[1m  defaults write org.x.X11  app_to_run /usr/X11/bin/xlsclients \e[0m "
+
+print -n "Shall I do this for you now? [y/N]: "
+
+function Change_xinitrc {
+	defaults write org.x.X11_launcher app_to_run /usr/X11/bin/xlsclients
+	defaults write org.x.X11          app_to_run /usr/X11/bin/xlsclients
+	print "To get the xterm back, issue"
+	print "\e[1m defaults write org.x.X11_launcher app_to_run /usr/X11/bin/xterm \e[0m "
+    print " or "
+	print "\e[1m defaults write org.x.X11  app_to_run /usr/X11/bin/xterm \e[0m "
+}
+
+function nope2 { print ""; print "Leaving the current behavior alone."  }
+
+    user_task_yes='Change_xinitrc'
+    user_task_no='nope2'
+    
+    querry_user
+    
+    user_task_yes=''  user_task_no=''
+
+
+# Change some annoying behaviors
+
+########################################################
+###  Nix the Quit Alert warning on logout?   ###########
+########################################################
+
+sleep 2
+print " "
+print " "
+print "##########################################################################"
+print " "
+print "Apple's X11.app has a \e[1m quit alert \e[0m  warning that pops up, preventing"
+print "a clean logout.  This can be \e[1m turned off \e[0m by issuing the command"
+print "\t defaults write com.apple.x11 no_quit_alert true"
+print " "
+
+print -n "Shall I do this for you now? [y/N]: "
+
+function changequitalert { 
+             defaults write com.apple.x11 no_quit_alert true
+             defaults write org.x.X11 no_quit_alert true
+             defaults write org.x.X11_launcher no_quit_alert true
+         }
+function nope2 { print ""; print "Leaving file com.apple.x11 alone."  }
+
+    user_task_yes='changequitalert'
+    user_task_no='nope2'
+    
+    querry_user
+    
+    user_task_yes=''  user_task_no=''
+
+
+sleep 2
+
+
+########################################################
+###  Restore canonical window focus behavior?   ########
+########################################################
+
+print " "
+print " "
+print "##########################################################################"
+print " "
+print "Apple's X11.app can be set to \e[1m focus-follows-mouse \e[0m  and click-through"
+print "behavior that is typical of standard X11 behavior.  This can be obtained"
+print "by issuing the following commands" 
+print "\t defaults write com.apple.x11 wm_ffm true "
+print "\t defaults write com.apple.x11 wm_click_through -bool true "
+print " "
+
+print -n "Shall I do this for you now? [y/N]: "
+
+function change_ffm {
+    defaults write com.apple.x11 wm_ffm true 
+    defaults write org.x.X11_launcher  wm_ffm true 
+    defaults write org.x.X11  wm_ffm true 
+
+    defaults write com.apple.x11 wm_click_through -bool true
+    defaults write org.x.X11_launcher  wm_click_through -bool true
+    defaults write org.x.X11  wm_click_through -bool true
+}
+
+function nope2 { print ""; print "Leaving file com.apple.x11 alone."  }
+
+    user_task_yes='change_ffm'
+    user_task_no='nope2'
+    
+    querry_user
+    
+    user_task_yes=''  user_task_no=''
+    
+
+print " "
+print " "
+print "Issue 'man Xquartz' and 'man quartz-wm' for more information."
+
+print "##########################################################################"
+print " "
+ 
+########################################################
+###  Get rix of X11.app's Dock Icon and menu bar?  #####
+########################################################
+
+sleep 2
+print " "
+print " "
+print "##########################################################################"
+print " "
+print "Apple's X11.app can be launched silently and without any trace in"
+print "the dock or menu bar.  If you do this you will lose the ability to use"
+print "the X11 menu and will have to launch X11 apps from the command line only."
+print " "
+print "Please save any work in running X11 applications prior to answering yes, as"
+print "we need to kill the X-server before starting. No need to do this if you anser No."
+print ""
+print -n "Shall I \e[1m get rid of the X11 dock icon \e[0m? [y/N]: "
+
+function RemoveDockIcon { 
+    
+    killall X11
+    # Find the lenght of the file Info.plist
+    lines=$( wc -l $PATH_TO_X11/Contents/Info.plist | awk '{ print $1 }' )
+    # Subtract two from this result
+    twofewerlines=$((lines - 2))
+    # Get all but the last two lines of the file
+    command head -n $twofewerlines $PATH_TO_X11/Contents/Info.plist >| /tmp/X11_Info.plist
+    # Back up the original file
+    sudo gzip -f $PATH_TO_X11/Contents/Info.plist
+    # Append new lines to the end of the trunctated file
+    command echo "        <key>LSUIElement</key>"  >> /tmp/X11_Info.plist
+    command echo "        <string>1</string>  "  >> /tmp/X11_Info.plist
+    command echo "</dict>  "  >> /tmp/X11_Info.plist
+    command echo "</plist>  "  >> /tmp/X11_Info.plist
+    # copy it back
+    sudo cp /tmp/X11_Info.plist $PATH_TO_X11/Contents/Info.plist
+    #
+    # Now issue the following command so that the change is made to take effect:
+    
+    # /System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/LaunchServices.framework/Versions/A/Support/lsregister -f $PATH_TO_X11
+    
+    # open -a X11
+}
+
+function nope3 { print ""; print "Leaving X11 alone."  }
+
+    user_task_yes='RemoveDockIcon'
+    user_task_no='nope3'
+    
+    querry_user
+    
+    user_task_yes=''  user_task_no=''
+
+
+sleep 2
+
+
+########################################################
+###  Restore X11.app's Dock Icon and menu bar?  #####
+########################################################
+
+sleep 2
+print " "
+print " "
+print "##########################################################################"
+print " "
+print "If you removed the X11 dock icon, you can restore it now or by running"
+print "this function again in the future.  This will restore the X11 application"
+print "to the Dock, i.e., the original state."
+print " "
+print "Please save any work in running X11 applications prior to answering yes, as"
+print "we need to kill the X-server before starting. No need to do this if you anser No."
+print ""
+print -n "Shall I \e[1m restore the X11 dock icon \e[0m? [y/N]: "
+
+function RestoreDockIcon { 
+    
+    killall X11
+    # Find the lenght of the file Info.plist
+    lines=$( wc -l $PATH_TO_X11/Contents/Info.plist | awk '{ print $1 }' )
+    # Subtract two from this result
+    twofewerlines=$((lines - 2))
+    # Get all but the last two lines of the file
+    command head -n $twofewerlines $PATH_TO_X11/Contents/Info.plist >| /tmp/X11_Info.plist
+    # Back up the original file
+    sudo gzip -f $PATH_TO_X11/Contents/Info.plist
+    # Append new lines to the end of the trunctated file
+    command echo "        <key>LSUIElement</key>"  >> /tmp/X11_Info.plist
+    command echo "        <string>0</string>  "  >> /tmp/X11_Info.plist
+    command echo "</dict>  "  >> /tmp/X11_Info.plist
+    command echo "</plist>  "  >> /tmp/X11_Info.plist
+    # copy it back
+    sudo cp /tmp/X11_Info.plist $PATH_TO_X11/Contents/Info.plist
+    #
+    # Now issue the following command so that the change is made to take effect:
+    
+    # /System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/LaunchServices.framework/Versions/A/Support/lsregister -f $PATH_TO_X11
+    
+    # open -a X11
+}
+
+function nope4 { print ""; print "Leaving X11 alone."  }
+
+    user_task_yes='RestoreDockIcon'
+    user_task_no='nope4'
+    
+    querry_user
+    
+    user_task_yes=''  user_task_no=''
+
+
+sleep 2
+
+
+
+
+
+###############################################################################
+#
+#    DO NOT set DISPLAY variable in startup scripts for bash, zsh and tcsh
+#
+###############################################################################
+
+
+ 
+
+   
+############ END #############################
+
+
+
+

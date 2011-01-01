@@ -1,0 +1,7 @@
+#!/bin/zsh -f
+
+# short cut to zsh files
+
+ function zshf {
+   cd $ZDOT
+}  

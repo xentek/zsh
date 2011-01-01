@@ -1,0 +1,65 @@
+###################################################################################
+###################################################################################
+######       Copy this file to ~/.zsh/zshprompt and edit that !          ##########
+###################################################################################
+###################################################################################
+ 
+
+# file template for ~/.zsh/zshprompt
+# copy to ~/.zsh directory and edit by hand, or use function switch_prompt
+# to do this automatically
+
+#  { ======> }  indicates where user might want to edit this file
+
+
+###################################################################################
+###################################################################################
+
+# Add optional arguments manually to the prompt here:
+
+# default is no arguments (an empty array)
+
+
+#  { ======> }
+
+
+       PROMPT_ARG_ARRAY=(  )
+
+
+ 
+#  Example for prompt simple:
+#  ARG_ARRAY=(default red green)
+
+#  Issue the command " prompt_${PROMPT_CHOICE}_help " to see available options.
+
+###################################################################################
+###################################################################################
+
+autoload -U colors
+colors
+
+# This gets set automatically using switch_prompt or can be edited manually
+# to correspond to the (middle) name of the desired prompt function in $fpath
+
+#  { ======> }
+
+# PROMPT_CHOICE='kerbaugh'
+  PROMPT_CHOICE='simple'
+  
+
+###################################################################################
+
+# Turn off the previous prompt:
+
+PS1="%# "
+PS2="> "
+
+prompt_opts=( cr percent )
+
+# Now set prompt to the user's choice:
+
+prompt $PROMPT_CHOICE  $PROMPT_ARG_ARRAY
+
+ 
+###################################################################################
+

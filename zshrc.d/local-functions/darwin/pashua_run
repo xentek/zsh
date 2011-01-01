@@ -1,0 +1,136 @@
+#!/bin/zsh -f
+
+if [[ $1 == '-P' ]];then
+      WhichPashua='use_external'
+      print "   Using the user-installed Pashua.app"
+else
+     WhichPashua='use_internal'
+     # Dockless version
+     # print "   Using internal Pashua framework in $ZDOT/zshrc.d/local-functions/etc"
+fi
+
+
+#---------------------------------------------------------------------------------------
+# pashua_run
+#
+# original script by Carsten Blum, developer of Pashua
+#
+# Modified by Wataru Kagawa (06/02/05)
+# wkagawa@jota.gsc.riken.go.jp
+#
+# with help from Bill Scott (wgscottATchemistryDOTucscDOTedu).
+#
+# The original bash script that executes Pashua was modified to a zsh function that can
+# be autoloaded.
+#
+# USAGE:
+# pashua_run "<configuration>"
+#
+# For example,
+#
+# pashua_run "windowtitle = Hello World! \n tx_type = text \n tx_text = This is a test."
+#
+# For details on the configuration syntax, see inside the Documentation folder that
+# comes with the Pashua program.  Pashua is available at,
+#
+# http://www.bluem.net/downloads/pashua_en/
+#---------------------------------------------------------------------------------------
+
+
+ 
+
+	local default_lang_env pashua_configfile absolutepath bundlepath mypath searchpath \
+	pashuapath result line key value varname varvalue
+
+	#---------------------------
+	# Set to English environment
+	#---------------------------
+
+	if [[ $__CF_USER_TEXT_ENCODING != ('0x1F5:0:0') ]]; then
+		default_lang_env=$__CF_USER_TEXT_ENCODING
+		__CF_USER_TEXT_ENCODING=0x1F5:0:0
+	fi
+
+
+	#--------------------
+	# Write a config file
+	#--------------------
+
+	pashua_configfile=$( command mktemp /tmp/pashua_XXXXXXXXX )
+	echo "$1" >> $pashua_configfile
+
+
+	#----------------------------------------
+	# Store Pashua binary path in $pashuapath
+	#----------------------------------------
+
+    if [[ -d "$ZDOT/zshrc.d/local-functions/etc/Pashua.app/Contents" && $WhichPashua == 'use_internal' ]];then
+        absolutepath="$ZDOT/zshrc.d/local-functions/etc/Pashua.app/Contents/MacOS/Pashua"
+    elif [[ -d "$SWPREFIX/share/zsh/templates/Library/init/zsh/zshrc.d/local-functions/etc/Pashua.app/Contents" && $WhichPashua == 'use_internal' ]];then
+        absolutepath="$SWPREFIX/share/zsh/templates/Library/init/zsh/zshrc.d/local-functions/etc/Pashua.app/Contents/MacOS/Pashua"
+	elif [[ -x /usr/bin/mdfind ]]; then
+		absolutepath=$( mdfind -onlyin /Applications Pashua.app | head -n 1 )/Contents/MacOS/Pashua
+		if [[ -z $absolutepath ]];then
+		      absolutepath=$( mdfind 'kMDItemContentType == "com.apple.application-bundle" && kMDItemDisplayName == "Pashua"' | head -n 1 )/Contents/MacOS/Pashua
+		fi
+		
+	else
+		absolutepath=$( locate Pashua.app/Contents/MacOS/Pashua | head -n 1 )
+	fi
+
+	bundlepath="Pashua.app/Contents/MacOS/Pashua"
+	mypath=$( dirname "$0" )
+
+	for searchpath in "$absolutepath" "$mypath/Pashua" "$mypath/$bundlepath" \
+	"./$bundlepath" "/Applications/$bundlepath" "$HOME/Applications/$bundlepath" \
+	"$2/$bundlepath"; do
+		if [[ -f "$searchpath" && -a "$searchpath" && -x "$searchpath" ]]; then
+			pashuapath=$searchpath
+			break
+		fi
+	done
+
+	if [[ ! -n $pashuapath ]]; then
+		print "Error: Pashua could not be found"
+		return 1
+	fi
+
+
+	#-----------
+	# Get result
+	#-----------
+
+	result=( $( "$pashuapath" $pashua_configfile \
+	 | command perl -pi -e "s| |_SPACE_|g" \
+	 | command perl -pi -e "s|\[return\]|_RETURN_|g" \
+	) )
+
+
+	#-------------------
+	# Remove config file
+	#-------------------
+
+	command rm $pashua_configfile
+
+
+	#-------------
+	# Parse result
+	#-------------
+
+	for line in $result; do
+		key=${${(s:=:)line}[1]}
+		value=${${${(s:=:)line}[2]}//_SPACE_/ }
+		varname=$key
+		varvalue="$value"
+		eval $varname='$varvalue'
+	done
+
+
+	#---------------------------------------------
+	# Revert back to original language environment
+	#---------------------------------------------
+
+	__CF_USER_TEXT_ENCODING=$default_lang_env
+
+ 
+ 

@@ -1,0 +1,19 @@
+#!/bin/zsh -f
+# find duplicate files on specified directory tree
+# Author: Karl Zimmerman
+
+osize=0 
+osum=0 
+ofile="" 
+
+newFile () { 
+    osum="${1}" 
+    osize="${2}" 
+    ofile="${3}" 
+} 
+
+find "${1}" -type f -exec sum {} \; 2>/dev/null | sort | while read sum size file; do 
+    [ ${osize} != ${size} ] && newFile ${sum} ${size} "${file}" && continue 
+    [ ${osum} != ${sum} ] && newFile ${sum} ${size} "${file}" && continue 
+    echo "${ofile} == ${file}" 
+done
