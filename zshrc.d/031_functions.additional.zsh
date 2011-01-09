@@ -27,42 +27,19 @@ if [[ -o interactive ]]; then
 # In this file we autload all or a subset of the function in the directory
 # called $ZDOT/zshrc.d/local-functions (or $ZDOT_TEMPLATE/local-functions).
 
-# I've divided these into three sets.  You can control which are loaded using
-# three controlling variables defined below, or fine-tune this using comments.
-
-# The first set I am confident you won't want to live without, so they are
-# autoloaded by default.  This is defined with LOAD_ESSENTIAL_FUNCTIONS='YES'    
-
-# The second set are additional functions that I like, but you might well find 
-# annoying.  These are not autoloaded by default, but you can load them by 
-# setting a flag.  (There are within this second set a few I have commented out, 
-# so you will have to also remove the comment (pound sign) to use these 
-# (these are ones I have but don't use).  LOAD_POSSIBLY_ANNOYING_FUNCTIONS='NO'
-# If you put a file (even an empty one) called ~/.zsh/zlocalfxn in a user's home
-# directory, the 'NO' setting will be over-ridden for that user.
-
-# The third set are specific to X-ray crystallography and biophysics programs, so
-# unless you use these programs, there is no reason to autoload them. (Most of
-# these are programs that you can install with fink.   LOAD_CRYSTAL_FUNCTIONS='NO'
-# If you have installed a crystallography program via fink, this will default
-# to loading these functions after testing for the directory /sw/share/xtal.
-
-# These controlling variables can be changed to load the second and third
-# set by changing 'NO' to 'YES' in each case:
+# This set I am confident you won't want to live without, so they are
+# autoloaded by default.  This is defined with LOAD_ESSENTIAL_FUNCTIONS='YES'
+# These controlling variables can be changed to load by changing 'NO' to 'YES' in each case:
 
 
 
-        ########################################################
-        #                                                      #
-        #       For system-wide control, edit these:           #
-        #                                                      #
-                LOAD_ESSENTIAL_FUNCTIONS='YES'                 #
-        #                                                      #    
-                LOAD_POSSIBLY_ANNOYING_FUNCTIONS='NO'          #
-        #                                                      #   
-                LOAD_CRYSTAL_FUNCTIONS='NO'                    #
-        #                                                      #
-        ########################################################      
+		########################################################
+		#                                                      #
+		#       For system-wide control, edit these:           #
+		#                                                      #
+		#		LOAD_ESSENTIAL_FUNCTIONS='YES'                 #
+		#                                                      #
+		########################################################
 
 
 
@@ -169,18 +146,6 @@ if [[ -o interactive ]]; then
         fi
     
 
-            # This is used to prompt a new user to configure the templates
-            # in a user-specific manner.
-            autoload -U configure_zsh_templates
-            
-            # This is required for many of the GUI scripts
-            # Don't turn it off
-            autoload -U pashua_run
-            
-            # wrapper needed for new _fink fast completions
-            autoload -U fink  
-            autoload -U fink_web sync_fink ; alias finkweb='fink_web'
-    
             # Terminal-Finder interactions
             autoload -U cdf posd posgrep posfind fdc cdd cpos  full_path_in_finder
             
@@ -346,30 +311,6 @@ if [[ -o interactive ]]; then
                 alias tidyx='tidyxml'       # 
                 # alias rm='MacRm -i'       # replaces the (interactive) rm command
                 
-           # two alternatives for gdirs:
-           if [[ -z $GUIDIRS_PASHUA ]];then 
-                GUIDIRS_PASHUA='yes'
-           fi
-                
-                # GUIDIRS_PASHUA='no'        
-            if [[ $GUIDIRS_PASHUA == 'yes' ]];then
-                autoload guidirs_pashua
-                function gdirs { 
-                    typeset -U dirs_shared
-                    dirstack $1 > /dev/null
-                    guidirs_pashua  2> /dev/null
-                }
-                # alias gdirs="typeset -U dirs_shared; dirstack > /dev/null ; guidirs_pashua"
-             else
-                autoload _guidirs
-                function gdirs { 
-                    typeset -U dirs_shared
-                    dirstack $1 > /dev/null
-                    _guidirs 2> /dev/null 
-                }
-                # alias gdirs="typeset -U dirs_shared; dirstack > /dev/null ; _guidirs"
-             fi
-            
              typeset -U dirs_shared
             
             # The command-line version is "dirstack" or cd\?.  Defined in $ZDOT/zshrc.d/aliases.local
@@ -383,143 +324,7 @@ if [[ -o interactive ]]; then
 ###############################################################################    
 ###############################################################################   
     
-    if [[ $LOAD_POSSIBLY_ANNOYING_FUNCTIONS == 'YES' || -f ~/.zsh/zlocalfxn ]];then
-    
-        if [[ -d $ZDOT_TEMPLATE/zshrc.d/local-functions/opt ]];then
-            FPATH=$ZDOT_TEMPLATE/zshrc.d/local-functions/opt:$FPATH
-        fi
-        
-        if [[ -d $ZDOT/zshrc.d/local-functions/opt ]];then
-            FPATH=$ZDOT/zshrc.d/local-functions/opt:$FPATH
-        fi
-        
-        # An augmented man function to read zsh shell builtins and helpfiles.
-         autoload -U man
-         autoload -U screen
-        
-        # Wrapper for sudo so when "sudo zsh" is invoked, 
-        # zsh will start root as a loging zsh shell to
-        # avoid problems with environment clashes.
-         autoload -U sudo
-        
-        #idiosyncratic ls variations
-         function lh { command ls -hltF "$@" | head }   
-         autoload -U ldot
-         alias ll='ls -l'  
-         
-         if [[ $(uname) == Darwin ]];then 
-            autoload -U checkmail
-            # autoload -U bbown  
-            # autoload -U manmac
-            # autoload -U startvnc
-         fi
 
-
-    fi  ## end ## [[ $LOAD_POSSIBLY_ANNOYING_FUNCTIONS == 'YES' ]]
-    
-###############################################################################    
-###############################################################################    
-    
-    
-    if [[ -f ~/.zsh/zxtalfxn || $LOAD_CRYSTAL_FUNCTIONS == 'YES' || -d $SWPREFIX/share/xtal ]];then
-
-        if [[ -d $ZDOT_TEMPLATE/zshrc.d/local-functions/xtal ]];then
-            FPATH=$ZDOT_TEMPLATE/zshrc.d/local-functions/xtal:$FPATH
-        fi
-        
-        if [[ -d $ZDOT/zshrc.d/local-functions/xtal ]];then
-            FPATH=$ZDOT/zshrc.d/local-functions/xtal:$FPATH
-        fi
-         
-        # Crystallography and biophysics-type functions
-        #
-        alias ccp4help="" ; unalias ccp4help
-        alias sca2fobs='sca2mtz'
-        alias cns="" ; unalias cns ; autoload -U cns
-        alias ono=""; unalias ono ; autoload -U ono
-
-        autoload -U ccp4help   #  A better ccp4help.
-        autoload -U ccp4_patches # Check for new ccp4 patches
-
-        # Augmented coot function wrapper
-        autoload -U coot 
-        
-        # Does what it claims
-        autoload -U sca2mtz 
-        
-        # Use default scala settins to process mosflm data
-        # ending with truncated mtz file and cns hkl files.
-        # Mercilessly interactive osa/shell script
-        autoload -U mos2fobs 
-        
-        # Launcher for MacPyMOL unix binary
-        autoload -U pymol 
-        
-        # Overlay two (eg) pdf Patterson maps
-        autoload -U overlay 
-
-        # If you have foo.mtz and foo.pdb from refmac, these make
-        # 2Fo-Fc and Fo-Fc maps
-        autoload -U mapcover mapcoverdiff
-        
-        # Xnested wrappers:  X11 bug workaround
-        autoload -U xdlmapman xdldataman
-        
-        # Function to download PDB files from the PDB server
-        autoload -U getpdb
-        
-        # My function to put DNA/RNA pdb files into standard format
-        alias canonical_pdb='canonicalize_pdb'
-        alias canon_pdb='canonicalize_pdb'
-        autoload -U canonicalize_pdb fix_namot
-        
-        # A better cns_edit and cns_web
-        autoload -U cns_edit cns_web
-
-        # Activate the environment.xtal script
-        [[ ! -d ~/.zsh ]] && mkdir -p ~/.zsh  
-        touch ~/.zsh/use_xtal_env
-
-    fi  ## end ## [[ $LOAD_CRYSTAL_FUNCTIONS == 'YES' ]]
-    
-    #########################################################################    
-    
-    #----------------------------------------------------------- 
-    # Choose default shell prompt AND Update terminal Titlebar and Tab
-    #-----------------------------------------------------------
-
-    # Load the default zsh prompt switching command-line interface
-    autoload -U promptinit; promptinit
-
-    # This activates the settitle, settab functions that will persist
-    # even if you change to a customizable prompt. 
-    # If you don't want to use settab and settitle, then issue the command
-    # "touch ~/.zsh/notitletabs" .  Note that the "simple" prompt will over-ride
-    # this setting.
-    
-    if [[ ! -f ~/.zsh/notitletabs ]]; then
-        autoload -U set_title_tab
-        set_title_tab
-    fi
-    
-    
-    # If we have OS X, load the GUI switching interface as well
-    
-    if [[ $(uname) == "Darwin" ]]; then
-        autoload -U  switch_prompt
-    fi
-    
-    # To customize the prompt, copy $ZDOT_TEMPLATE/zshrc.d/prompt to
-    # ~/.zsh/zshprompt and modify.  The function switch_prompt automates
-    # this procedure.
-    
-    if [[ -f ~/.zsh/zshprompt ]];then
-       source ~/.zsh/zshprompt
-    elif [[ -f $ZDOT/zshrc.d/prompt ]];then
-       source $ZDOT/zshrc.d/prompt
-    else
-       source $ZDOT_TEMPLATE/zshrc.d/prompt
-    fi
 
     #########################################################################    
     
@@ -559,8 +364,5 @@ if [[ -o interactive ]]; then
     
 fi ## end ## [[ -o interactive ]]
 
-###############################################################################    
 ###############################################################################
- 
-
-
+###############################################################################
