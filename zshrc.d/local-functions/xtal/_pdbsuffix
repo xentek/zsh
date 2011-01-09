@@ -1,6 +1,0 @@
-#compdef  canon_pdb canonical_pdb canonicalize_pdb fix_namot molmol  pdb_contents
-autoload -U _files_only
-#local expl
- _description files  expl %B'--- pdb files available ---'%b
-_files_only "$expl[@]" -g '*.pdb'
-

@@ -1,6 +1,0 @@
-#compdef pymol
-autoload -U _files_only
-#local expl
- _description files  expl %B'--- files loadable into pymol ---'%b
-_files_only "$expl[@]" -g '*.(pdb|ccp4|xplor|pse|pml)'
-
