@@ -1,7 +1,0 @@
-#!/bin/zsh -f
-
-# bbown: recursively change file type to BBEdit text
-
-command  find "$@" -type f -exec SetFile -c "R*ch" -t TEXT {} \; ;
-
-
