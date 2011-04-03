@@ -58,7 +58,7 @@
 
 if [[ -o interactive ]]; then
 
-       bindkey -v
-       # print "Using vi key bindings!"
+       bindkey -e
+       print "Using emacs key bindings!"
  
 fi

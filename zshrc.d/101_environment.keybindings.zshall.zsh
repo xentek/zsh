@@ -40,14 +40,28 @@
 #
 ###############################################################################
 
+if [[ -o interactive ]]; then
+  
+
+    # zshrc_load_status 'key bindings'
+
+    if [[ -f ~/.zsh/zshvi ]];then
+       # Over-ride to use vi key bindings
+       # Keep this conditional test for legacy compatibility
+       # and for the convenience of individual user customizability.
+       bindkey -v
+       print "Using vi key bindings!"
+    else
+       bindkey -e
+    fi
+    
+fi
 
 ##########################################################################
 #
 #     Use this for all zsh keybidings AFTER emacs or vi is chosen
 #
 ##########################################################################
-
-
 
 if [[ -o interactive ]]; then
     # {{{ Key bindings 
